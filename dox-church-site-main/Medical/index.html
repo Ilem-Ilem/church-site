@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doxa Medical Team</title>
+    <link rel="stylesheet" href="../assets/vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/vendor/bootstrap-icons/bootstrap-icons.css">
+    <link rel="stylesheet" href="../assets/vendor/aos/aos.css">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+        integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.js"></script>
+    <script src="../assets/vendor/aos/aos.js"></script>
+
+    <style>
+        :root {
+            --text-main: #111418;
+            --text-muted: #60758a;
+            --border: #dbe0e6;
+            --brand: #0d80f2;
+            --bg-soft: #f0f2f5;
+        }
+
+        body {
+            font-family: Lexend, "Noto Sans", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            color: var(--text-main);
+        }
+
+        .main-body {
+            width: 90%;
+            margin: 0 auto;
+        }
+
+        .hero {
+            min-height: 480px;
+            background: linear-gradient(rgba(0, 0, 0, .1), rgba(0, 0, 0, .4)),
+                url(../Img/IMG-20250101-WA0021.jpg) center/cover no-repeat;
+            border-radius: 1rem;
+        }
+
+        .section-title {
+            font-weight: 700;
+            letter-spacing: -0.015em;
+        }
+
+        .card-border {
+            border: 1px solid var(--border);
+        }
+
+        .avatar {
+            width: 100%;
+            padding-top: 100%;
+            background-position: center;
+            background-size: cover;
+            border-radius: 50%;
+        }
+
+        .aspect-video {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%;
+            border-radius: 1rem;
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+
+        .price-badge {
+            background: var(--brand);
+            color: #fff;
+            padding: .15rem .6rem;
+            border-radius: .75rem;
+            font-size: .75rem;
+            font-weight: 600;
+        }
+
+        .btn-soft {
+            background: var(--bg-soft);
+            color: var(--text-main);
+            font-weight: 700;
+        }
+
+        .benefit-icon,
+        .top-btn {
+            background: var(--bg-soft);
+        }
+
+        .top-btn {
+            color: #fff;
+            background: var(--brand);
+            border: none;
+            border-radius: .75rem;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .muted {
+            color: var(--text-muted);
+        }
+
+        .quest-con{
+            /* max-width: 820px; */
+            /* margin: 0 auto; */
+        }
+
+        /* small max width container like original */
+        /* .container-narrow {
+            max-width: 960px;
+        } */
+    </style>
+</head>
+
+<body>
+    <div class="main-body py-4">
+        <div class="container-narrow">
+
+            <!-- Hero -->
+            <section class="hero d-flex align-items-center justify-content-center text-center p-4">
+                <div class="text-white">
+                    <h1 class="fw-black display-5">Ready to elevate your well-being?</h1>
+                    <p class="lead mb-3">Discover personalized health solutions delivered right to your door.</p>
+                    <a href="#plans" class="btn btn-primary fw-bold px-4 py-2"
+                        style="background:var(--brand); border-color:var(--brand);">Get Started</a>
+                </div>
+            </section>
+
+            <!-- What sets us apart -->
+            <h2 class="section-title fs-4 px-2 pt-4 pb-2">What sets us apart</h2>
+            <div class="row g-3 px-2">
+                <div class="col-12 col-md-4">
+                    <div class="d-flex flex-column gap-3">
+                        <div class="aspect-video" style='background-image:url(../Img/1720935361532.jpg);'>
+                        </div>
+                        <div>
+                            <p class="fw-medium mb-1">Personalized Health Plans</p>
+                            <p class="muted small mb-0">Our plans are tailored to your unique health goals and
+                                lifestyle, ensuring you receive the products and support that are right for you.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="d-flex flex-column gap-3">
+                        <div class="aspect-video" style='background-image:url(../Img/1731874997821.jpg);'>
+                        </div>
+                        <div>
+                            <p class="fw-medium mb-1">Expert Health Tips</p>
+                            <p class="muted small mb-0">Gain access to expert advice and tips to help you achieve your
+                                health goals and maintain a healthy lifestyle.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="d-flex flex-column gap-3">
+                        <div class="aspect-video" style='background-image:url(../Img/IMG-20250130-WA0018.jpg);'>
+                        </div>
+                        <div>
+                            <p class="fw-medium mb-1">Community Support</p>
+                            <p class="muted small mb-0">Join a community of like-minded individuals on a similar health
+                                journey, offering support and motivation.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Story & Mission -->
+            <h2 class="section-title fs-4 px-2 pt-4 pb-2">Our Story</h2>
+            <p class="px-2">Wellness Delivered was founded with a simple mission: to make health and wellness accessible
+                to everyone. We believe that everyone deserves to live a healthy and fulfilling life, and we're
+                committed to providing the tools and support to make that a reality. Lorem ipsum, dolor sit amet
+                consectetur adipisicing elit. Quasi animi ullam aliquam. Beatae laboriosam error, eligendi dolores
+                praesentium tenetur quam placeat dignissimos aperiam assumenda neque, labore earum consequuntur rem
+                ipsa! Error explicabo quod et suscipit illo obcaecati, accusamus officiis nam ducimus doloribus sit
+                eaque doloremque ipsa rem totam, excepturi omnis.</p>
+
+            <h2 class="section-title fs-4 px-2 pt-4 pb-2">Our Mission</h2>
+            <p class="px-2">Our mission is to empower individuals to take control of their health by providing
+                personalized health solutions and fostering a supportive community. We strive to be a trusted partner in
+                your health journey, offering guidance and resources every step of the way. Lorem ipsum dolor, sit amet
+                consectetur adipisicing elit. Architecto mollitia debitis, maiores iure aut voluptatibus consectetur
+                obcaecati autem ad voluptatem repellendus perferendis, molestias adipisci illum eveniet expedita cumque
+                atque, optio minima illo accusantium sed beatae. Ex, magni perspiciatis id sed laudantium corporis cum
+                modi pariatur mollitia at temporibus quam repellendus!</p>
+
+            <!-- Team -->
+            <h2 class="section-title fs-4 px-2 pt-4 pb-2">Meet the Team</h2>
+            <div class="row row-cols-1 row-cols-sm-3 g-3 px-2 text-center">
+                <div class="col">
+                    <div class="px-4">
+                        <div class="avatar mx-auto" style='background-image:url(../Img/1720935393094.jpg);'>
+                        </div>
+                    </div>
+                    <p class="fw-medium mb-0 mt-2">Dr. Maya Sharma</p>
+                    <p class="muted small">Chief Medical Officer</p>
+                </div>
+                <div class="col">
+                    <div class="px-4">
+                        <div class="avatar mx-auto" style='background-image:url(../Img/1720935393094.jpg);'>
+                        </div>
+                    </div>
+                    <p class="fw-medium mb-0 mt-2">Ethan Bennett</p>
+                    <p class="muted small">Head of Product</p>
+                </div>
+                <div class="col">
+                    <div class="px-4">
+                        <div class="avatar mx-auto" style='background-image:url(../Img/1720935393094.jpg);'>
+                        </div>
+                    </div>
+                    <p class="fw-medium mb-0 mt-2">Olivia Patel</p>
+                    <p class="muted small">Community Manager</p>
+                </div>
+            </div>
+
+            <!-- Plans -->
+            <div id="plans" class="d-flex flex-wrap justify-content-between align-items-start gap-3 px-2 pt-4">
+                <div>
+                    <p class="h2 fw-bold mb-1">Choose Your Wellness Delivered Plan</p>
+                    <p class="muted small mb-0">Select the plan that best fits your health goals and lifestyle. Each
+                        plan is designed to provide you with the best health products and support.</p>
+                </div>
+            </div>
+
+            <div class="row g-3 px-2 pt-3">
+                <!-- Basic -->
+                <div class="col-12 col-md-4">
+                    <div class="card card-border h-100">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title fw-bold">Basic</h5>
+                            <p class="mb-3"><span class="display-6 fw-black">$29</span> <span
+                                    class="fw-bold">/month</span></p>
+                            <a href="#" class="btn btn-soft mb-3">Subscribe</a>
+                            <ul class="list-unstyled small d-flex flex-column gap-2 mb-0">
+                                <li><i class="bi bi-check2 me-2"></i>Curated health products</li>
+                                <li><i class="bi bi-check2 me-2"></i>Expert health tips</li>
+                                <li><i class="bi bi-check2 me-2"></i>Monthly health challenges</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <!-- Premium -->
+                <div class="col-12 col-md-4">
+                    <div class="card card-border h-100">
+                        <div class="card-body d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="card-title fw-bold mb-0">Premium</h5>
+                                <span class="price-badge">Best Value</span>
+                            </div>
+                            <p class="mt-2 mb-3"><span class="display-6 fw-black">$49</span> <span
+                                    class="fw-bold">/month</span></p>
+                            <a href="#" class="btn btn-soft mb-3">Subscribe</a>
+                            <ul class="list-unstyled small d-flex flex-column gap-2 mb-0">
+                                <li><i class="bi bi-check2 me-2"></i>All Basic features</li>
+                                <li><i class="bi bi-check2 me-2"></i>Personalized health plan</li>
+                                <li><i class="bi bi-check2 me-2"></i>Exclusive product samples</li>
+                                <li><i class="bi bi-check2 me-2"></i>Priority customer support</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <!-- Ultimate -->
+                <div class="col-12 col-md-4">
+                    <div class="card card-border h-100">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title fw-bold">Ultimate</h5>
+                            <p class="mb-3"><span class="display-6 fw-black">$79</span> <span
+                                    class="fw-bold">/month</span></p>
+                            <a href="#" class="btn btn-soft mb-3">Subscribe</a>
+                            <ul class="list-unstyled small d-flex flex-column gap-2 mb-0">
+                                <li><i class="bi bi-check2 me-2"></i>All Premium features</li>
+                                <li><i class="bi bi-check2 me-2"></i>One-on-one health coaching</li>
+                                <li><i class="bi bi-check2 me-2"></i>Customized product selection</li>
+                                <li><i class="bi bi-check2 me-2"></i>VIP access to events</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Doxa Medical Team Subscription Card -->
+            <h2 class="section-title fs-4 px-2 pt-4 pb-2">Doxa Medical Team Subscription Card</h2>
+            <p class="px-2">We are excited to announce the launch of the Doxa Medical Team Subscription Card, aimed at
+                providing affordable healthcare to our church community. This card is available for purchase at a fee of
+                ₦1000, with a monthly subscription fee of ₦500. It is open to both church members and non-members.</p>
+
+            <h3 class="fs-5 px-2">Benefits</h3>
+            <div class="px-2">
+                <div class="d-flex align-items-center gap-3 py-2">
+                    <div class="benefit-icon d-flex align-items-center justify-content-center rounded"
+                        style="width:40px;height:40px;"><i class="bi bi-check2"></i></div>
+                    <p class="mb-0">Full malaria treatment once a month</p>
+                </div>
+                <div class="d-flex align-items-center gap-3 py-2">
+                    <div class="benefit-icon d-flex align-items-center justify-content-center rounded"
+                        style="width:40px;height:40px;"><i class="bi bi-check2"></i></div>
+                    <p class="mb-0">2 free sanitary pads per month for female subscribers</p>
+                </div>
+                <div class="d-flex align-items-center gap-3 py-2">
+                    <div class="benefit-icon d-flex align-items-center justify-content-center rounded"
+                        style="width:40px;height:40px;"><i class="bi bi-check2"></i></div>
+                    <p class="mb-0">Free BP and temperature checks during service</p>
+                </div>
+                <div class="d-flex align-items-center gap-3 py-2">
+                    <div class="benefit-icon d-flex align-items-center justify-content-center rounded"
+                        style="width:40px;height:40px;"><i class="bi bi-check2"></i></div>
+                    <p class="mb-0">One free consultation per month</p>
+                </div>
+                <div class="d-flex align-items-center gap-3 py-2">
+                    <div class="benefit-icon d-flex align-items-center justify-content-center rounded"
+                        style="width:40px;height:40px;"><i class="bi bi-check2"></i></div>
+                    <p class="mb-0">Nutritional guidance with a basic meal plan template tailored to Nigerian diets</p>
+                </div>
+            </div>
+            <p class="px-2">The card is valid for 12 months, with a tick-off space for each month to help you keep track
+                of your benefits. This initiative is part of our vision to promote preventive healthcare, accessibility,
+                and medical awareness within our community. To subscribe or for any inquiries, please meet any Medical
+                Team member after every service.</p>
+
+            <!-- FAQ -->
+            <div class="quest-con ">
+                <h2 class="section-title fs-4 px-2 pt-4 pb-2">Frequently Asked Questions</h2>
+                <div class="accordion px-2" id="faqAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="q1">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#a1" aria-expanded="true" aria-controls="a1">
+                                How do I choose the right plan for me?
+                            </button>
+                        </h2>
+                        <div id="a1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body muted small">
+                                Consider your health goals, lifestyle, and budget. Our Basic plan is a great starting
+                                point,
+                                while Premium and Ultimate offer more personalized features and support.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="q2">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#a2" aria-expanded="false" aria-controls="a2">
+                                Can I change my plan later?
+                            </button>
+                        </h2>
+                        <div id="a2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body muted small">
+                                Consider your health goals, lifestyle, and budget. Our Basic plan is a great starting
+                                point,
+                                while Premium and Ultimate offer more personalized features and support.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="q3">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#a3" aria-expanded="false" aria-controls="a3">
+                                What if I have a medical condition?
+                            </button>
+                        </h2>
+                        <div id="a3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body muted small">
+                                Consider your health goals, lifestyle, and budget. Our Basic plan is a great starting
+                                point,
+                                while Premium and Ultimate offer more personalized features and support.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- Contact -->
+            <h2 class="section-title fs-4 px-2 pt-4 pb-2">Contact Us</h2>
+            <p class="px-2">Have questions or need assistance? Reach out to us at <a
+                    href="mailto:support@wellnessdelivered.com">support@wellnessdelivered.com</a> or call us at (555)
+                123-4567. We're here to help you on your health journey.</p>
+
+            <!-- Back to top -->
+            <div class="d-flex justify-content-end px-2 pb-4 position-fixed bottom-0 end-0">
+                <a href="#top" class="top-btn" onclick="window.scrollTo({top:0, behavior:'smooth'}); return false;"
+                    aria-label="Back to top">
+                    <i class="bi bi-arrow-up"></i>
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+
+</html>

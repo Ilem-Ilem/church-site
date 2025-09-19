@@ -8,7 +8,7 @@ class TeamFunction extends Model
 {
     protected $table = 'team_functions';
     
-    protected $fillable = ['team_id', 'function'];
+    protected $fillable = ['team_id', 'function', 'function_id'];
 
     public function team()
     {

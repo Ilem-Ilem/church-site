@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Believers Academy</title>
+    <link rel="stylesheet" href="assets/vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/vendor/bootstrap-icons/bootstrap-icons.css">
+    <link rel="stylesheet" href="assets/vendor/aos/aos.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+        integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.js"></script>
+    <script src="assets/vendor/aos/aos.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .card-con {
+            max-width: 800px;
+            margin: 100px auto;
+        }
+
+        .section-title {
+            font-size: 23px;
+        }
+
+        .navbar {
+            background: linear-gradient(to right, #357be4, #294dc0) !important;
+            height: 85px;
+        }
+
+        .card {
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-box {
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            border-left: 5px solid;
+        }
+
+        .status-box-open {
+            border-color: #28a745;
+            background-color: #e2f0e7;
+        }
+
+        .status-box-closed {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+        }
+
+        .status-box-open .status-text {
+            font-weight: bold;
+            color: #28a745;
+            margin-bottom: 0.5rem;
+        }
+
+        .status-box-closed .status-text {
+            font-weight: bold;
+            color: #dc3545;
+            margin-bottom: 0.5rem;
+        }
+
+        .link-text a {
+            color: #007bff;
+            text-decoration: underline;
+        }
+
+        .modal-body-scrollable {
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-md custom-navbar fixed-top">
+        <div class="container-fluid">
+            <img src="Img/doxa.PNG" alt="logo" class="logo">
+
+            <!-- Large screen nav links -->
+            <div class="collapse navbar-collapse d-none d-md-flex justify-content-end">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="sermon.html">Message</a></li>
+                    <li class="nav-item"><a class="nav-link" href="about_us.html">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="cell.html">Cell</a></li>
+                    <li class="nav-item"><a class="nav-link" href="event.html">Event</a></li>
+                    <li class="nav-item"><a class="nav-link" href="map.html">Location</a></li>
+                    <li class="nav-item"><a class="nav-link" href="belivers.html">Believers academy</a></li>
+                    <li class="nav-item"><a class="nav-link" href="transport.html">Need a Ride</a></li>
+                </ul>
+            </div>
+
+            <!-- Mobile toggle -->
+            <button class="navbar-toggler d-md-none" type="button" data-bs-toggle="offcanvas"
+                data-bs-target="#offcanvasNav" aria-controls="offcanvasNav">
+                <i class="bi bi-list text-white" style="font-size: 1.8rem;"></i>
+            </button>
+        </div>
+    </nav>
+    <script>
+        window.addEventListener('scroll', function () {
+            const navbar = document.querySelector('.custom-navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+    </script>
+
+    <!-- Offcanvas menu -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNav" aria-labelledby="offcanvasNavLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title text-white" id="offcanvasNavLabel">Doxa Commission Global</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+                aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <ul class="navbar-nav">
+                <div class="navcon">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                </div>
+                <div class="navcon">
+                    <li class="nav-item"><a class="nav-link" href="sermon.html">Message</a></li>
+                </div>
+                <div class="navcon">
+                    <li class="nav-item"><a class="nav-link" href="about_us.html">About</a></li>
+                </div>
+                <div class="navcon">
+                    <li class="nav-item"><a class="nav-link" href="cell.html">Cell</a></li>
+                </div>
+                <div class="navcon">
+                    <li class="nav-item"><a class="nav-link" href="event.html">Event</a></li>
+                </div>
+                <div class="navcon">
+                    <li class="nav-item"><a class="nav-link" href="map.html">Location</a></li>
+                </div>
+                <div class="navcon">
+                    <li class="nav-item"><a class="nav-link" href="belivers.html">Believers academy</a></li>
+                </div>
+                <div class="navcon">
+                    <li class="nav-item"><a class="nav-link" href="transport.html">Need a Ride</a></li>
+                </div>
+
+            </ul>
+        </div>
+    </div>
+    <div class="container card-con">
+        <div class="card p-4 p-md-5">
+            <h1 class="mb-3 fw-bold">Believers Academy</h1>
+            <p class="lead">Our Believers Class is a foundational course designed for new converts and anyone seeking to
+                deepen their understanding of core Christian doctrines. It's a welcoming environment where you can ask
+                questions, grow in faith, and connect with other believers.</p>
+
+            <p class="mt-4 fw-semibold">In this class, you will learn about:</p>
+            <ul class="list-style-type-disc">
+                <li>The fundamentals of salvation and new birth</li>
+                <li>The person and work of the Holy Spirit</li>
+                <li>The importance of prayer and Bible study</li>
+                <li>Understanding the church and fellowship</li>
+                <li>Living a victorious Christian life</li>
+            </ul>
+
+            <p class="mt-4">We believe that a strong foundation in these truths is essential for every believer to
+                thrive in their walk with God.</p>
+
+            <div class="status-box status-box-open mt-4">
+                <p class="status-text mb-2">Status: Open for Registration!</p>
+                <p class="link-text mb-0">New classes begin every first Sunday of the month. Click <a href="#"
+                        class="text-decoration-underline text-primary fw-bold" data-bs-toggle="modal"
+                        data-bs-target="#registrationModal">here</a> to register.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registration Modal -->
+    <div class="modal fade" id="registrationModal" tabindex="-1" aria-labelledby="registrationModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="section-title" id="registrationModalLabel">Believers Academy Registration</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body modal-body-scrollable">
+                    <p>Please fill out the form below to register for our upcoming Believers Acedemy. We look forward to
+                        welcoming you!</p>
+                    <form>
+                        <div class="mb-3">
+                            <label for="fullName" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="fullName" placeholder="Your Full Name">
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" placeholder="your.email@example.com">
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone" placeholder="+234 801 234 5678">
+                        </div>
+                        <div class="mb-3">
+                            <label for="howHeard" class="form-label">How did you hear about Doxa Church?</label>
+                            <select class="form-select" id="howHeard">
+                                <option selected disabled>Select an option</option>
+                                <option>Friend or Family</option>
+                                <option>Social Media</option>
+                                <option>Website</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="questions" class="form-label">Any questions or specific areas of
+                                interest?</label>
+                            <textarea class="form-control" id="questions" rows="3"
+                                placeholder="e.g., I'm interested in learning more about prayer."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- footer -->
+    <footer class="main-footer">
+
+        <div class="row mx-2">
+
+            <div class="footer-content-con row mx-2">
+                <div class="footer-content col-lg-3 col-md-6">
+                    <!-- <img src="Img/doxa.PNG"> -->
+                    <h2>Doxa commissin Global</h2>
+                    <h4>Bringing nation into God's glory world</h3>
+                        <div class="footer-info">
+                            <p>
+                                <i class="fa-solid fa-location-dot"></i>129 Goldie, Adjacent amika
+                                utuk, Calabar, Cross River State, Nigeria.
+                            </p>
+                            <p><i class="fa-solid fa-phone"></i>+234 [Your Phone Number]</p>
+                            <p>
+                                <i class="fa-regular fa-envelope"></i>
+                                <a href="mailto:info@doxachurch.org">info@doxachurch.org</a>
+                            </p>
+                        </div>
+                </div>
+
+                <div class="footer-content col-lg-3 col-md-6">
+                    <h2>Sunday Glory Life service</h2>
+                    <p>7am, 8:30am, 10am and 4pm</p>
+                    <h4>Thursday Glory Experience</h4>
+                    <p>5:30pm</p>
+                </div>
+
+                <div class="footer-content col-lg-3 col-md-6">
+                    <h2>Quick Links</h2>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="messages.html">Messages</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="map.html">Location</a></li>
+                        <li><a href="believers_class.html">Believers Class</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-content newsletter col-lg-3 col-md-6">
+                    <h3 class=>Stay Connected</h3>
+                    <p></p>Subscribe to our newsletter for updates and spiritual insights.</p>
+                    <form id="newsletter-form">
+                        <input type="email" id="newsletter-email" placeholder="Your email address" required>
+                        <button type="submit">
+                            Subscribe
+                        </button>
+                    </form>
+                    <div class="footer-icons-wrapper">
+                        <a href="https://www.facebook.com/DoxaCommissionGlobal/" aria-label="Facebook"><i
+                                class="fab fa-facebook-f"></i></a>
+                        <a href="https://www.instagram.com/doxa_commission/?hl=en" aria-label="Instagram"><i
+                                class="fab fa-instagram"></i></a>
+                        <a href="https://www.tiktok.com/discover/doxa-commission-global" aria-label="TikTok"><i
+                                class="fab fa-tiktok"></i></a>
+                        <a href="https://www.youtube.com/channel/UCZtReUAxK3S6qBKnV5G6PTw" aria-label="YouTube"><i
+                                class="fab fa-youtube"></i></a>
+                        <a href="#" aria-label="Spotify"><i class="fab fa-spotify"></i></a>
+                    </div>
+                    <p style="color: rgb(204, 198, 198); text-align: center; margin-top: 8px;">Follow us for update
+                        and
+                        inspiration!</p>
+                </div>
+            </div>
+
+            <div class="break"></div>
+
+            <div class="footer-2">
+                <p>&copy; Copyright Doxa Commission Global <span id="current-year"></span> All Right Reserved. Desinged
+                    and Developed by Doxa
+                    database
+                </p>
+            </div>
+
+        </div>
+        <script>
+            let year = new Date().getFullYear()
+            document.getElementById('current-year').innerHTML = year
+        </script>
+
+    </footer>
+</body>
+
+</html>

@@ -3,6 +3,9 @@
 
 <head>
     <tallstackui:script />
+    {{-- <script src="/tinymce/js/tinymce/tinymce.min.js"></script> --}}
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+
     @include('partials.head')
 </head>
 
@@ -22,7 +25,7 @@
         </flux:navlist>
         <flux:navlist variant="outline">
 
-            @role(['admin', 'team-lead'])
+            @role(['admin', 'team-lead', 'lead-assist'])
             <flux:navlist.group expandable heading="Members"
                 :expanded="request()->routeIs('admin.dashboard.members.*') ? 'true' : 'false'">
                 <flux:navlist.item :href="route('admin.dashboard.members', ['chapter' => request()->get('chapter')])"
@@ -42,6 +45,9 @@
                 </flux:navlist.item>
                 @endrole
             </flux:navlist.group>
+
+            {{-- Report Group --}}
+            
             @endrole
             @role('admin')
             {{-- Teams Group --}}
@@ -62,29 +68,17 @@
                     Team Leader
                 </flux:navlist.item>
             </flux:navlist.group>
-            <flux:navlist class="w-64" :heading="'Management'" variant="outline">
-                <flux:navlist.group heading="Team Functions" expandable :expanded="false">
-                    <flux:navlist.item icon="squares-2x2" :href="route('admin.dashboard.functions.assign-general-function', request()->query())">Assign function</flux:navlist.item>
-                    <flux:navlist.item icon="squares-2x2" :href="route('admin.dashboard.functions.create-function', request()->query())">Create New Team Function</flux:navlist.item>
-                    
-                </flux:navlist.group>
-            </flux:navlist>
-            @endrole
-        </flux:navlist>
 
+            @endrole
+            @include('partials.team-based-menu')
+
+            
+        </flux:navlist>
+    
+       
         <flux:spacer />
 
-        <flux:navlist variant="outline">
-            <flux:navlist.item icon="folder-git-2" href="https://github.com/laravel/livewire-starter-kit"
-                target="_blank">
-                {{ __('Repository') }}
-            </flux:navlist.item>
-
-            <flux:navlist.item icon="book-open-text" href="https://laravel.com/docs/starter-kits#livewire"
-                target="_blank">
-                {{ __('Documentation') }}
-            </flux:navlist.item>
-        </flux:navlist>
+        
 
         <!-- Desktop User Menu -->
         <flux:dropdown class="hidden lg:block" position="bottom" align="start">

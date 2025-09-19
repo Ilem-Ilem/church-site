@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About Us</title>
+
+    <link rel="stylesheet" href="assets/vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/vendor/bootstrap-icons/bootstrap-icons.css">
+    <link rel="stylesheet" href="assets/vendor/aos/aos.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+        integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.js"></script>
+    <script src="assets/vendor/aos/aos.js"></script>
+    <style>
+        /* ===== BRAND COLORS & TYPOGRAPHY ===== */
+        :root {
+            --primary-color: #1a3d6d;
+            /* Deep Blue */
+            --secondary-color: #f4f4f4;
+            --accent-color: #78aaf1;
+            /* Warm Accent */
+            --text-color: #333;
+        }
+
+        body {
+            color: var(--text-color);
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        main {
+            width: 100%;
+        }
+
+
+        .custom-navbar {
+            transition: background-color 0.4s ease, box-shadow 0.4s ease;
+            background: transparent;
+            padding: 0.8rem 1rem;
+        }
+
+        .custom-navbar .nav-link {
+            color: white;
+            transition: color 0.3s ease;
+        }
+
+        .custom-navbar.scrolled {
+            background: linear-gradient(to right, #357be4, #294dc0);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .custom-navbar.scrolled .nav-link {
+            color: white;
+        }
+
+        .logo {
+            height: 50px;
+        }
+
+        /* Offcanvas styles */
+        .offcanvas-end {
+            background: linear-gradient(to right, #357be4, #294dc0);
+        }
+
+        .offcanvas-end .nav-link {
+            color: white;
+            padding: 0.5rem 0;
+            font-size: 1.1rem;
+        }
+
+        h2.section-title {
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        /* ===== IMAGE & TEXT SECTIONS ===== */
+        .about-section img {
+            border-radius: 10px;
+        }
+
+        /* ===== MISSION & VISION CARDS ===== */
+        .icon-card {
+            text-align: center;
+            padding: 30px;
+            border-radius: 10px;
+            background: var(--secondary-color);
+            transition: all 0.3s ease;
+        }
+
+        .icon-card:hover {
+            background: var(--accent-color);
+            color: white;
+            transform: translateY(-5px);
+        }
+
+        .icon-card i {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        /* ===== HISTORY TIMELINE ===== */
+        .timeline {
+            border-left: 3px solid var(--accent-color);
+            padding-left: 20px;
+        }
+
+        .timeline-item {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: 5px;
+            width: 15px;
+            height: 15px;
+            background: var(--accent-color);
+            border-radius: 50%;
+        }
+
+        /* ===== FLOATING BUTTON ===== */
+        .fab-icon {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            width: fit-content;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            font-size: 1.5rem;
+            z-index: 1000;
+        }
+
+        /* ===== SERVICES ===== */
+        .service-content {
+            display: flex;
+            gap: 30px;
+        }
+
+        .service-card-con {
+            background: var(--secondary-color);
+            text-align: center;
+            transition: 0.3s;
+            padding: 20px;
+        }
+
+        .service-card-con:nth-child(2) {
+            padding: 20px 80px;
+        }
+
+        .service-card-con:hover {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        /* ===== ANIMATIONS ===== */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .fade-in.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .about-hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+            background: url('/Img/1721033716535.jpg') center center no-repeat;
+            background-size: cover;
+            /* background-attachment: fixed; */
+        }
+
+        .about-hero h1,
+        .about-hero p {
+            color: white;
+            margin: 0;
+        }
+
+        /* Square Image */
+        .image-wrapper {
+            position: relative;
+            width: 100%;
+            padding-top: 100%;
+            overflow: hidden;
+        }
+
+        .square-img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Section Header with Watermark */
+        .section-header {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        .watermark {
+            position: absolute;
+            top: -20px;
+            left: 0;
+            font-size: 4rem;
+            font-weight: 900;
+            color: rgba(0, 0, 0, 0.05);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .section-title {
+            position: relative;
+            z-index: 1;
+            font-weight: bold;
+        }
+
+        /* Scrollable Text */
+        .text-content {
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        /* Smooth scroll look */
+        .text-content::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .text-content::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        .text-content::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .timeline-section {
+            position: relative;
+        }
+
+        .section-title {
+            font-weight: bold;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .timeline {
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 0;
+        }
+
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 4px;
+            background-color: #0d6efd;
+            /* primary color */
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -2px;
+        }
+
+        .timeline-item {
+            padding: 20px 40px;
+            position: relative;
+            width: 50%;
+        }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            right: -10px;
+            background-color: white;
+            border: 4px solid #0d6efd;
+            top: 20px;
+            border-radius: 50%;
+            z-index: 1;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        .timeline-item.left {
+            left: 0;
+        }
+
+        .timeline-item.right {
+            left: 50%;
+        }
+
+        .timeline-item.right::after {
+            left: -10px;
+        }
+
+        .timeline-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .timeline-content h5 {
+            margin-top: 0;
+            color: #0d6efd;
+            font-weight: bold;
+        }
+
+        .timeline-item:hover .timeline-content {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .timeline-item:hover::after {
+            background-color: #0d6efd;
+            transform: scale(1.2);
+        }
+
+        /* Responsive */
+        @media screen and (max-width: 768px) {
+            .timeline::after {
+                left: 20px;
+            }
+
+            .timeline-item {
+                width: 100%;
+                padding-left: 60px;
+                padding-right: 25px;
+            }
+
+            .timeline-item.right {
+                left: 0%;
+            }
+
+            .timeline-item::after {
+                left: 0;
+            }
+        }
+
+        /* ===== LEADERS ===== */
+        .leader-box {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            /* Keeps square shape */
+            overflow: hidden;
+            border-radius: 6px;
+        }
+
+        .leader-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .leader-box:hover img {
+            transform: scale(1.05);
+        }
+
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.65);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .leader-box:hover .overlay {
+            opacity: 1;
+        }
+
+        .overlay h5 {
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .social-links a {
+            color: white;
+            margin: 0 5px;
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
+        }
+
+        .social-links a:hover {
+            color: var(--accent-color);
+        }
+
+        .main-con {
+            width: 80%;
+            margin: 0 auto;
+
+        }
+
+        @media (max-width:640px) {
+            .main-con {
+                width: 100%;
+                /* border: 2px solid red; */
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-md custom-navbar fixed-top">
+        <div class="container-fluid">
+            <img src="Img/doxa.PNG" alt="logo" class="logo">
+
+            <!-- Large screen nav links -->
+            <div class="collapse navbar-collapse d-none d-md-flex justify-content-end">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="sermon.html">Message</a></li>
+                    <li class="nav-item"><a class="nav-link" href="about_us.html">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="cell.html">Cell</a></li>
+                    <li class="nav-item"><a class="nav-link" href="event.html">Event</a></li>
+                    <li class="nav-item"><a class="nav-link" href="map.html">Location</a></li>
+                    <li class="nav-item"><a class="nav-link" href="belivers.html">Believers academy</a></li>
+                    <li class="nav-item"><a class="nav-link" href="transport.html">Need a Ride</a></li>
+                </ul>
+            </div>
+
+            <!-- Mobile toggle -->
+            <button class="navbar-toggler d-md-none" type="button" data-bs-toggle="offcanvas"
+                data-bs-target="#offcanvasNav" aria-controls="offcanvasNav">
+                <i class="bi bi-list text-white" style="font-size: 1.8rem;"></i>
+            </button>
+        </div>
+    </nav>
+    <script>
+        window.addEventListener('scroll', function () {
+            const navbar = document.querySelector('.custom-navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+    </script>
+
+    <!-- Offcanvas menu -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNav" aria-labelledby="offcanvasNavLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title text-white" id="offcanvasNavLabel">Doxa Commission Global</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+                aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <ul class="navbar-nav">
+                <div class="navcon">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                </div>
+                <div class="navcon">
+                    <li class="nav-item"><a class="nav-link" href="sermon.html">Message</a></li>
+                </div>
+                <div class="navcon">
+                    <li class="nav-item"><a class="nav-link" href="about_us.html">About</a></li>
+                </div>
+                <div class="navcon">
+                    <li class="nav-item"><a class="nav-link" href="cell.html">Cell</a></li>
+                </div>
+                <div class="navcon">
+                    <li class="nav-item"><a class="nav-link" href="event.html">Event</a></li>
+                </div>
+                <div class="navcon">
+                    <li class="nav-item"><a class="nav-link" href="map.html">Location</a></li>
+                </div>
+                <div class="navcon">
+                    <li class="nav-item"><a class="nav-link" href="belivers.html">Believers academy</a></li>
+                </div>
+                <div class="navcon">
+                    <li class="nav-item"><a class="nav-link" href="transport.html">Need a Ride</a></li>
+                </div>
+
+            </ul>
+        </div>
+    </div>
+
+
+    <main>
+        <!-- HERO -->
+        <section class="about-hero">
+            <h1>Welcome to Our Church</h1>
+            <p>Building faith, hope, and love in Christ</p>
+        </section>
+
+
+        <div class="main-con">
+            <!-- ABOUT THE CHURCH -->
+            <section class="about-section  my-5">
+                <div class="row align-items-start">
+                    <!-- Image Column -->
+                    <div class="col-md-6" data-aos="fade-left">
+                        <div class="image-wrapper">
+                            <img src="/Img/IMG-20250130-WA0014.jpg" class="img-fluid square-img">
+                        </div>
+                    </div>
+
+                    <!-- Text Column -->
+                    <div class="col-md-6" data-aos="fade-right">
+                        <div class="section-header">
+                            <span class="watermark">About</span>
+                            <h2 class="section-title">About Us</h2>
+                        </div>
+                        <div class="text-content">
+                            <p>
+                                Our church is a community of believers dedicated to spreading the gospel,
+                                serving our neighbors, and growing in Christ's love.
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                                Pellentesque habitant morbi tristique senectus et netus et malesuada
+                                fames ac turpis egestas. Integer luctus ligula eu ligula sodales, nec
+                                lacinia purus elementum. Vestibulum viverra, nisl ac ullamcorper volutpat,
+                                leo sapien suscipit nulla, et cursus nunc leo id mauris.
+                                Sed feugiat lectus at massa ultrices, vel lacinia lorem rhoncus.
+                                Vivamus id nunc eget risus vehicula feugiat. Suspendisse suscipit ultrices magna.
+                                Proin dapibus arcu sed ligula sodales scelerisque.
+                                <!-- repeat lorem to simulate overflow -->
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AOS Script -->
+            <script>
+                AOS.init({
+                    duration: 1000,
+                    once: true
+                });
+            </script>
+
+
+            <!-- MISSION & VISION -->
+            <section class=" my-5 fade-in">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="icon-card">
+                            <i class="bi bi-bullseye"></i>
+                            <h4>Our Mission</h4>
+                            <p>To share the gospel and disciple believers to live Christ-centered lives.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="icon-card">
+                            <i class="bi bi-eye"></i>
+                            <h4>Our Vision</h4>
+                            <p>To be a light in our community and a beacon of hope to the world.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- HISTORY -->
+            <section class=" my-5 fade-in">
+                <h2 class="section-title">Our History</h2>
+                <div class="timeline">
+                    <div class="timeline-item left" data-aos="fade-right">
+                        <div class="timeline-content">
+                            <h5>1995</h5>
+                            <p>Church founded by faithful believers with a vision to serve.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item right" data-aos="fade-left">
+                        <div class="timeline-content">
+                            <h5>2000</h5>
+                            <p>Started youth outreach and community engagement programs.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item left" data-aos="fade-right">
+                        <div class="timeline-content">
+                            <h5>2005</h5>
+                            <p>Expanded outreach programs and built a new worship hall.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item right" data-aos="fade-left">
+                        <div class="timeline-content">
+                            <h5>2015</h5>
+                            <p>Launched online ministry and global prayer network.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item left" data-aos="fade-right">
+                        <div class="timeline-content">
+                            <h5>2023</h5>
+                            <p>Celebrated our 28th anniversary with new missions worldwide.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- LEADERS -->
+            <section class=" my-5">
+                <h2 class="text-center mb-4">Our Leaders</h2>
+                <div class="row g-4">
+                    <!-- Leader 1 -->
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-2 leader-card">
+                        <div class="leader-box">
+                            <img src="/Img/1721033716535.jpg" alt="Leader 1">
+                            <div class="overlay">
+                                <h5>John Doe</h5>
+                                <div class="social-links">
+                                    <a href="#"><i class="bi bi-facebook"></i></a>
+                                    <a href="#"><i class="bi bi-twitter"></i></a>
+                                    <a href="#"><i class="bi bi-instagram"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-center mt-2 mb-0 fw-bold">John Doe</p>
+                    </div>
+
+                    <!-- Leader 2 -->
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-2 leader-card">
+                        <div class="leader-box">
+                            <img src="/Img/1720935393094.jpg" alt="Leader 2">
+                            <div class="overlay">
+                                <h5>Mary Smith</h5>
+                                <div class="social-links">
+                                    <a href="#"><i class="bi bi-facebook"></i></a>
+                                    <a href="#"><i class="bi bi-twitter"></i></a>
+                                    <a href="#"><i class="bi bi-instagram"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-center mt-2 mb-0 fw-bold">Mary Smith</p>
+                    </div>
+
+                    <!-- Leader 3 -->
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-2 leader-card">
+                        <div class="leader-box">
+                            <img src="/Img/1720935393094.jpg" alt="Leader 3">
+                            <div class="overlay">
+                                <h5>David Johnson</h5>
+                                <div class="social-links">
+                                    <a href="#"><i class="bi bi-facebook"></i></a>
+                                    <a href="#"><i class="bi bi-twitter"></i></a>
+                                    <a href="#"><i class="bi bi-instagram"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-center mt-2 mb-0 fw-bold">David Johnson</p>
+                    </div>
+
+                    <!-- Leader 4 -->
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-2 leader-card">
+                        <div class="leader-box">
+                            <img src="/Img/IMG-20250130-WA0018.jpg" alt="Leader 4">
+                            <div class="overlay">
+                                <h5>Sarah Lee</h5>
+                                <div class="social-links">
+                                    <a href="#"><i class="bi bi-facebook"></i></a>
+                                    <a href="#"><i class="bi bi-twitter"></i></a>
+                                    <a href="#"><i class="bi bi-instagram"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-center mt-2 mb-0 fw-bold">Sarah Lee</p>
+                    </div>
+
+                    <!-- Leader 5 -->
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-2 leader-card">
+                        <div class="leader-box">
+                            <img src="/Img/5a4aa24e566c4c88a9120f553a4a8435.jpg" alt="Leader 5">
+                            <div class="overlay">
+                                <h5>Michael Brown</h5>
+                                <div class="social-links">
+                                    <a href="#"><i class="bi bi-facebook"></i></a>
+                                    <a href="#"><i class="bi bi-twitter"></i></a>
+                                    <a href="#"><i class="bi bi-instagram"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-center mt-2 mb-0 fw-bold">Michael Brown</p>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- GET INVOLVED -->
+            <section class="fade-in">
+                <!-- <div class="content-section "> -->
+                <div class="cta-section" style="background-color: aliceblue;">
+                    <h3>Get Involved and Connect With Us!</h3>
+                    <p>
+                        We invite you to be a part of our church family. Whether you're new to faith or have been a
+                        believer
+                        for
+                        years, there's a place for you here.
+                    </p>
+                    <div class="cta-buttons row gap-2">
+                        <button class="cta-button col-sm-12  col-lg-5 primary-button"><a href="cell.html"
+                                style="text-decoration: none; color: white;">Find a Cell Group</a></button>
+                        <button class="cta-button col-sm-12 col-lg-5 secondary-button"><a href="#"
+                                style="text-decoration: none;">Volunteer</a>
+                        </button>
+                    </div>
+                </div>
+                <!-- </div> -->
+            </section>
+
+            <!-- SERVICES -->
+            <section class="fade-in ">
+                <h2 class="section-title">Our Services</h2>
+                <section class=" my-5 fade-in">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="icon-card">
+                                <h5>Sunday Service</h5>
+                                <p>7:00 AM, 8:30 AM, 10:00 AM & 4:00 PM</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="icon-card">
+                                <h5>Thursday Service</h5>
+                                <p>5:30 PM</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+            <!-- CONTACT -->
+            <section class=" my-5 fade-in contact">
+                <section id="contact">
+                    <h2 class="section-title">Contact Us</h2>
+                    <div class="contact-grid">
+                        <div class="contact-info">
+                            <p>
+                                <i class="fa-solid fa-location-dot"></i>129 Goldie, Adjacent amika
+                                utuk, Calabar, Cross River State, Nigeria.
+                            </p>
+                            <p><i class="fa-solid fa-phone"></i>+234 [Your Phone Number]</p>
+                            <p>
+                                <i class="fa-regular fa-envelope"></i>
+                                <a href="mailto:info@doxachurch.org">info@doxachurch.org</a>
+                            </p>
+                            <p><strong>Service Times:</strong></p>
+                            <ul class="service-times-list">
+                                <p><b>Sunday we hold four Glory Life services</b></p>
+                                <li><b>Sundays:</b> 7am, 8:30am, 10am and 4pm</li>
+                                <p><b>Glory Exprience</b></p>
+                                <li><b>Thursday:</b> 5:30 PM</li>
+                            </ul>
+                        </div>
+                        <div class="contact-form-wrapper" id="message">
+                        </div>
+
+                    </div>
+                </section>
+                <section>
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m16!1m12!1m3!1d350.20663000377255!2d8.335787824956927!3d4.949313548569035!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!2m1!1sDoxa%20Commission%20Global!5e0!3m2!1sen!2sng!4v1752870059845!5m2!1sen!2sng"
+                        width="100%" height="300" style="border:0;" allowfullscreen="true" loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+
+                    <div class="col-md-6" style="width: 100%;">
+                        <form style="width: 100%;">
+                            <div class="mb-3">
+                                <input type="text" class="form-control" placeholder="Your Name"
+                                    style="padding-right: 200px ;">
+                            </div>
+                            <div class="mb-3">
+                                <input type="email" class="form-control" placeholder="Your Email">
+                            </div>
+                            <div class="mb-3">
+                                <textarea class="form-control" rows="4" placeholder="Your Message"></textarea>
+                            </div>
+                            <button class="btn btn-primary">Send Message</button>
+                        </form>
+                    </div>
+        </div>
+        </div>
+    </main>
+
+
+
+    <!-- CONCLAVES MODAL -->
+    <div class="modal fade" id="conclavesModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Our Conclaves</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <ul>
+                        <li>Conclave A – Location 1</li>
+                        <li>Conclave B – Location 2</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <footer class="main-footer">
+
+        <div class="row mx-2">
+
+            <div class="footer-content-con row mx-2">
+                <div class="footer-content col-lg-3 col-md-6">
+                    <!-- <img src="Img/doxa.PNG"> -->
+                    <h2>Doxa commissin Global</h2>
+                    <h4>Bringing nation into God's glory world</h3>
+                        <div class="footer-info">
+                            <p>
+                                <i class="fa-solid fa-location-dot"></i>129 Goldie, Adjacent amika
+                                utuk, Calabar, Cross River State, Nigeria.
+                            </p>
+                            <p><i class="fa-solid fa-phone"></i>+234 [Your Phone Number]</p>
+                            <p>
+                                <i class="fa-regular fa-envelope"></i>
+                                <a href="mailto:info@doxachurch.org">info@doxachurch.org</a>
+                            </p>
+                        </div>
+                </div>
+
+                <div class="footer-content col-lg-3 col-md-6">
+                    <h2>Sunday Glory Life service</h2>
+                    <p>7am, 8:30am, 10am and 4pm</p>
+                    <h4>Thursday Glory Experience</h4>
+                    <p>5:30pm</p>
+                </div>
+
+                <div class="footer-content col-lg-3 col-md-6">
+                    <h2>Quick Links</h2>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="messages.html">Messages</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="map.html">Location</a></li>
+                        <li><a href="believers_class.html">Believers Class</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-content newsletter col-lg-3 col-md-6">
+                    <h3 class=>Stay Connected</h3>
+                    <p></p>Subscribe to our newsletter for updates and spiritual insights.</p>
+                    <form id="newsletter-form">
+                        <input type="email" id="newsletter-email" placeholder="Your email address" required>
+                        <button type="submit">
+                            Subscribe
+                        </button>
+                    </form>
+                    <div class="footer-icons-wrapper">
+                        <a href="https://www.facebook.com/DoxaCommissionGlobal/" aria-label="Facebook"><i
+                                class="fab fa-facebook-f"></i></a>
+                        <a href="https://www.instagram.com/doxa_commission/?hl=en" aria-label="Instagram"><i
+                                class="fab fa-instagram"></i></a>
+                        <a href="https://www.tiktok.com/discover/doxa-commission-global" aria-label="TikTok"><i
+                                class="fab fa-tiktok"></i></a>
+                        <a href="https://www.youtube.com/channel/UCZtReUAxK3S6qBKnV5G6PTw" aria-label="YouTube"><i
+                                class="fab fa-youtube"></i></a>
+                        <a href="#" aria-label="Spotify"><i class="fab fa-spotify"></i></a>
+                    </div>
+                    <p style="color: rgb(204, 198, 198); text-align: center; margin-top: 8px;">Follow us for update
+                        and
+                        inspiration!</p>
+                </div>
+            </div>
+
+            <div class="break"></div>
+
+            <div class="footer-2">
+                <p>&copy; Copyright Doxa Commission Global <span id="current-year"></span> All Right Reserved. Desinged
+                    and Developed by Doxa
+                    database
+                </p>
+            </div>
+
+        </div>
+        <script>
+            let year = new Date().getFullYear()
+            document.getElementById('current-year').innerHTML = year
+        </script>
+
+    </footer>
+
+
+    <!-- FLOATING BUTTON -->
+    <button class="fab-icon" data-bs-toggle="modal" data-bs-target="#conclavesModal">
+        <i class="bi bi-people"></i> &nbsp;Conclaves
+    </button>
+
+
+    <script>
+        // Smooth scroll animation for fade-in
+        const fadeEls = document.querySelectorAll('.fade-in');
+        function checkFade() {
+            fadeEls.forEach(el => {
+                const rect = el.getBoundingClientRect();
+                if (rect.top < window.innerHeight - 50) {
+                    el.classList.add('show');
+                }
+            });
+        }
+        window.addEventListener('scroll', checkFade);
+        window.addEventListener('load', checkFade);
+    </script>
+
+    <script>
+        AOS.init({
+            duration: 1000,  // Animation duration in ms
+            once: true,      // Animation only happens once
+            offset: 100,     // Distance from the trigger point
+            easing: 'ease-in-out' // Smooth easing
+        });
+    </script>
+</body>
+
+</html>

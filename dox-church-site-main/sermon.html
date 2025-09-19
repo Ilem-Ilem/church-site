@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sermons</title>
+
+    <link rel="stylesheet" href="assets/vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/vendor/bootstrap-icons/bootstrap-icons.css">
+    <link rel="stylesheet" href="assets/vendor/aos/aos.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+        integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.js"></script>
+    <script src="assets/vendor/aos/aos.js"></script>
+</head>
+
+<body class="d-flex flex-column h-100">
+    <main class="flex-shrink-0">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-md custom-navbar fixed-top">
+            <div class="container-fluid">
+                <img src="Img/doxa.PNG" alt="logo" class="logo">
+
+                <!-- Large screen nav links -->
+                <div class="collapse navbar-collapse d-none d-md-flex justify-content-end">
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="sermon.html">Message</a></li>
+                        <li class="nav-item"><a class="nav-link" href="about_us.html">About</a></li>
+                        <li class="nav-item"><a class="nav-link" href="cell.html">Cell</a></li>
+                        <li class="nav-item"><a class="nav-link" href="event.html">Event</a></li>
+                        <li class="nav-item"><a class="nav-link" href="map.html">Location</a></li>
+                        <li class="nav-item"><a class="nav-link" href="belivers.html">Believers academy</a></li>
+                        <li class="nav-item"><a class="nav-link" href="transport.html">Need a Ride</a></li>
+                    </ul>
+                </div>
+
+                <!-- Mobile toggle -->
+                <button class="navbar-toggler d-md-none" type="button" data-bs-toggle="offcanvas"
+                    data-bs-target="#offcanvasNav" aria-controls="offcanvasNav">
+                    <i class="bi bi-list text-white" style="font-size: 1.8rem;"></i>
+                </button>
+            </div>
+        </nav>
+        <script>
+            window.addEventListener('scroll', function () {
+                const navbar = document.querySelector('.custom-navbar');
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+        </script>
+
+        <!-- Offcanvas menu -->
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNav" aria-labelledby="offcanvasNavLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title text-white" id="offcanvasNavLabel">Doxa Commission Global</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+                    aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <ul class="navbar-nav">
+                    <div class="navcon">
+                        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    </div>
+                    <div class="navcon">
+                        <li class="nav-item"><a class="nav-link" href="sermon.html">Message</a></li>
+                    </div>
+                    <div class="navcon">
+                        <li class="nav-item"><a class="nav-link" href="about_us.html">About</a></li>
+                    </div>
+                    <div class="navcon">
+                        <li class="nav-item"><a class="nav-link" href="cell.html">Cell</a></li>
+                    </div>
+                    <div class="navcon">
+                        <li class="nav-item"><a class="nav-link" href="event.html">Event</a></li>
+                    </div>
+                    <div class="navcon">
+                        <li class="nav-item"><a class="nav-link" href="map.html">Location</a></li>
+                    </div>
+                    <div class="navcon">
+                        <li class="nav-item"><a class="nav-link" href="belivers.html">Believers academy</a></li>
+                    </div>
+                    <div class="navcon">
+                        <li class="nav-item"><a class="nav-link" href="transport.html">Need a Ride</a></li>
+                    </div>
+
+                </ul>
+            </div>
+        </div>
+
+        <!-- ------MAIN CONTENT------- -->
+        <header class="bg-dark py-5">
+            <div class="container px-5">
+                <div class="row gx-5 align-items-center">
+                    <!-- Text Section -->
+                    <div class="col-lg-6 col-xl-7 col-xxl-6 order-xl-first order-first">
+                        <div class="my-5 text-center text-xl-start">
+                            <h1 class="display-5 fw-bolder text-white mb-2">Doxa Messages</h1>
+                            <p class="lead fw-normal text-white-50 mb-4">Experience life-transforming messages that
+                                bring hope, healing, and breakthrough</p>
+                            <div class="d-grid gap-3 d-sm-flex justify-content-sm-center justify-content-xl-start">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0">
+                                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 256 256">
+                                            <path
+                                                d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z">
+                                            </path>
+                                        </svg>
+                                    </span>
+                                    <input type="text" placeholder="Search message, series or speaker"
+                                        class="form-control bg-light border-0 p-3">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Card Stack Section (Order changes on larger screens) -->
+                    <div class="col-lg-6  col-xxl-6 d-flex justify-content-center order-xl-last order-last">
+                        <div class="card-stack-container">
+                            <div class="card-stack-item"></div>
+                            <div class="card-stack-item"></div>
+                            <div class="card-stack-item"></div>
+                            <div class="card-stack-item"></div>
+                            <div class="card-stack-item card-stack-front">
+                                <div class="card-stack-content overlay">
+                                    <span class="badge bg-primary text-white mb-2">New Release</span>
+                                    <h3 class="h4 featured-title mb-2">Unlocking Your Divine Potential</h3>
+                                    <a href="#!" class="listen-button">
+                                        <i class="fas fa-play-circle me-1"></i> Listen Now
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </header>
+
+
+        <!-- ------SERIES-------- -->
+        <div class="py-5 " style="width: 80%; margin: 0 auto;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold">Latest Sermons</h2>
+                <a href="view_all_series.html">
+                    <button class="btn btn-outline-primary rounded-pill">View All Series</button>
+                </a>
+            </div>
+
+
+            <div class="row align-items-stretch">
+
+                <!-- Card 1 -->
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4 ">
+                    <div class="card card-container">
+                        <div class="image-wrapper">
+                            <img src="/Img/1720935393094.jpg" class="card-img" alt="Card Image 1">
+                            <div class="play-button-overlay">
+                                <i class="fas fa-folder"></i>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Stay Woke (No Shaking)</h5>
+                            <p class="card-text">In "Stay Woke (No Shaking)", Dr. Flourish Peters teaches that true
+                                alertness in the faith means...</p>
+                            <div class="card-details">
+                                <div class="detail-item">
+                                    <i class="fas fa-user-circle"></i> <span>Dr. Flourish Peters</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-clock"></i> <span>108:58</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-calendar-alt"></i> <span>Aug 10, 2025</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card card-container">
+                        <div class="image-wrapper">
+                            <img src="/Img/IMG-20250130-WA0014.jpg" class="card-img" alt="Card Image 2">
+                            <div class="play-button-overlay">
+                                <i class="fas fa-folder"></i>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Don't Escape, Engage</h5>
+                            <p class="card-text">In this revelatory teaching, Dr. Flourish Peters challenges the
+                                escapist mindset often associated with Christian faith, urging believers to actively
+                                engage with the world rather than withdraw from it. He emphasizes that a life of faith
+                                is a life of influence and impact, not isolation.</p>
+                            <div class="card-details">
+                                <div class="detail-item">
+                                    <i class="fas fa-user-circle"></i> <span>Dr. Flourish Peters</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-clock"></i> <span>90:41</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-calendar-alt"></i> <span>Jun 23, 2025</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card card-container">
+                        <div class="image-wrapper">
+                            <img src="/Img/IMG-20250101-WA0021.jpg" class="card-img" alt="Card Image 3">
+                            <div class="play-button-overlay">
+                                <i class="fas fa-folder"></i>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">One Man 2</h5>
+                            <p class="card-text">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Unde delectus
+                                quasi dolorum recusandae, numquam repudiandae nesciunt dignissimos doloremque similique
+                                maxime!</p>
+                            <div class="card-details">
+                                <div class="detail-item">
+                                    <i class="fas fa-user-circle"></i> <span>Pastor Lanre Olubaji</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-clock"></i> <span>189:41</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-calendar-alt"></i> <span>Jun 22, 2025</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card card-container">
+                        <div class="image-wrapper">
+                            <img src="/Img/1720965759253.jpg" class="card-img" alt="Card Image 4">
+                            <div class="play-button-overlay">
+                                <i class="fas fa-folder"></i>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">The Power of Gratitude</h5>
+                            <p class="card-text">A powerful message on how cultivating a grateful heart can transform
+                                your life and perspective.</p>
+                            <div class="card-details">
+                                <div class="detail-item">
+                                    <i class="fas fa-user-circle"></i> <span>Mark Wilson</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-clock"></i> <span>45:30</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-calendar-alt"></i> <span>Jul 1, 2025</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card card-container">
+                        <div class="image-wrapper">
+                            <img src="/Img/IMG-20250130-WA0038.jpg" class="card-img" alt="Card Image 5">
+                            <div class="play-button-overlay">
+                                <i class="fas fa-folder"></i>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Finding Your Purpose</h5>
+                            <p class="card-text">This sermon helps you navigate the journey of discovering your true
+                                calling and living a purpose-driven life.</p>
+                            <div class="card-details">
+                                <div class="detail-item">
+                                    <i class="fas fa-user-circle"></i> <span>Sarah Adams</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-clock"></i> <span>58:12</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-calendar-alt"></i> <span>Jul 15, 2025</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ---------SERMORNS------- -->
+        <div class="py-5 " style="width: 80%; margin: 0 auto;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold">Latest Sermons</h2>
+                <a href="view-all-sermon.html">
+                    <button class="btn btn-outline-primary rounded-pill">View All Sermons</button>
+                </a>
+            </div>
+
+
+            <div class="row align-items-stretch">
+
+                <!-- Card 1 -->
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4 ">
+                    <div class="card card-container">
+                        <div class="image-wrapper">
+                            <img src="/Img/1720935393094.jpg" class="card-img" alt="Card Image 1">
+                            <div class="play-button-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Stay Woke (No Shaking)</h5>
+                            <p class="card-text">In "Stay Woke (No Shaking)", Dr. Flourish Peters teaches that true
+                                alertness in the faith means...</p>
+                            <div class="card-details">
+                                <div class="detail-item">
+                                    <i class="fas fa-user-circle"></i> <span>Dr. Flourish Peters</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-clock"></i> <span>108:58</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-calendar-alt"></i> <span>Aug 10, 2025</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card card-container">
+                        <div class="image-wrapper">
+                            <img src="/Img/IMG-20250130-WA0014.jpg" class="card-img" alt="Card Image 2">
+                            <div class="play-button-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Don't Escape, Engage</h5>
+                            <p class="card-text">In this revelatory teaching, Dr. Flourish Peters challenges the
+                                escapist mindset often associated with Christian faith, urging believers to actively
+                                engage with the world rather than withdraw from it. He emphasizes that a life of faith
+                                is a life of influence and impact, not isolation.</p>
+                            <div class="card-details">
+                                <div class="detail-item">
+                                    <i class="fas fa-user-circle"></i> <span>Dr. Flourish Peters</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-clock"></i> <span>90:41</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-calendar-alt"></i> <span>Jun 23, 2025</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card card-container">
+                        <div class="image-wrapper">
+                            <img src="/Img/IMG-20250101-WA0021.jpg" class="card-img" alt="Card Image 3">
+                            <div class="play-button-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">One Man 2</h5>
+                            <p class="card-text">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Unde delectus
+                                quasi dolorum recusandae, numquam repudiandae nesciunt dignissimos doloremque similique
+                                maxime!</p>
+                            <div class="card-details">
+                                <div class="detail-item">
+                                    <i class="fas fa-user-circle"></i> <span>Pastor Lanre Olubaji</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-clock"></i> <span>189:41</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-calendar-alt"></i> <span>Jun 22, 2025</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card card-container">
+                        <div class="image-wrapper">
+                            <img src="/Img/1720965759253.jpg" class="card-img" alt="Card Image 4">
+                            <div class="play-button-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">The Power of Gratitude</h5>
+                            <p class="card-text">A powerful message on how cultivating a grateful heart can transform
+                                your life and perspective.</p>
+                            <div class="card-details">
+                                <div class="detail-item">
+                                    <i class="fas fa-user-circle"></i> <span>Mark Wilson</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-clock"></i> <span>45:30</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-calendar-alt"></i> <span>Jul 1, 2025</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card card-container">
+                        <div class="image-wrapper">
+                            <img src="/Img/IMG-20250130-WA0038.jpg" class="card-img" alt="Card Image 5">
+                            <div class="play-button-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Finding Your Purpose</h5>
+                            <p class="card-text">This sermon helps you navigate the journey of discovering your true
+                                calling and living a purpose-driven life.</p>
+                            <div class="card-details">
+                                <div class="detail-item">
+                                    <i class="fas fa-user-circle"></i> <span>Sarah Adams</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-clock"></i> <span>58:12</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-calendar-alt"></i> <span>Jul 15, 2025</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 6 -->
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card card-container">
+                        <div class="image-wrapper">
+                            <img src="/Img/IMG-20250130-WA0023.jpg" class="card-img" alt="Card Image 6">
+                            <div class="play-button-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Overcoming Adversity</h5>
+                            <p class="card-text">A message of hope and resilience, exploring biblical principles for
+                                overcoming life's challenges.</p>
+                            <div class="card-details">
+                                <div class="detail-item">
+                                    <i class="fas fa-user-circle"></i> <span>David Chen</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-clock"></i> <span>65:05</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-calendar-alt"></i> <span>Jul 22, 2025</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 7 -->
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card card-container">
+                        <div class="image-wrapper">
+                            <img src="/Img/1720935361532.jpg" class="card-img" alt="Card Image 7">
+                            <div class="play-button-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Love Your Neighbor</h5>
+                            <p class="card-text">An essential teaching on the importance of community and showing love
+                                to those around us.</p>
+                            <div class="card-details">
+                                <div class="detail-item">
+                                    <i class="fas fa-user-circle"></i> <span>Jessica Lee</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-clock"></i> <span>48:20</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-calendar-alt"></i> <span>Jul 29, 2025</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 8 -->
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card card-container">
+                        <div class="image-wrapper">
+                            <img src="/Img/1731874997821.jpg" class="card-img" alt="Card Image 8">
+                            <div class="play-button-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">The Joy of Giving</h5>
+                            <p class="card-text">Explore the spiritual and personal rewards of generosity and selfless
+                                giving in this inspiring message.</p>
+                            <div class="card-details">
+                                <div class="detail-item">
+                                    <i class="fas fa-user-circle"></i> <span>Kevin Carter</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-clock"></i> <span>52:15</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-calendar-alt"></i> <span>Aug 5, 2025</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!-- --------FOOTER--------- -->
+        <footer class="main-footer">
+
+            <div class="row mx-2">
+
+                <div class="footer-content-con row mx-2">
+                    <div class="footer-content col-lg-3 col-md-6">
+                        <!-- <img src="Img/doxa.PNG"> -->
+                        <h2>Doxa commissin Global</h2>
+                        <h4>Bringing nation into God's glory world</h3>
+                            <div class="footer-info">
+                                <p>
+                                    <i class="fa-solid fa-location-dot"></i>129 Goldie, Adjacent amika
+                                    utuk, Calabar, Cross River State, Nigeria.
+                                </p>
+                                <p><i class="fa-solid fa-phone"></i>+234 [Your Phone Number]</p>
+                                <p>
+                                    <i class="fa-regular fa-envelope"></i>
+                                    <a href="mailto:info@doxachurch.org">info@doxachurch.org</a>
+                                </p>
+                            </div>
+                    </div>
+
+                    <div class="footer-content col-lg-3 col-md-6">
+                        <h2>Sunday Glory Life service</h2>
+                        <p>7am, 8:30am, 10am and 4pm</p>
+                        <h4>Thursday Glory Experience</h4>
+                        <p>5:30pm</p>
+                    </div>
+
+                    <div class="footer-content col-lg-3 col-md-6">
+                        <h2>Quick Links</h2>
+                        <ul>
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="messages.html">Messages</a></li>
+                            <li><a href="about.html">About</a></li>
+                            <li><a href="map.html">Location</a></li>
+                            <li><a href="believers_class.html">Believers Class</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-content newsletter col-lg-3 col-md-6">
+                        <h3 class=>Stay Connected</h3>
+                        <p></p>Subscribe to our newsletter for updates and spiritual insights.</p>
+                        <form id="newsletter-form">
+                            <input type="email" id="newsletter-email" placeholder="Your email address" required>
+                            <button type="submit">
+                                Subscribe
+                            </button>
+                        </form>
+                        <div class="footer-icons-wrapper">
+                            <a href="https://www.facebook.com/DoxaCommissionGlobal/" aria-label="Facebook"><i
+                                    class="fab fa-facebook-f"></i></a>
+                            <a href="https://www.instagram.com/doxa_commission/?hl=en" aria-label="Instagram"><i
+                                    class="fab fa-instagram"></i></a>
+                            <a href="https://www.tiktok.com/discover/doxa-commission-global" aria-label="TikTok"><i
+                                    class="fab fa-tiktok"></i></a>
+                            <a href="https://www.youtube.com/channel/UCZtReUAxK3S6qBKnV5G6PTw" aria-label="YouTube"><i
+                                    class="fab fa-youtube"></i></a>
+                            <a href="#" aria-label="Spotify"><i class="fab fa-spotify"></i></a>
+                        </div>
+                        <p style="color: rgb(204, 198, 198); text-align: center; margin-top: 8px;">Follow us for update
+                            and
+                            inspiration!</p>
+                    </div>
+                </div>
+
+                <div class="break"></div>
+
+                <div class="footer-2">
+                    <p>&copy; Copyright Doxa Commission Global <span id="current-year"></span> All Right Reserved.
+                        Desinged and Developed by Doxa
+                        database
+                    </p>
+                </div>
+
+            </div>
+            <script>
+                let year = new Date().getFullYear()
+                document.getElementById('current-year').innerHTML = year
+            </script>
+
+        </footer>
+    </main>
+    <script src="js/scripts.js"></script>
+</body>
+
+</html

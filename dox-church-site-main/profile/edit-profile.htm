@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit profile</title>
+    <link rel="stylesheet" href="../assets/vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/vendor/bootstrap-icons/bootstrap-icons.css">
+    <link rel="stylesheet" href="../assets/vendor/aos/aos.css">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+        integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.js"></script>
+    <script src="../assets/vendor/aos/aos.js"></script>
+</head>
+<style>
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f3f4f6;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+
+    .profile-card {
+        max-width: 700px;
+    }
+</style>
+
+<body>
+
+
+    <div class="card p-4 rounded-3 shadow-lg w-100 profile-card">
+        <div class="card-body">
+            <h2 class="h4 fw-bold mb-4">Update Profile</h2>
+            <form>
+                <!-- Profile Picture -->
+                <div class="mb-3">
+                    <label for="profilePicture" class="form-label">Profile Picture</label>
+                    <input type="file" class="form-control" id="profilePicture" accept="image/*">
+                </div>
+
+                <!-- Personal Info -->
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="fullName" class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="fullName" value="Jane Doe">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="position" class="form-label">Position</label>
+                        <input type="text" class="form-control" id="position" value="Web Developer">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" value="jane.doe@example.com">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="phone" class="form-label">Phone</label>
+                        <input type="tel" class="form-control" id="phone" value="No Phone Provided">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="location" class="form-label">Location</label>
+                        <input type="text" class="form-control" id="location" value="No Address Provided">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="nationality" class="form-label">Nationality</label>
+                        <input type="text" class="form-control" id="nationality" value="No Nationality Provided">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="dob" class="form-label">Date of Birth</label>
+                        <input type="date" class="form-control" id="dob">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Sex</label>
+                        <div class="d-flex gap-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="sex" id="male" value="Male">
+                                <label class="form-check-label" for="male">Male</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="sex" id="female" value="Female">
+                                <label class="form-check-label" for="female">Female</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="sex" id="other" value="Not specified"
+                                    checked>
+                                <label class="form-check-label" for="other">Not specified</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="bio" class="form-label">Bio</label>
+                    <textarea class="form-control" id="bio"
+                        rows="3">Passionate web developer with a love for clean code and responsive design. Enjoys hiking, photography, and exploring new technologies in her spare time.</textarea>
+                </div>
+
+                <hr class="my-4">
+
+                <!-- Health Info -->
+                <div class="mb-3">
+                    <label for="healthInfo" class="form-label">Health Info</label>
+                    <textarea class="form-control" id="healthInfo" rows="3">No health information provided.</textarea>
+                </div>
+
+                <div class="mt-4 text-center">
+                    <a href="view_profile.html" class="btn btn-primary w-100 fw-semibold py-3 rounded-lg shadow-md">
+                        Save Changes
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</body>
+
+</html>
+
+</body>
+
+</html>

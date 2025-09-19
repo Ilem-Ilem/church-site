@@ -193,10 +193,4 @@ new class extends Component {
         </div>
     </x-modal>
 
-
-    {{-- <x-modal center id="confirm-delete">
-        TallStackUi
-    </x-modal> --}}
-
-
 </div>

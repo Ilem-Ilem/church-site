@@ -26,7 +26,6 @@ class GlobalSetting extends Model
     ];
 
     protected $casts = [
-        'social_links' => 'array',
         'meta_keywords' => 'array',
         'extras' => 'array',
     ];

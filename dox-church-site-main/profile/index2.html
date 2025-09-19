@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Profile Generator</title>
+    <link rel="stylesheet" href="../assets/vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/vendor/bootstrap-icons/bootstrap-icons.css">
+    <link rel="stylesheet" href="../assets/vendor/aos/aos.css">
+    <link rel="stylesheet" href="../https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="../style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+        integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+        ,crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.js"></script>
+    <script src="../assets/vendor/aos/aos.js"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            color: #1f4e79;
+        }
+
+        .container {
+            max-width: 850px;
+        }
+
+        .card {
+            background-color: #f8f9fa;
+            border: none;
+        }
+
+        .nav-link.active {
+            color: #007bff !important;
+            border-bottom: 2px solid #007bff;
+        }
+
+        .nav-link {
+            color: #6c757d !important;
+        }
+
+        .nav-link:hover {
+            color: #007bff !important;
+        }
+
+        .form-control,
+        .form-select {
+            background-color: #ffffff;
+            border: 1px solid #ced4da;
+            color: #1f4e79;
+        }
+
+        .form-control::placeholder {
+            color: #adb5bd;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            background-color: #ffffff;
+            border-color: #007bff;
+            color: #1f4e79;
+            box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+        }
+
+        .form-check-input {
+            background-color: #ffffff;
+            border: 1px solid #ced4da;
+        }
+
+        .form-check-input:checked {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+        }
+
+        .text-blue {
+            color: #007bff !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container my-5">
+        <!-- Form Section -->
+        <div id="form-section">
+            <div class="d-flex justify-content-center">
+                <div class="w-100" style="max-width: 600px;">
+                    <div class="card p-4 shadow-lg rounded-3">
+                        <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link active" id="personal-tab" data-bs-toggle="tab" href="#personal"
+                                    role="tab" aria-controls="personal" aria-selected="true">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26"
+                                        class="me-2">
+                                        <g fill="currentColor">
+                                            <path fill-rule="evenodd"
+                                                d="M9 9a4 4 0 1 0 8 0a4 4 0 0 0-8 0m6 0a2 2 0 1 1-4 0a2 2 0 0 1 4 0"
+                                                clip-rule="evenodd" />
+                                            <path
+                                                d="M20 21a1 1 0 1 1-2 0v-2.5c0-2.494-2.206-4.5-4.984-4.5C10.23 14 8 16.013 8 18.5l.002 2.5a1 1 0 1 1-2 0L6 18.5c0-3.64 3.169-6.5 7.016-6.5C16.86 12 20 14.857 20 18.5z" />
+                                            <path fill-rule="evenodd"
+                                                d="M13 24c6.075 0 11-4.925 11-11S19.075 2 13 2S2 6.925 2 13s4.925 11 11 11m0 2c7.18 0 13-5.82 13-13S20.18 0 13 0S0 5.82 0 13s5.82 13 13 13"
+                                                clip-rule="evenodd" />
+                                        </g>
+                                    </svg>Personal
+                                </a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" id="contact-tab" data-bs-toggle="tab" href="#contact" role="tab"
+                                    aria-controls="contact" aria-selected="false">
+                                    <i class="fa-solid fa-phone me-2"></i>Contact
+                                </a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" id="role-tab" data-bs-toggle="tab" href="#role" role="tab"
+                                    aria-controls="role" aria-selected="false">
+                                    <i class="fa-solid fa-briefcase me-2"></i>Role
+                                </a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" id="health-tab" data-bs-toggle="tab" href="#health" role="tab"
+                                    aria-controls="health" aria-selected="false">
+                                    <i class="fa-solid fa-heartbeat me-2"></i>Health
+                                </a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" id="education-tab" data-bs-toggle="tab" href="#education" role="tab"
+                                    aria-controls="education" aria-selected="false">
+                                    <i class="fa-solid fa-graduation-cap me-2"></i>Educational Background
+                                </a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" id="social-tab" data-bs-toggle="tab" href="#social" role="tab"
+                                    aria-controls="social" aria-selected="false">
+                                    <i class="fa-solid fa-users me-2"></i>Social Information
+                                </a>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content" id="myTabContent">
+                            <!-- Personal Tab Content -->
+                            <div class="tab-pane fade show active" id="personal" role="tabpanel"
+                                aria-labelledby="personal-tab">
+                                <h5 class="card-title text-blue mb-4">Personal Details</h5>
+                                <form id="personalForm">
+                                    <div class="mb-3">
+                                        <label for="profilePicture" class="form-label text-dark">Profile Picture</label>
+                                        <input type="file" class="form-control" id="profilePicture" accept="image/*">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="fullName" class="form-label text-dark">Full Name</label>
+                                        <input type="text" class="form-control" id="fullName"
+                                            placeholder="Enter your full name">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="dob" class="form-label text-dark">Date of Birth</label>
+                                        <input type="date" class="form-control" id="dob">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="nationality" class="form-label text-dark">Nationality</label>
+                                        <input type="text" class="form-control" id="nationality"
+                                            placeholder="Enter your nationality">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label text-dark">Sex</label>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="sex" id="male"
+                                                value="Male">
+                                            <label class="form-check-label text-dark" for="male">Male</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="sex" id="female"
+                                                value="Female">
+                                            <label class="form-check-label text-dark" for="female">Female</label>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="maritalStatus" class="form-label text-dark">Marital Status</label>
+                                        <select class="form-select" id="maritalStatus">
+                                            <option selected value="">Select your marital status...</option>
+                                            <option value="Single">Single</option>
+                                            <option value="Married">Married</option>
+                                            <option value="Divorced">Divorced</option>
+                                            <option value="Widowed">Widowed</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="occupation" class="form-label text-dark">Occupation</label>
+                                        <input type="text" class="form-control" id="occupation"
+                                            placeholder="Enter your occupation">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="stateOfOrigin" class="form-label text-dark">State of Origin</label>
+                                        <input type="text" class="form-control" id="stateOfOrigin"
+                                            placeholder="Enter your state of origin">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="lga" class="form-label text-dark">Local Government Area</label>
+                                        <input type="text" class="form-control" id="lga" placeholder="Enter your LGA">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="tribe" class="form-label text-dark">Tribe</label>
+                                        <input type="text" class="form-control" id="tribe"
+                                            placeholder="Enter your tribe">
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Contact Tab Content -->
+                            <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+                                <h5 class="card-title text-blue mb-4">Contact Information</h5>
+                                <form id="contactForm">
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label text-dark">Email address</label>
+                                        <input type="email" class="form-control" id="email"
+                                            placeholder="name@example.com">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="address" class="form-label text-dark">Address</label>
+                                        <input type="text" class="form-control" id="address"
+                                            placeholder="Enter your address">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="phoneNumber" class="form-label text-dark">Phone Number</label>
+                                        <input type="tel" class="form-control" id="phoneNumber"
+                                            placeholder="Enter your phone number">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="emergencyContact" class="form-label text-dark">Emergency
+                                            Contact</label>
+                                        <input type="text" class="form-control" id="emergencyContact"
+                                            placeholder="Name and number">
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Role Tab Content -->
+                            <div class="tab-pane fade" id="role" role="tabpanel" aria-labelledby="role-tab">
+                                <h5 class="card-title text-blue mb-4">Role Details</h5>
+                                <form id="roleForm">
+                                    <div class="mb-3">
+                                        <label for="team" class="form-label text-dark">Team</label>
+                                        <select class="form-select" id="team">
+                                            <option selected value="">Select your team...</option>
+                                            <option value="Team A">Team A</option>
+                                            <option value="Team B">Team B</option>
+                                            <option value="Team C">Team C</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="position" class="form-label text-dark">Position</label>
+                                        <select class="form-select" id="position">
+                                            <option selected value="">Select your position...</option>
+                                            <option value="Manager">Manager</option>
+                                            <option value="Developer">Developer</option>
+                                            <option value="Designer">Designer</option>
+                                        </select>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Health Tab Content -->
+                            <div class="tab-pane fade" id="health" role="tabpanel" aria-labelledby="health-tab">
+                                <h5 class="card-title text-blue mb-4">Health Information</h5>
+                                <form id="healthForm">
+                                    <div class="mb-3">
+                                        <label for="healthInfo" class="form-label text-dark">Health Information</label>
+                                        <textarea class="form-control" id="healthInfo" rows="4"
+                                            placeholder="Enter any relevant health information..."></textarea>
+                                    </div>
+                                </form>
+                            </div>
+                            <!-- Educational Background Tab Content -->
+                            <div class="tab-pane fade" id="education" role="tabpanel" aria-labelledby="education-tab">
+                                <h5 class="card-title text-blue mb-4">Educational Background</h5>
+                                <form id="educationForm">
+                                    <div class="mb-3">
+                                        <label for="levelOfEducation" class="form-label text-dark">Level of
+                                            Education</label>
+                                        <select class="form-select" id="levelOfEducation">
+                                            <option selected value="">Select level...</option>
+                                            <option value="High School">High School</option>
+                                            <option value="Bachelor's Degree">Bachelor's Degree</option>
+                                            <option value="Master's Degree">Master's Degree</option>
+                                            <option value="Doctorate">Doctorate</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="institution" class="form-label text-dark">Institution</label>
+                                        <input type="text" class="form-control" id="institution"
+                                            placeholder="Enter your institution's name">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="course" class="form-label text-dark">Course</label>
+                                        <input type="text" class="form-control" id="course"
+                                            placeholder="Enter your course of study">
+                                    </div>
+                                </form>
+                            </div>
+                            <!-- Social Information Tab Content -->
+                            <div class="tab-pane fade" id="social" role="tabpanel" aria-labelledby="social-tab">
+                                <h5 class="card-title text-blue mb-4">Social Information</h5>
+                                <form id="socialForm">
+                                    <div class="mb-3">
+                                        <label for="socialMediaHandles" class="form-label text-dark">Social Media
+                                            Handles</label>
+                                        <input type="text" class="form-control" id="socialMediaHandles"
+                                            placeholder="e.g., @johndoe on X, @johndoe_ on Instagram">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="hobbies" class="form-label text-dark">Hobbies/Interests</label>
+                                        <textarea class="form-control" id="hobbies" rows="3"
+                                            placeholder="e.g., reading, hiking, photography"></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="languagesSpoken" class="form-label text-dark">Languages
+                                            Spoken</label>
+                                        <textarea class="form-control" id="languagesSpoken" rows="3"
+                                            placeholder="e.g., English, Spanish, French"></textarea>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="d-grid mt-4">
+                            <button id="createProfileBtn" class="btn btn-primary btn-lg">
+                                Create Profile
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Section (Initially Hidden) -->
+        <div id="profile-section" class="d-none">
+            <div class="d-flex justify-content-center">
+                <div class="w-100" style="max-width: 500px;">
+                    <div class="card p-4 text-center rounded-3 shadow-lg">
+                        <div class="d-flex justify-content-center mb-4">
+                            <img src="https://placehold.co/150x150/ffffff/007bff?text=Profile"
+                                class="rounded-circle w-36 h-36 object-fit-cover border border-secondary shadow-sm"
+                                id="profileImage" alt="Profile Picture" style="width: 150px; height: 150px;">
+                        </div>
+                        <h3 class="card-title mb-1 text-dark" id="profileName"></h3>
+                        <p class="card-text text-secondary mb-4" id="profileRole"></p>
+                        <hr class="my-4 text-secondary">
+                        <div class="row text-start">
+                            <div class="col-md-6 mb-3">
+                                <h5 class="text-blue mb-2">Contact Info</h5>
+                                <ul class="list-unstyled">
+                                    <li><strong class="text-dark">Email:</strong> <span id="profileEmail"></span></li>
+                                    <li><strong class="text-dark">Address:</strong> <span id="profileAddress"></span>
+                                    </li>
+                                    <li><strong class="text-dark">Phone:</strong> <span id="profilePhone"></span></li>
+                                    <li><strong class="text-dark">Emergency Contact:</strong> <span
+                                            id="profileEmergencyContact"></span></li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <h5 class="text-blue mb-2">Details</h5>
+                                <ul class="list-unstyled">
+                                    <li><strong class="text-dark">Nationality:</strong> <span
+                                            id="profileNationality"></span></li>
+                                    <li><strong class="text-dark">DOB:</strong> <span id="profileDob"></span></li>
+                                    <li><strong class="text-dark">Sex:</strong> <span id="profileSex"></span></li>
+                                    <li><strong class="text-dark">Marital Status:</strong> <span
+                                            id="profileMaritalStatus"></span></li>
+                                    <li><strong class="text-dark">Occupation:</strong> <span
+                                            id="profileOccupation"></span></li>
+                                    <li><strong class="text-dark">State of Origin:</strong> <span
+                                            id="profileStateOfOrigin"></span></li>
+                                    <li><strong class="text-dark">LGA:</strong> <span id="profileLga"></span></li>
+                                    <li><strong class="text-dark">Tribe:</strong> <span id="profileTribe"></span></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <hr class="my-4 text-secondary">
+                        <h5 class="text-blue mt-3 mb-2 text-start">Educational Info</h5>
+                        <ul class="list-unstyled text-start">
+                            <li><strong class="text-dark">Level of Education:</strong> <span
+                                    id="profileLevelOfEducation"></span></li>
+                            <li><strong class="text-dark">Institution:</strong> <span id="profileInstitution"></span>
+                            </li>
+                            <li><strong class="text-dark">Course:</strong> <span id="profileCourse"></span></li>
+                        </ul>
+                        <hr class="my-4 text-secondary">
+                        <h5 class="text-blue mt-3 mb-2 text-start">Social Info</h5>
+                        <ul class="list-unstyled text-start">
+                            <li><strong class="text-dark">Social Media:</strong> <span id="profileSocialMedia"></span>
+                            </li>
+                            <li><strong class="text-dark">Hobbies:</strong> <span id="profileHobbies"></span></li>
+                            <li><strong class="text-dark">Languages:</strong> <span id="profileLanguages"></span></li>
+                        </ul>
+                        <hr class="my-4 text-secondary">
+                        <h5 class="text-blue mt-3 mb-2 text-start">Health Info</h5>
+                        <p class="text-secondary text-start" id="profileHealth"></p>
+
+                        <div class="d-grid mt-4">
+                            <button id="updateProfileBtn" class="btn btn-secondary btn-lg">
+                                Update Profile
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const createProfileBtn = document.getElementById('createProfileBtn');
+            const updateProfileBtn = document.getElementById('updateProfileBtn');
+            const formSection = document.getElementById('form-section');
+            const profileSection = document.getElementById('profile-section');
+            const profilePictureInput = document.getElementById('profilePicture');
+            const profileImageElement = document.getElementById('profileImage');
+
+            let currentImageURL = null;
+
+            // Function to handle tab switching
+            // NOTE: Bootstrap's own JS handles the active state and display property,
+            // but we'll keep a manual switch function just in case.
+            function switchTab(e) {
+                e.preventDefault();
+                const targetId = e.target.getAttribute('href');
+                const targetTab = document.querySelector(targetId);
+
+                // Deactivate all tab links and content
+                document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+                document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('show', 'active'));
+
+                // Activate the clicked link and its corresponding tab pane
+                e.target.classList.add('active');
+                targetTab.classList.add('show', 'active');
+            }
+
+            // Attach click listeners to tab links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', switchTab);
+            });
+
+            // Function to update the profile page with form data
+            function updateProfile() {
+                // Get values from the form inputs
+                const fullName = document.getElementById('fullName').value;
+                const dob = document.getElementById('dob').value;
+                const nationality = document.getElementById('nationality').value;
+                const sex = document.querySelector('input[name="sex"]:checked')?.value || 'Not specified';
+                const maritalStatus = document.getElementById('maritalStatus').value;
+                const occupation = document.getElementById('occupation').value;
+                const stateOfOrigin = document.getElementById('stateOfOrigin').value;
+                const lga = document.getElementById('lga').value;
+                const tribe = document.getElementById('tribe').value;
+                const email = document.getElementById('email').value;
+                const emergencyContact = document.getElementById('emergencyContact').value;
+                const address = document.getElementById('address').value;
+                const phoneNumber = document.getElementById('phoneNumber').value;
+                const position = document.getElementById('position').value;
+                const team = document.getElementById('team').value;
+                const healthInfo = document.getElementById('healthInfo').value;
+                const levelOfEducation = document.getElementById('levelOfEducation').value;
+                const institution = document.getElementById('institution').value;
+                const course = document.getElementById('course').value;
+                const socialMediaHandles = document.getElementById('socialMediaHandles').value;
+                const hobbies = document.getElementById('hobbies').value;
+                const languagesSpoken = document.getElementById('languagesSpoken').value;
+
+                // Handle the profile picture
+                const file = profilePictureInput.files[0];
+                if (file) {
+                    // Revoke the previous URL to prevent memory leaks
+                    if (currentImageURL) {
+                        URL.revokeObjectURL(currentImageURL);
+                    }
+                    currentImageURL = URL.createObjectURL(file);
+                    profileImageElement.src = currentImageURL;
+                } else {
+                    profileImageElement.src = 'https://placehold.co/150x150/ffffff/007bff?text=Profile';
+                }
+
+                // Update the profile page elements
+                document.getElementById('profileName').textContent = fullName || 'No Name Provided';
+                document.getElementById('profileRole').textContent = `${position || 'No Position'} at ${team || 'No Team'}`;
+                document.getElementById('profileEmail').textContent = email || 'No Email Provided';
+                document.getElementById('profileEmergencyContact').textContent = emergencyContact || 'No Emergency Contact Provided';
+                document.getElementById('profileAddress').textContent = address || 'No Address Provided';
+                document.getElementById('profilePhone').textContent = phoneNumber || 'No Phone Provided';
+                document.getElementById('profileDob').textContent = dob || 'No DOB Provided';
+                document.getElementById('profileNationality').textContent = nationality || 'No Nationality Provided';
+                document.getElementById('profileSex').textContent = sex;
+                document.getElementById('profileMaritalStatus').textContent = maritalStatus || 'Not specified';
+                document.getElementById('profileOccupation').textContent = occupation || 'Not specified';
+                document.getElementById('profileStateOfOrigin').textContent = stateOfOrigin || 'Not specified';
+                document.getElementById('profileLga').textContent = lga || 'Not specified';
+                document.getElementById('profileTribe').textContent = tribe || 'Not specified';
+                document.getElementById('profileLevelOfEducation').textContent = levelOfEducation || 'Not specified';
+                document.getElementById('profileInstitution').textContent = institution || 'Not specified';
+                document.getElementById('profileCourse').textContent = course || 'Not specified';
+                document.getElementById('profileSocialMedia').textContent = socialMediaHandles || 'Not specified';
+                document.getElementById('profileHobbies').textContent = hobbies || 'Not specified';
+                document.getElementById('profileLanguages').textContent = languagesSpoken || 'Not specified';
+                document.getElementById('profileHealth').textContent = healthInfo || 'No health information provided.';
+
+                // Show the profile and hide the form
+                formSection.classList.add('d-none');
+                profileSection.classList.remove('d-none');
+            }
+
+            // Add click listeners to the buttons
+            createProfileBtn.addEventListener('click', updateProfile);
+
+            updateProfileBtn.addEventListener('click', () => {
+                // Show the form and hide the profile
+                profileSection.classList.add('d-none');
+                formSection.classList.remove('d-none');
+            });
+        });
+    </script>
+
+</body>
+
+</html>

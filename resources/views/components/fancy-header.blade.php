@@ -6,17 +6,19 @@
 
 <header class="relative overflow-hidden pt-6 pb-6 sm:pt-6 sm:pb-6 mb-4 rounded-lg shadow-lg dark:bg-zinc-800">
     <!-- Background SVG Pattern -->
-    <svg class="absolute inset-0 w-full h-full text-gray-200 dark:text-gray-800" viewBox="0 0 100 100" preserveAspectRatio="none" fill="currentColor">
+    <svg class="absolute inset-0 w-full h-full text-gray-200 dark:text-gray-800" viewBox="0 0 100 100" preserveAspectRatio="none">
         <defs>
+            <!-- Fixed stop-color (Tailwind classes don’t work in SVG) -->
             <radialGradient id="ring-gradient-1" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" class="stop-color-fuchsia-500" />
-                <stop offset="100%" class="stop-color-transparent" />
+                <stop offset="0%" stop-color="#d946ef" /> <!-- fuchsia-500 -->
+                <stop offset="100%" stop-color="transparent" />
             </radialGradient>
             <radialGradient id="ring-gradient-2" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" class="stop-color-teal-500" />
-                <stop offset="100%" class="stop-color-transparent" />
+                <stop offset="0%" stop-color="#14b8a6" /> <!-- teal-500 -->
+                <stop offset="100%" stop-color="transparent" />
             </radialGradient>
         </defs>
+
         <circle cx="20" cy="80" r="10" fill="url(#ring-gradient-1)" class="animate-[spin_10s_linear_infinite]" />
         <circle cx="80" cy="20" r="15" fill="url(#ring-gradient-2)" class="animate-[pulse_4s_cubic-bezier(0.4,0,0.6,1)_infinite]" />
         <circle cx="45" cy="50" r="12" fill="url(#ring-gradient-1)" class="animate-[spin_7s_linear_infinite_reverse]" />
@@ -24,12 +26,12 @@
         <circle cx="30" cy="30" r="18" fill="url(#ring-gradient-1)" class="animate-[spin_15s_linear_infinite]" />
     </svg>
 
-    <!-- Overlay -->
+    <!-- Overlay Layers -->
     <div class="absolute inset-0 bg-gradient-to-t from-gray-50 dark:from-gray-900 to-transparent"></div>
     <div class="absolute inset-0 bg-white/5 dark:bg-black/5 backdrop-blur-sm"></div>
 
     <!-- Main Content -->
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-1">
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
         @if ($breadcrumbs)
             <nav class="flex" aria-label="Breadcrumb">
                 <ol class="inline-flex items-center space-x-1 sm:space-x-2">

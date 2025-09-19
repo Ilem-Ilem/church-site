@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>View All Series</title>
+
+    <link rel="stylesheet" href="assets/vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/vendor/bootstrap-icons/bootstrap-icons.css">
+    <link rel="stylesheet" href="assets/vendor/aos/aos.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+        integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.js"></script>
+    <script src="assets/vendor/aos/aos.js"></script>
+    <style>
+        .navbar {
+            background: linear-gradient(to right, #4f46e5, #143399) !important;
+            height: 100px;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            margin-top: 90px;
+            /* border: 2px solid red; */
+        }
+
+        /* Main container for a slightly wider layout on large screens */
+        .container {
+            max-width: 1200px;
+        }
+
+        .card-container {
+            transition: all 0.4s cubic-bezier(0.2, 0.5, 0.1, 1);
+            border: 1px solid #e0e0e0;
+            /* Softer, subtle border */
+            border-radius: 8px;
+            /* Slightly less rounded corners */
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            /* Subtle shadow */
+            height: 100%;
+            /* Ensure card itself fills the column height */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-container:hover {
+            /* transform: translateY(-8px); */
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Image and Play Button Container */
+        .image-wrapper {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .card-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.2, 0.5, 0.1, 1);
+        }
+
+        /* Hover effect: Scale up the image */
+        .card-container:hover .card-img {
+            transform: scale(1.1);
+        }
+
+        /* Play button styling */
+        .play-button-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 64px;
+            height: 64px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.4s ease-in-out;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 2px solid #fff;
+        }
+
+        .play-button-overlay i {
+            font-size: 1.8rem;
+            color: #1a1a1a;
+        }
+
+        /* Hover effect: Show the play button */
+        .card-container:hover .play-button-overlay {
+            opacity: 1;
+        }
+
+        /* Card Body Content Styling */
+        .card-body {
+            padding: 1.25rem;
+            background-color: #ffffff;
+            border-radius: 0 0 8px 8px;
+            display: flex;
+            /* Enable flexbox for card body */
+            flex-direction: column;
+            /* Stack children vertically */
+            flex-grow: 1;
+            /* Allow card body to grow and fill space */
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-text {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #555;
+            margin-bottom: 1rem;
+            /* Truncate text to two lines with ellipsis */
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex-grow: 1;
+            /* Allow text to grow and fill available space */
+        }
+
+        .card-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: #888;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            color: #666;
+        }
+
+        .detail-item i {
+            margin-right: 8px;
+            color: #007bff;
+        }
+
+        .detail-item span {
+            font-weight: 500;
+        }
+
+        /* Search bar styling */
+        .search-bar {
+            background-color: #ffffff;
+            border-radius: 20px;
+            padding: 8px 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e0e0e0;
+        }
+
+        .search-bar input {
+            border: none;
+            box-shadow: none;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            box-shadow: none;
+        }
+
+        /* Responsive Columns with custom breakpoint logic */
+        /* @media (min-width: 1200px) {
+            .col-lg-3 {
+                flex: 0 0 auto;
+                width: 25%;
+            }
+        }
+        @media (max-width: 1199.98px) {
+            .col-lg-4 {
+                flex: 0 0 auto;
+                width: 33.33333333%;
+            }
+        } */
+        @media (max-width: 991.98px) {
+            .col-md-6 {
+                flex: 0 0 auto;
+                width: 50%;
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            .col-sm-12 {
+                flex: 0 0 auto;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-md custom-navbar fixed-top">
+        <div class="container-fluid">
+            <img src="Img/doxa.PNG" alt="logo" class="logo">
+
+            <!-- Large screen nav links -->
+            <div class="collapse navbar-collapse d-none d-md-flex justify-content-end">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="sermon.html">Message</a></li>
+                    <li class="nav-item"><a class="nav-link" href="about_us.html">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="cell.html">Cell</a></li>
+                    <li class="nav-item"><a class="nav-link" href="event.html">Event</a></li>
+                    <li class="nav-item"><a class="nav-link" href="map.html">Location</a></li>
+                    <li class="nav-item"><a class="nav-link" href="belivers.html">Believers academy</a></li>
+                    <li class="nav-item"><a class="nav-link" href="transport.html">Need a Ride</a></li>
+                </ul>
+            </div>
+
+            <!-- Mobile toggle -->
+            <button class="navbar-toggler d-md-none" type="button" data-bs-toggle="offcanvas"
+                data-bs-target="#offcanvasNav" aria-controls="offcanvasNav">
+                <i class="bi bi-list text-white" style="font-size: 1.8rem;"></i>
+            </button>
+        </div>
+    </nav>
+    <script>
+        window.addEventListener('scroll', function () {
+            const navbar = document.querySelector('.custom-navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+    </script>
+
+    <!-- Offcanvas menu -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNav" aria-labelledby="offcanvasNavLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title text-white" id="offcanvasNavLabel">Doxa Commission Global</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+                aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <ul class="navbar-nav">
+                <div class="navcon">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                </div>
+                <div class="navcon">
+                    <li class="nav-item"><a class="nav-link" href="sermon.html">Message</a></li>
+                </div>
+                <div class="navcon">
+                    <li class="nav-item"><a class="nav-link" href="about_us.html">About</a></li>
+                </div>
+                <div class="navcon">
+                    <li class="nav-item"><a class="nav-link" href="cell.html">Cell</a></li>
+                </div>
+                <div class="navcon">
+                    <li class="nav-item"><a class="nav-link" href="event.html">Event</a></li>
+                </div>
+                <div class="navcon">
+                    <li class="nav-item"><a class="nav-link" href="map.html">Location</a></li>
+                </div>
+                <div class="navcon">
+                    <li class="nav-item"><a class="nav-link" href="belivers.html">Believers academy</a></li>
+                </div>
+                <div class="navcon">
+                    <li class="nav-item"><a class="nav-link" href="transport.html">Need a Ride</a></li>
+                </div>
+
+            </ul>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="py-5" style="width: 80%; margin: 0 auto;">
+            <!-- Header with back button, title, and search bar -->
+            <div class="mb-4">
+                <a href="sermon.html" class="text-decoration-none text-dark fw-bold d-flex align-items-center mb-3">
+                    <i class="fas fa-arrow-left me-2"></i> Back to Sermons
+                </a>
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <div class="me-md-3">
+                        <h2 class="fw-bold mb-0">All Series</h2>
+                        <p class="text-muted">Browse all our sermons and listen to life-transforming messages</p>
+                    </div>
+                    <div class="input-group search-bar flex-grow-1" style="max-width: 400px;">
+                        <span class="input-group-text bg-transparent border-0"><i class="fas fa-search"></i></span>
+                        <input type="search" class="form-control" placeholder="Search sermons..."
+                            aria-label="Search sermons">
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!-- Card Grid Section -->
+            <div class="row align-items-stretch">
+
+                <!-- Card 1 -->
+                <a href="view-series-detail.html" style="text-decoration: none;"
+                    class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card card-container">
+                        <div class="image-wrapper">
+                            <img src="Img/series.jpg" class="card-img" alt="Card Image 1">
+                            <div class="play-button-overlay">
+                                <i class="fas fa-folder"></i>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Factors That Encourages spiritual Growth</h5>
+                            <p class="card-text">In "Factors That Encourages spiritual Growth", Dr Tee teaches that
+                                true alertness in the faith means...</p>
+                            <div class="card-details">
+                                <div class="detail-item">
+                                    <i class="fas fa-user-circle"></i> <span>Dr Tee</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-clock"></i> <span>108:58</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-calendar-alt"></i> <span>Aug 10, 2025</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <!-- Card 1 -->
+                <a href="view-series-detail.html" style="text-decoration: none;"
+                    class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card card-container">
+                        <div class="image-wrapper">
+                            <img src="Img/series.jpg" class="card-img" alt="Card Image 1">
+                            <div class="play-button-overlay">
+                                <i class="fas fa-folder"></i>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Factors That Encourages spiritual Growth</h5>
+                            <p class="card-text">In "Factors That Encourages spiritual Growth", Dr Tee teaches that
+                                true alertness in the faith means...</p>
+                            <div class="card-details">
+                                <div class="detail-item">
+                                    <i class="fas fa-user-circle"></i> <span>Dr Tee</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-clock"></i> <span>108:58</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-calendar-alt"></i> <span>Aug 10, 2025</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <!-- Card 1 -->
+                <a href="view-series-detail.html" style="text-decoration: none;"
+                    class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card card-container">
+                        <div class="image-wrapper">
+                            <img src="Img/series.jpg" class="card-img" alt="Card Image 1">
+                            <div class="play-button-overlay">
+                                <i class="fas fa-folder"></i>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Factors That Encourages spiritual Growth</h5>
+                            <p class="card-text">In "Factors That Encourages spiritual Growth", Dr Tee teaches that
+                                true alertness in the faith means...</p>
+                            <div class="card-details">
+                                <div class="detail-item">
+                                    <i class="fas fa-user-circle"></i> <span>Dr Tee</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-clock"></i> <span>108:58</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-calendar-alt"></i> <span>Aug 10, 2025</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <!-- Card 1 -->
+                <a href="view-series-detail.html" style="text-decoration: none;"
+                    class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card card-container">
+                        <div class="image-wrapper">
+                            <img src="Img/series.jpg" class="card-img" alt="Card Image 1">
+                            <div class="play-button-overlay">
+                                <i class="fas fa-folder"></i>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Factors That Encourages spiritual Growth</h5>
+                            <p class="card-text">In "Factors That Encourages spiritual Growth", Dr Tee teaches that
+                                true alertness in the faith means...</p>
+                            <div class="card-details">
+                                <div class="detail-item">
+                                    <i class="fas fa-user-circle"></i> <span>Dr Tee</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-clock"></i> <span>108:58</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-calendar-alt"></i> <span>Aug 10, 2025</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <!-- Card 1 -->
+                <a href="view-series-detail.html" style="text-decoration: none;"
+                    class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card card-container">
+                        <div class="image-wrapper">
+                            <img src="Img/series.jpg" class="card-img" alt="Card Image 1">
+                            <div class="play-button-overlay">
+                                <i class="fas fa-folder"></i>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Factors That Encourages spiritual Growth</h5>
+                            <p class="card-text">In "Factors That Encourages spiritual Growth", Dr Tee teaches that
+                                true alertness in the faith means...</p>
+                            <div class="card-details">
+                                <div class="detail-item">
+                                    <i class="fas fa-user-circle"></i> <span>Dr Tee</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-clock"></i> <span>108:58</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-calendar-alt"></i> <span>Aug 10, 2025</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- footer -->
+    <footer class="main-footer">
+
+        <div class="row mx-2">
+
+            <div class="footer-content-con row mx-2">
+                <div class="footer-content col-lg-3 col-md-6">
+                    <!-- <img src="Img/doxa.PNG"> -->
+                    <h2>Doxa commissin Global</h2>
+                    <h4>Bringing nation into God's glory world</h3>
+                        <div class="footer-info">
+                            <p>
+                                <i class="fa-solid fa-location-dot"></i>129 Goldie, Adjacent amika
+                                utuk, Calabar, Cross River State, Nigeria.
+                            </p>
+                            <p><i class="fa-solid fa-phone"></i>+234 [Your Phone Number]</p>
+                            <p>
+                                <i class="fa-regular fa-envelope"></i>
+                                <a href="mailto:info@doxachurch.org">info@doxachurch.org</a>
+                            </p>
+                        </div>
+                </div>
+
+                <div class="footer-content col-lg-3 col-md-6">
+                    <h2>Sunday Glory Life service</h2>
+                    <p>7am, 8:30am, 10am and 4pm</p>
+                    <h4>Thursday Glory Experience</h4>
+                    <p>5:30pm</p>
+                </div>
+
+                <div class="footer-content col-lg-3 col-md-6">
+                    <h2>Quick Links</h2>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="messages.html">Messages</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="map.html">Location</a></li>
+                        <li><a href="believers_class.html">Believers Class</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-content newsletter col-lg-3 col-md-6">
+                    <h3 class=>Stay Connected</h3>
+                    <p></p>Subscribe to our newsletter for updates and spiritual insights.</p>
+                    <form id="newsletter-form">
+                        <input type="email" id="newsletter-email" placeholder="Your email address" required>
+                        <button type="submit">
+                            Subscribe
+                        </button>
+                    </form>
+                    <div class="footer-icons-wrapper">
+                        <a href="https://www.facebook.com/DoxaCommissionGlobal/" aria-label="Facebook"><i
+                                class="fab fa-facebook-f"></i></a>
+                        <a href="https://www.instagram.com/doxa_commission/?hl=en" aria-label="Instagram"><i
+                                class="fab fa-instagram"></i></a>
+                        <a href="https://www.tiktok.com/discover/doxa-commission-global" aria-label="TikTok"><i
+                                class="fab fa-tiktok"></i></a>
+                        <a href="https://www.youtube.com/channel/UCZtReUAxK3S6qBKnV5G6PTw" aria-label="YouTube"><i
+                                class="fab fa-youtube"></i></a>
+                        <a href="#" aria-label="Spotify"><i class="fab fa-spotify"></i></a>
+                    </div>
+                    <p style="color: rgb(204, 198, 198); text-align: center; margin-top: 8px;">Follow us for update
+                        and
+                        inspiration!</p>
+                </div>
+            </div>
+
+            <div class="break"></div>
+
+            <div class="footer-2">
+                <p>&copy; Copyright Doxa Commission Global <span id="current-year"></span> All Right Reserved. Desinged
+                    and Developed by Doxa
+                    database
+                </p>
+            </div>
+
+        </div>
+        <script>
+            let year = new Date().getFullYear()
+            document.getElementById('current-year').innerHTML = year
+        </script>
+
+    </footer>
+
+</body>
+
+</html>

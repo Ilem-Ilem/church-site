@@ -24,23 +24,24 @@ new  class extends Component {
     public string $livestream_url = '';
     public string $podcast_url = '';
     public string $giving_url = '';
-    public array $social_links = [];
+    public $social_links;
     public string $meta_title = '';
     public string $meta_description = '';
     public string $meta_keywords = '';
-    public array $extras = [];
+    public $extras;
 
     public function mount()
     {
         $this->settings = GlobalSetting::firstOrCreate([]);
 
+       
         $this->church_name      = $this->settings->church_name ?? '';
         $this->denomination     = $this->settings->denomination ?? '';
         $this->tagline          = $this->settings->tagline ?? '';
         $this->livestream_url   = $this->settings->livestream_url ?? '';
         $this->podcast_url      = $this->settings->podcast_url ?? '';
         $this->giving_url       = $this->settings->giving_url ?? '';
-        $this->social_links     = $this->settings->social_links ?? [];
+        $this->social_links     = json_decode($this->settings->social_links, true) ?? [];
         $this->meta_title       = $this->settings->meta_title ?? '';
         $this->meta_description = $this->settings->meta_description ?? '';
         $this->meta_keywords    = $this->settings->meta_keywords ?? '';
@@ -67,7 +68,7 @@ new  class extends Component {
             'livestream_url' => $this->livestream_url,
             'podcast_url' => $this->podcast_url,
             'giving_url' => $this->giving_url,
-            'social_links' => $this->social_links,
+            'social_links' => json_encode($this->social_links),
             'meta_title' => $this->meta_title,
             'meta_description' => $this->meta_description,
             'meta_keywords' => $this->meta_keywords,
@@ -152,10 +153,11 @@ new  class extends Component {
         <!-- Social Links -->
         <x-tab.items tab="Social Links" class="hover:bg-zinc-700">
             <div class="space-y-3">
-                <x-input label="Facebook" wire:model="social_links.facebook" />
-                <x-input label="YouTube" wire:model="social_links.youtube" />
-                <x-input label="Instagram" wire:model="social_links.instagram" />
-                <x-input label="Twitter" wire:model="social_links.twitter" />
+            <x-input label="Facebook" wire:model="social_links.facebook" />
+            <x-input label="YouTube" wire:model="social_links.youtube" />
+            <x-input label="Instagram" wire:model="social_links.instagram" />
+            <x-input label="Twitter" wire:model="social_links.twitter" />
+            <x-input label="Telegram" wire:model="social_links.telegram" />
             </div>
         </x-tab.items>
 

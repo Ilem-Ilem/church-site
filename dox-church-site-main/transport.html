@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doxa Transportaion</title>
+  <link rel="stylesheet" href="assets/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/vendor/bootstrap-icons/bootstrap-icons.css">
+  <link rel="stylesheet" href="assets/vendor/aos/aos.css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+    integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.js"></script>
+  <script src="assets/vendor/aos/aos.js"></script>
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <!-- Inter Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      background-color: #f3f4f6;
+      line-height: 1.6;
+      color: #374151;
+    }
+
+    .rounded-2xl {
+      border-radius: 1rem;
+    }
+
+    /* Hero Section */
+    .hero-section {
+      background-image: url('https://placehold.co/1280x450/4f46e5/ffffff?text=Doxa+Commission+Transportation');
+      background-size: cover;
+      background-position: center;
+      height: 450px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: white;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      position: relative;
+      padding: 1.5rem;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      border-radius: 1rem;
+    }
+
+    .hero-text {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-text h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+    }
+
+    .hero-text p {
+      font-size: 1.25rem;
+      margin-top: 1rem;
+    }
+
+    /* Location List */
+    .location-card {
+      transition: transform 0.2s ease;
+    }
+
+    .location-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .location-meta div {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+      color: #4b5563;
+    }
+
+    .location-meta i {
+      margin-right: 0.5rem;
+      color: #4f46e5;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-md custom-navbar fixed-top">
+    <div class="container-fluid">
+      <img src="Img/doxa.PNG" alt="logo" class="logo">
+
+      <!-- Large screen nav links -->
+      <div class="collapse navbar-collapse d-none d-md-flex justify-content-end">
+        <ul class="navbar-nav">
+          <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="sermon.html">Message</a></li>
+          <li class="nav-item"><a class="nav-link" href="about_us.html">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="cell.html">Cell</a></li>
+          <li class="nav-item"><a class="nav-link" href="event.html">Event</a></li>
+          <li class="nav-item"><a class="nav-link" href="map.html">Location</a></li>
+          <li class="nav-item"><a class="nav-link" href="belivers.html">Believers academy</a></li>
+          <li class="nav-item"><a class="nav-link" href="transport.html">Need a Ride</a></li>
+        </ul>
+      </div>
+
+      <!-- Mobile toggle -->
+      <button class="navbar-toggler d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNav"
+        aria-controls="offcanvasNav">
+        <i class="bi bi-list text-white" style="font-size: 1.8rem;"></i>
+      </button>
+    </div>
+  </nav>
+  <script>
+    window.addEventListener('scroll', function () {
+      const navbar = document.querySelector('.custom-navbar');
+      if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    });
+  </script>
+
+  <!-- Offcanvas menu -->
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNav" aria-labelledby="offcanvasNavLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title text-white" id="offcanvasNavLabel">Doxa Commission Global</h5>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+      <ul class="navbar-nav">
+        <div class="navcon">
+          <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+        </div>
+        <div class="navcon">
+          <li class="nav-item"><a class="nav-link" href="sermon.html">Message</a></li>
+        </div>
+        <div class="navcon">
+          <li class="nav-item"><a class="nav-link" href="about_us.html">About</a></li>
+        </div>
+        <div class="navcon">
+          <li class="nav-item"><a class="nav-link" href="cell.html">Cell</a></li>
+        </div>
+        <div class="navcon">
+          <li class="nav-item"><a class="nav-link" href="event.html">Event</a></li>
+        </div>
+        <div class="navcon">
+          <li class="nav-item"><a class="nav-link" href="map.html">Location</a></li>
+        </div>
+        <div class="navcon">
+          <li class="nav-item"><a class="nav-link" href="belivers.html">Believers academy</a></li>
+        </div>
+        <div class="navcon">
+          <li class="nav-item"><a class="nav-link" href="transport.html">Need a Ride</a></li>
+        </div>
+
+      </ul>
+    </div>
+  </div>
+
+  <div class="container-fluid p-0 mb-5">
+    <!-- Hero Section -->
+    <section class="hero-section rounded-2xl mx-3">
+      <div class="hero-overlay"></div>
+      <div class="hero-text">
+        <h1 class="display-4 fw-bold">Transportation Services</h1>
+        <p class="lead">We're here to help you get to church safely and on time!</p>
+      </div>
+    </section>
+  </div>
+
+  <main class="container">
+    <section class="mb-5">
+      <div class="">
+        <h2 class="section-title mb-4">Pickup Locations</h2>
+        <p class="lead text-center" style="max-width: 900px; margin: 0 auto;">
+          We offer a free transportation service from various pickup points
+          around the city. Please arrive at least 10 minutes before the
+          scheduled time. If you have any questions, feel free to contact the
+          designated person for your location.
+        </p>
+      </div>
+    </section>
+
+    <!-- Locations Grid -->
+    <section class="mb-5">
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <!-- Location Card 1 -->
+        <div class="col">
+          <div class="card p-4 rounded-2xl h-100 location-card shadow-sm">
+            <h3 class="card-title fw-semibold mb-2">UNICAL Maingate</h3>
+            <div class="location-meta">
+              <div>
+                <i class="far fa-clock"></i><span>Pickup Time: 8:30 AM</span>
+              </div>
+              <div>
+                <i class="fas fa-user-alt"></i><span>Contact: John Doe</span>
+              </div>
+              <div>
+                <i class="fas fa-phone-alt"></i><span>Phone: 0801 234 5678</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Location Card 2 -->
+        <div class="col">
+          <div class="card p-4 rounded-2xl h-100 location-card shadow-sm">
+            <h3 class="card-title fw-semibold mb-2">UNICAL Hall 8</h3>
+            <div class="location-meta">
+              <div>
+                <i class="far fa-clock"></i><span>Pickup Time: 9:00 AM</span>
+              </div>
+              <div>
+                <i class="fas fa-user-alt"></i><span>Contact: Jane Smith</span>
+              </div>
+              <div>
+                <i class="fas fa-phone-alt"></i><span>Phone: 0809 876 5432</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Location Card 3 -->
+        <div class="col">
+          <div class="card p-4 rounded-2xl h-100 location-card shadow-sm">
+            <h3 class="card-title fw-semibold mb-2">Itagbor</h3>
+            <div class="location-meta">
+              <div>
+                <i class="far fa-clock"></i><span>Pickup Time: 8:45 AM</span>
+              </div>
+              <div>
+                <i class="fas fa-user-alt"></i><span>Contact: Michael Efe</span>
+              </div>
+              <div>
+                <i class="fas fa-phone-alt"></i><span>Phone: 0811 223 3445</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Get Involved Section -->
+    <section class="mb-5">
+      <div class="cta-section bg-light-subtle p-5 rounded-2xl text-center shadow-sm">
+        <h3 class="fw-bold fs-2">Need a Pickup from a Different Location?</h3>
+        <p class="lead text-muted mt-3">
+          We're always looking to expand our pickup routes. Fill out a
+          request form to let us know where you are.
+        </p>
+        <button type="button" class="btn btn-primary btn-lg mt-4 px-5 py-3 rounded-pill" data-bs-toggle="modal"
+          data-bs-target="#pickupModal">
+          Request a Pickup
+        </button>
+      </div>
+    </section>
+  </main>
+  <!-- --------FOOTER--------- -->
+  <footer class="main-footer">
+
+    <div class="row mx-2">
+
+      <div class="footer-content-con row mx-2">
+        <div class="footer-content col-lg-3 col-md-6">
+          <!-- <img src="Img/doxa.PNG"> -->
+          <h2>Doxa commissin Global</h2>
+          <h4>Bringing nation into God's glory world</h3>
+            <div class="footer-info">
+              <p>
+                <i class="fa-solid fa-location-dot"></i>129 Goldie, Adjacent amika
+                utuk, Calabar, Cross River State, Nigeria.
+              </p>
+              <p><i class="fa-solid fa-phone"></i>+234 [Your Phone Number]</p>
+              <p>
+                <i class="fa-regular fa-envelope"></i>
+                <a href="mailto:info@doxachurch.org">info@doxachurch.org</a>
+              </p>
+            </div>
+        </div>
+
+        <div class="footer-content col-lg-3 col-md-6">
+          <h2>Sunday Glory Life service</h2>
+          <p>7am, 8:30am, 10am and 4pm</p>
+          <h4>Thursday Glory Experience</h4>
+          <p>5:30pm</p>
+        </div>
+
+        <div class="footer-content col-lg-3 col-md-6">
+          <h2>Quick Links</h2>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="messages.html">Messages</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="map.html">Location</a></li>
+            <li><a href="believers_class.html">Believers Class</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-content newsletter col-lg-3 col-md-6">
+          <h3 class=>Stay Connected</h3>
+          <p></p>Subscribe to our newsletter for updates and spiritual insights.</p>
+          <form id="newsletter-form">
+            <input type="email" id="newsletter-email" placeholder="Your email address" required>
+            <button type="submit">
+              Subscribe
+            </button>
+          </form>
+          <div class="footer-icons-wrapper">
+            <a href="https://www.facebook.com/DoxaCommissionGlobal/" aria-label="Facebook"><i
+                class="fab fa-facebook-f"></i></a>
+            <a href="https://www.instagram.com/doxa_commission/?hl=en" aria-label="Instagram"><i
+                class="fab fa-instagram"></i></a>
+            <a href="https://www.tiktok.com/discover/doxa-commission-global" aria-label="TikTok"><i
+                class="fab fa-tiktok"></i></a>
+            <a href="https://www.youtube.com/channel/UCZtReUAxK3S6qBKnV5G6PTw" aria-label="YouTube"><i
+                class="fab fa-youtube"></i></a>
+            <a href="#" aria-label="Spotify"><i class="fab fa-spotify"></i></a>
+          </div>
+          <p style="color: rgb(204, 198, 198); text-align: center; margin-top: 8px;">Follow us for update
+            and
+            inspiration!</p>
+        </div>
+      </div>
+
+      <div class="break"></div>
+
+      <div class="footer-2">
+        <p>&copy; Copyright Doxa Commission Global <span id="current-year"></span> All Right Reserved. Desinged and
+          Developed by Doxa
+          database
+        </p>
+      </div>
+
+    </div>
+    <script>
+      let year = new Date().getFullYear()
+      document.getElementById('current-year').innerHTML = year
+    </script>
+
+  </footer>
+  <!-- Modal for Pickup Request Form -->
+  <div class="modal fade" id="pickupModal" tabindex="-1" aria-labelledby="pickupModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-2xl">
+        <div class="modal-header border-0">
+          <h5 class="modal-title" id="pickupModalLabel">Request a Pickup</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="pickup-request-form">
+            <div class="mb-3">
+              <label for="name" class="form-label">Your Name</label>
+              <input type="text" class="form-control" id="name" name="name" required placeholder="John Doe" />
+            </div>
+            <div class="mb-3">
+              <label for="phone" class="form-label">Phone Number</label>
+              <input type="tel" class="form-control" id="phone" name="phone" required placeholder="0801 234 5678" />
+            </div>
+            <div class="mb-3">
+              <label for="pickup-location" class="form-label">Pickup Location/Address</label>
+              <textarea class="form-control" id="pickup-location" name="pickup-location" rows="4" required
+                placeholder="e.g. 123 Main Street, Near the City Hall"></textarea>
+            </div>
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-primary mt-3">
+                Submit Request
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const pickupForm = document.getElementById('pickup-request-form');
+
+    // Handle form submission
+    pickupForm.addEventListener('submit', (event) => {
+      event.preventDefault(); // Prevent default form submission behavior
+
+      // In a real application, you would send this data to a server.
+      // For this example, we'll just log it to the console.
+      console.log('Pickup request submitted:', {
+        name: pickupForm.name.value,
+        phone: pickupForm.phone.value,
+        location: pickupForm['pickup-location'].value,
+      });
+
+      // Hide the modal after submission
+      const modalElement = document.getElementById('pickupModal');
+      const modal = bootstrap.Modal.getInstance(modalElement);
+      if (modal) {
+        modal.hide();
+      }
+
+      // Reset the form
+      pickupForm.reset();
+    });
+  </script>
+</body>
+
+</html>

@@ -31,4 +31,13 @@ class Team extends Model
     {
         return $this->belongsTo(Chapter::class);
     }
+
+    public function appointment(){
+        return $this->hasOne(AppointmentTeams::class);
+    }
+
+
+    public function leader(){
+        return $this->hasOne(TeamUser::class)->where('role_in_team', 'team_lead');
+    }
 }

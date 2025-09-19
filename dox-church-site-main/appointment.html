@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Church Suite Appointment Booking</title>
+    <link rel="stylesheet" href="assets/vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/vendor/bootstrap-icons/bootstrap-icons.css">
+    <link rel="stylesheet" href="assets/vendor/aos/aos.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+        integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.js"></script>
+    <script src="assets/vendor/aos/aos.js"></script>
+    <style>
+        body {
+            /* font-family: 'Inter', sans-serif; */
+            background-color: #f8f9fa;
+            /* Light gray background */
+        }
+
+        .container-bg {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container container-bg shadow-lg rounded-4 p-4 p-sm-5 mb-5">
+        <header class="text-center mb-4">
+            <h1 class="fs-2 fs-sm-1 fw-bold text-dark mb-2">Church Suite Appointment Booking</h1>
+            <p class="text-secondary">Schedule your time with the church staff.</p>
+        </header>
+
+        <!-- Free Counselling Days -->
+        <div id="counselling-days-section" class="mb-5">
+            <h2 class="fs-4 fw-semibold text-dark mb-3">Free Counselling Days</h2>
+            <div id="freeDaysContainer" class="d-flex flex-wrap gap-3 justify-content-center">
+                <!-- Cards will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Appointment Booking Form -->
+        <div id="booking-section" class="mb-5">
+            <h2 class="fs-4 fw-semibold text-dark mb-3">Book a New Appointment</h2>
+            <form id="appointmentForm" class="row g-3">
+                <div class="col-12">
+                    <label for="name" class="form-label text-dark">Your Name</label>
+                    <input type="text" id="name" name="name" required class="form-control rounded-3">
+                </div>
+                <div class="col-12">
+                    <label for="email" class="form-label text-dark">Email Address</label>
+                    <input type="email" id="email" name="email" required class="form-control rounded-3">
+                </div>
+                <!-- Date and Time select bars in a 2-column grid -->
+                <div class="col-12 row g-3">
+                    <div class="col-md-6">
+                        <label for="date" class="form-label text-dark">Date</label>
+                        <select id="date" name="date" required class="form-select rounded-3">
+                            <!-- Options populated by JS -->
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="time" class="form-label text-dark">Time</label>
+                        <select id="time" name="time" required class="form-select rounded-3">
+                            <!-- Options populated by JS -->
+                        </select>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label for="reason" class="form-label text-dark">Reason for Appointment</label>
+                    <textarea id="reason" name="reason" rows="3" required class="form-control rounded-3"></textarea>
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary w-100 btn-lg rounded-3 fw-semibold">Book
+                        Appointment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+        <!-- Footer -->
+    <footer class="main-footer">
+
+        <div class="row mx-2">
+
+            <div class="footer-content-con row mx-2">
+                <div class="footer-content col-lg-3 col-md-6">
+                    <!-- <img src="Img/doxa.PNG"> -->
+                    <h2>Doxa commissin Global</h2>
+                    <h4>Bringing nation into God's glory world</h3>
+                        <div class="footer-info">
+                            <p>
+                                <i class="fa-solid fa-location-dot"></i>129 Goldie, Adjacent amika
+                                utuk, Calabar, Cross River State, Nigeria.
+                            </p>
+                            <p><i class="fa-solid fa-phone"></i>+234 [Your Phone Number]</p>
+                            <p>
+                                <i class="fa-regular fa-envelope"></i>
+                                <a href="mailto:info@doxachurch.org">info@doxachurch.org</a>
+                            </p>
+                        </div>
+                </div>
+
+                <div class="footer-content col-lg-3 col-md-6">
+                    <h2>Sunday Glory Life service</h2>
+                    <p>7am, 8:30am, 10am and 4pm</p>
+                    <h4>Thursday Glory Experience</h4>
+                    <p>5:30pm</p>
+                </div>
+
+                <div class="footer-content col-lg-3 col-md-6">
+                    <h2>Quick Links</h2>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="messages.html">Messages</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="map.html">Location</a></li>
+                        <li><a href="believers_class.html">Believers Class</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-content newsletter col-lg-3 col-md-6">
+                    <h3 class=>Stay Connected</h3>
+                    <p></p>Subscribe to our newsletter for updates and spiritual insights.</p>
+                    <form id="newsletter-form">
+                        <input type="email" id="newsletter-email" placeholder="Your email address" required>
+                        <button type="submit">
+                            Subscribe
+                        </button>
+                    </form>
+                    <div class="footer-icons-wrapper">
+                        <a href="https://www.facebook.com/DoxaCommissionGlobal/" aria-label="Facebook"><i
+                                class="fab fa-facebook-f"></i></a>
+                        <a href="https://www.instagram.com/doxa_commission/?hl=en" aria-label="Instagram"><i
+                                class="fab fa-instagram"></i></a>
+                        <a href="https://www.tiktok.com/discover/doxa-commission-global" aria-label="TikTok"><i
+                                class="fab fa-tiktok"></i></a>
+                        <a href="https://www.youtube.com/channel/UCZtReUAxK3S6qBKnV5G6PTw" aria-label="YouTube"><i
+                                class="fab fa-youtube"></i></a>
+                        <a href="#" aria-label="Spotify"><i class="fab fa-spotify"></i></a>
+                    </div>
+                    <p style="color: rgb(204, 198, 198); text-align: center; margin-top: 8px;">Follow us for update
+                        and
+                        inspiration!</p>
+                </div>
+            </div>
+
+            <div class="break"></div>
+
+            <div class="footer-2">
+                <p>&copy; Copyright Doxa Commission Global <span id="current-year"></span> All Right Reserved. Desinged and Developed by Doxa
+                    database
+                </p>
+            </div>
+
+        </div>
+        <script>
+            let year = new Date().getFullYear()
+            document.getElementById('current-year').innerHTML = year
+        </script>
+
+    </footer>
+
+
+    <script>
+        // DOM elements
+        const form = document.getElementById('appointmentForm');
+        const freeDaysContainer = document.getElementById('freeDaysContainer');
+
+        // Function to populate date and time slots
+        function populateSelectors() {
+            const dateSelect = document.getElementById('date');
+            const timeSelect = document.getElementById('time');
+
+            // Free days data
+            const freeDays = [
+                { day: 'Monday', date: 'August 11' },
+                { day: 'Wednesday', date: 'August 13' },
+                { day: 'Friday', date: 'August 15' },
+                { day: 'Monday', date: 'August 18' },
+                { day: 'Wednesday', date: 'August 20' }
+            ];
+
+            // Time slots from 9 AM to 5 PM
+            const timeSlots = [];
+            const startHour = 9;
+            const endHour = 17;
+            for (let i = startHour; i <= endHour; i++) {
+                const hour = i < 10 ? `0${i}` : `${i}`;
+                timeSlots.push(`${hour}:00`);
+            }
+
+            // Populate Date Select
+            dateSelect.innerHTML = '<option value="" selected disabled>Select Date</option>';
+            freeDays.forEach(dayInfo => {
+                const option = document.createElement('option');
+                option.value = dayInfo.date;
+                option.textContent = dayInfo.date;
+                dateSelect.appendChild(option);
+            });
+
+            // Populate Time Select
+            timeSelect.innerHTML = '<option value="" selected disabled>Select Time</option>';
+            timeSlots.forEach(slot => {
+                const option = document.createElement('option');
+                option.value = slot;
+                option.textContent = slot;
+                timeSelect.appendChild(option);
+            });
+        }
+
+        // Add a new appointment
+        function addAppointment(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const date = document.getElementById('date').value;
+            const time = document.getElementById('time').value;
+            const reason = document.getElementById('reason').value;
+
+            if (!name || !email || !date || !time || !reason) {
+                showCustomAlert("All form fields are required.");
+                return;
+            }
+
+            form.reset();
+            showCustomAlert('Appointment booked successfully!');
+        }
+
+        // Function to render the free counselling day cards
+        function renderFreeDays() {
+            const days = [
+                { day: 'Monday' },
+                { day: 'Wednesday' },
+                { day: 'Friday' },
+                { day: 'Monday' },
+                { day: 'Wednesday' }
+            ];
+
+            freeDaysContainer.innerHTML = '';
+            days.forEach(dayInfo => {
+                const card = document.createElement('div');
+                card.classList.add('card', 'text-center', 'border-primary', 'shadow-sm');
+                card.style.width = '10rem';
+                card.innerHTML = `
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">${dayInfo.day}</h5>
+                    </div>
+                `;
+                freeDaysContainer.appendChild(card);
+            });
+        }
+
+        // Custom alert function
+        function showCustomAlert(message) {
+            if (document.getElementById('customAlertModal')) {
+                return;
+            }
+
+            const modalHtml = `
+                <div class="modal fade" id="customAlertModal" tabindex="-1" aria-labelledby="customAlertLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="customAlertLabel">Notification</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                ${message}
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+            const myModal = new bootstrap.Modal(document.getElementById('customAlertModal'));
+            myModal.show();
+
+            document.getElementById('customAlertModal').addEventListener('hidden.bs.modal', function (event) {
+                event.target.remove();
+            });
+        }
+
+        // Add event listeners
+        form.addEventListener('submit', addAppointment);
+
+        // Initialize on window load
+        window.onload = () => {
+            populateSelectors();
+            renderFreeDays();
+        };
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doxa Medical Team</title>
+  <link rel="stylesheet" href="../assets/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../assets/vendor/bootstrap-icons/bootstrap-icons.css">
+  <link rel="stylesheet" href="../assets/vendor/aos/aos.css">
+  <!-- <link rel="stylesheet" href="../style.css"> -->
+  <link rel="stylesheet" href="../https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+    integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.js"></script>
+  <script src="../assets/vendor/aos/aos.js"></script>
+  <!-- Custom CSS to handle the animations and specific styling -->
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: auto;
+      background: #e0f2fe;
+      width: 100%;
+      height: 100vh;
+      font-family: 'Inter', sans-serif;
+    }
+
+    h1 {
+      font-weight: bold;
+      margin: 0;
+    }
+
+    p {
+      font-size: 14px;
+      font-weight: 100;
+      line-height: 20px;
+      letter-spacing: 0.5px;
+      margin: 20px 0 30px;
+    }
+
+    span {
+      font-size: 12px;
+    }
+
+    a {
+      color: #333;
+      font-size: 14px;
+      text-decoration: none;
+      margin: 15px 0;
+    }
+
+    .container {
+      position: relative;
+      /* Updated width to 80% for larger screens */
+      width: 80%;
+      max-width: 1200px;
+      /* An optional max-width to keep it from getting too large */
+      min-height: 480px;
+      border-radius: 10px;
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.2),
+        0 10px 10px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+
+    .form-container {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      transition: all 0.6s ease-in-out;
+    }
+
+    .sign-in-container {
+      left: 0;
+      width: 50%;
+      z-index: 2;
+    }
+
+    .sign-up-container {
+      right: 0;
+      width: 50%;
+      z-index: 1;
+    }
+
+    .form-container form {
+      height: 100%;
+      background: #fff;
+      padding: 0 50px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .form-container input {
+      width: 100%;
+      background: #eee;
+      border: none;
+      padding: 12px 15px;
+      margin: 8px 0;
+    }
+
+    button {
+      background: #2563eb;
+      color: #fff;
+      border: 1px solid #2563eb;
+      border-radius: 20px;
+      font-size: 12px;
+      padding: 20px 30px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: transform 80ms ease-in, background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    button:hover {
+      transform: scale(0.95);
+      background-color: #1d4ed8;
+    }
+
+    button:focus {
+      outline: none;
+    }
+
+    button.ghost {
+      background: transparent;
+      border-color: #fff;
+    }
+
+    button.ghost:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-color: #e0f2fe;
+    }
+
+    .sign-up-container {
+      left: 0;
+      opacity: 0;
+    }
+
+    .overlay-container {
+      display: block;
+      position: absolute;
+      z-index: 100;
+      width: 50%;
+      height: 100%;
+      top: 0;
+      left: 50%;
+      overflow: hidden;
+      transition: transform 0.6s ease-in-out;
+    }
+
+    .overlay {
+      position: relative;
+      height: 100%;
+      width: 200%;
+      left: -100%;
+      background: linear-gradient(to right, #3b82f6, #1d4ed8) no-repeat 0 0 / cover;
+      color: #fff;
+      transform: translateY(0);
+      transition: transform 0.6s ease-in-out;
+    }
+
+    .overlay-panel {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      width: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0 40px;
+      text-align: center;
+      transform: translateY(0);
+      transition: transform 0.6s ease-in-out;
+    }
+
+    .overlay-right {
+      right: 0;
+      transform: translateY(0);
+    }
+
+    .overlay-left {
+      transform: translateY(0);
+    }
+
+    /* Desktop Animation */
+    .container.right-panel-active .sign-in-container {
+      transform: translateY(100%);
+    }
+
+    .container.right-panel-active .overlay-container {
+      transform: translateX(-100%);
+    }
+
+    .container.right-panel-active .sign-up-container {
+      transform: translateX(100%);
+      opacity: 1;
+      z-index: 5;
+    }
+
+    .container.right-panel-active .overlay {
+      transform: translateX(50%);
+    }
+
+    .container.right-panel-active .overlay-right {
+      transform: translateY(20%);
+    }
+
+    /* --- Navbar Styles --- */
+    .navbar .con {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 0 2rem;
+    }
+
+    @media (min-width: 760px) {
+      .navbar .con .collapse {
+        position: absolute;
+        right: 20px;
+      }
+    }
+
+    .navbar img {
+      width: 100px;
+      height: 100px;
+    }
+
+    .navbar a:hover {
+      /* background: #007bff; */
+      color: rgb(226, 220, 208);
+      border-bottom: 1px solid rgb(146, 146, 146);
+      transform: translateY(-2px);
+      border-radius: 10%;
+      transition: 0.3s;
+    }
+
+    .offcanvas-body a:hover {
+      color: #000000;
+      /* transition: 1s; */
+    }
+
+    .navcon:hover {
+      background: #fcfcfca8;
+      width: 100%;
+      padding-left: 5px;
+      transition: 1s;
+    }
+
+    .custom-navbar {
+      transition: background-color 0.4s ease, box-shadow 0.4s ease;
+      background: transparent;
+      padding: 0.8rem 1rem;
+    }
+
+    .custom-navbar .nav-link {
+      color: white;
+      transition: color 0.3s ease;
+    }
+
+    .navbar {
+      background: linear-gradient(to right, #3b82f6, #1d4ed8) !important;
+      height: 85px;
+    }
+
+    /* .custom-navbar.scrolled {
+      background: linear-gradient(to right, #357be4, #294dc0);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .custom-navbar.scrolled .nav-link {
+      color: white;
+    } */
+
+    .logo {
+      height: 50px;
+    }
+
+    /* Offcanvas styles */
+    .offcanvas-end {
+      background-color: rgba(0, 123, 255, 0.95);
+    }
+
+    .offcanvas-end .nav-link {
+      color: white;
+      padding: 0.5rem 0;
+      font-size: 1.1rem;
+    }
+
+
+    @media (max-width: 768px) {
+      .navbar img {
+        width: 80px;
+        height: 80px;
+      }
+    }
+
+    /* .custom-navbar {
+        background-color: #3b82f6;
+        transition: background-color 0.3s ease-in-out;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        z-index: 1030;
+      }
+      .custom-navbar.scrolled {
+        background-color: #1d4ed8;
+      }
+      .custom-navbar .logo {
+        height: 50px;
+        width: 50px;
+        border-radius: 50%;
+      }
+      .custom-navbar .nav-link {
+        color: white !important;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        transition: background-color 0.3s ease-in-out;
+      }
+      .custom-navbar .nav-link:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 5px;
+      }
+      .offcanvas-header {
+        background-color: #3b82f6;
+      }
+      .offcanvas-body {
+        background-color: #1d4ed8;
+      }
+      .offcanvas .nav-link {
+        color: white !important;
+        padding: 10px 15px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .offcanvas .nav-link:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+      .btn-close-white {
+          color: white;
+      } */
+
+    /* --- Media Query for Mobile Responsiveness --- */
+    @media (max-width: 768px) {
+      body {
+        align-items: stretch;
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+      }
+
+      /* Adjust container margin to prevent it from being hidden behind the fixed navbar */
+      .container {
+        margin-top: 80px;
+        width: 90%;
+        min-height: 480px;
+        height: auto;
+        box-shadow: none;
+        display: block;
+        margin: 0 auto;
+        padding-bottom: 20px;
+        border-radius: 0;
+      }
+
+      .form-container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        min-height: 480px;
+        transition: transform 0.6s ease-in-out;
+      }
+
+      /* Set initial position for forms to enable sliding animation */
+      .sign-in-container {
+        transform: translateY(0);
+      }
+
+      .sign-up-container {
+        transform: translateY(100%);
+      }
+
+      /* Hide desktop-only overlay on mobile */
+      .overlay-container {
+        display: none;
+      }
+
+      /* Mobile buttons container */
+      .mobile-buttons {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        display: flex;
+        justify-content: space-around;
+        padding: 20px 0;
+        background: linear-gradient(to top, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+        border-top: 1px solid #ddd;
+        z-index: 1000;
+      }
+
+      .mobile-buttons button {
+        width: 45%;
+        padding: 10px 20px;
+        background: #2563eb;
+        color: #fff;
+      }
+
+      .mobile-buttons button.ghost {
+        background: transparent;
+        border-color: #2563eb;
+        color: #2563eb;
+      }
+
+      /* Mobile animation logic */
+      .container.right-panel-active .sign-in-container {
+        transform: translateY(-100%);
+      }
+
+      .container.right-panel-active .sign-up-container {
+        transform: translateY(-100%);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navbar with responsive toggle -->
+  <nav class="navbar navbar-expand-md custom-navbar fixed-top">
+    <div class="container-fluid">
+      <!-- Logo -->
+      <img src="../Img/doxa.PNG" alt="logo" class="logo">
+
+      <!-- Large screen nav links -->
+      <div class="collapse navbar-collapse d-none d-md-flex justify-content-end">
+        <ul class="navbar-nav">
+          <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Message</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Cell</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Event</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Location</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Believers Class</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Need a Ride</a></li>
+        </ul>
+      </div>
+
+      <!-- Mobile toggle -->
+      <button class="navbar-toggler d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNav"
+        aria-controls="offcanvasNav">
+        <i class="bi bi-list text-white" style="font-size: 1.8rem;"></i>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Offcanvas menu -->
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNav" aria-labelledby="offcanvasNavLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title text-white" id="offcanvasNavLabel">Doxa Medical Team</h5>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+      <ul class="navbar-nav">
+        <div class="navcon">
+          <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+        </div>
+        <div class="navcon">
+          <li class="nav-item"><a class="nav-link" href="#">Message</a></li>
+        </div>
+        <div class="navcon">
+          <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+        </div>
+        <div class="navcon">
+          <li class="nav-item"><a class="nav-link" href="#">Cell</a></li>
+        </div>
+        <div class="navcon">
+          <li class="nav-item"><a class="nav-link" href="#">Event</a></li>
+        </div>
+        <div class="navcon">
+          <li class="nav-item"><a class="nav-link" href="#">Location</a></li>
+        </div>
+        <div class="navcon">
+          <li class="nav-item"><a class="nav-link" href="#">Believers Class</a></li>
+        </div>
+        <div class="navcon">
+          <li class="nav-item"><a class="nav-link" href="#">Need a Ride</a></li>
+        </div>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Main Content Container -->
+  <div class="container" id="container">
+    <div class="form-container sign-up-container">
+      <form action="#">
+        <h1>Create Your Account</h1>
+        <input type="text" placeholder="Name" />
+        <input type="email" placeholder="Email" />
+        <input type="password" placeholder="Password" />
+        <button>Sign Up</button>
+      </form>
+    </div>
+    <div class="form-container sign-in-container">
+      <form action="#">
+        <h1>Sign In to Health in a Box</h1>
+        <input type="email" placeholder="Email" />
+        <input type="password" placeholder="Password" />
+        <a href="#">Forget your password?</a>
+        <button>Sign In</button>
+      </form>
+    </div>
+    <div class="overlay-container d-none d-md-block">
+      <div class="overlay">
+        <div class="overlay-panel overlay-left">
+          <h1>Welcome Back!</h1>
+          <p>To stay connected with your health journey, please sign in.</p>
+          <button class="ghost" id="signIn">Sign In</button>
+        </div>
+        <div class="overlay-panel overlay-right">
+          <h1>Hello, Health Seeker!</h1>
+          <p>
+            Enter your personal details to start your journey with us
+          </p>
+          <button class="ghost" id="signUp">Sign Up</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- <div class="mobile-buttons d-md-none">
+    <button class="ghost" id="mobileSignIn">Sign In</button>
+    <button class="ghost" id="mobileSignUp">Sign Up</button>
+  </div> -->
+  <!-- Bootstrap JS for added functionality, though not strictly needed for this example -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+  <script>
+    // JavaScript for the scrolling navbar effect
+    window.addEventListener('scroll', function () {
+      const navbar = document.querySelector('.custom-navbar');
+      if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    });
+
+    const byId = (id) => {
+      return document.getElementById(id);
+    };
+    const $signUpButton = byId('signUp');
+    const $signInButton = byId('signIn');
+    const $container = byId('container');
+    const $mobileSignUpButton = byId('mobileSignUp');
+    const $mobileSignInButton = byId('mobileSignIn');
+
+    // Desktop
+    if ($signUpButton) {
+      $signUpButton.addEventListener('click', () => {
+        $container.classList.add('right-panel-active');
+      });
+    }
+
+    if ($signInButton) {
+      $signInButton.addEventListener('click', () => {
+        $container.classList.remove('right-panel-active');
+      });
+    }
+
+    // Mobile
+    if ($mobileSignUpButton) {
+      $mobileSignUpButton.addEventListener('click', () => {
+        $container.classList.add('right-panel-active');
+      });
+    }
+
+    if ($mobileSignInButton) {
+      $mobileSignInButton.addEventListener('click', () => {
+        $container.classList.remove('right-panel-active');
+      });
+    }
+  </script>
+</body>
+
+</html>

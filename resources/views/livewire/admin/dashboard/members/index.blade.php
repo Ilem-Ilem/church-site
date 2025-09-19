@@ -51,7 +51,7 @@ new #[Layout('components.layouts.admin')] class extends Component {
             'headers' => [
                 ['index' => 'name', 'label' => 'Name'],
                 ['index' => 'email', 'label' => 'Email'],
-                ['index' => 'action'],
+                ['index' => 'action', 'label'=>'Action'],
             ],
             'rows' => $this->rows(),
         ];
