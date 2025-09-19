@@ -2,7 +2,7 @@
 
 use Livewire\Volt\Component;
 use Livewire\Attributes\{Layout, Url, };
-use App\Models\{Chapter, AppointmentTeams};
+use App\Models\{Chapter, AppointmentTeams, Appointment};
 
 new #[Layout('components.layouts.layout')] class extends Component {
     public ?string $name = null;
@@ -75,14 +75,65 @@ new #[Layout('components.layouts.layout')] class extends Component {
 
     public function save()
     {
-        $this->validate([
-            'title'=>'required|string',
-            'description'=>'required|string|min:225',
-            'name'=>'required|string',
-            'email'=>'required|email'
+        $this->validateAppointment();
+       
+        $chapter = Chapter::where('name', $this->chapter)->first();
+
+        Appointment::create([
+            'title'       => $this->title,
+            'description' => $this->description,
+            'day'         => now()->next($this->daySelected)->format('Y-m-d'), // next occurrence of day
+            'start_time'  => $this->startTime,
+            'end_time'    => $this->endTime,
+            'team_id'     => $this->selectedTeam,
+            'chapter_id'  => $chapter?->id ?? 0,
+            'user_id'     => $this->user?->id,
+            'username'    => $this->name,
+            'email'       => $this->email,
+            'status'      => 'pending',
         ]);
 
-        
+        session()->flash('success', 'Appointment booked successfully!');
+        $this->resetExcept(['appointmentTeams', 'user', 'chapter', 'name', 'email']);
+    }
+    
+    public function validateAppointment()
+    {
+        $this->validate(
+    [
+        'title'       => 'required|string|max:255',
+        'description' => 'required|string|min:20',
+        'name'        => 'required|string|max:255',
+        'email'       => 'required|email|max:255',
+        'selectedTeam'=> 'required|integer',
+        'daySelected' => 'required|string',
+        'startTime'   => 'required',
+        'endTime'     => 'required'
+    ],
+    [
+        'title.required'       => 'Please provide a title for your appointment.',
+        'title.max'            => 'The title must not be longer than 255 characters.',
+
+        'description.required' => 'Please enter a reason for the appointment.',
+        'description.min'      => 'The reason must be at least 20 characters long.',
+
+        'name.required'        => 'Your name is required.',
+        'name.max'             => 'Your name must not exceed 255 characters.',
+
+        'email.required'       => 'We need your email address to confirm the appointment.',
+        'email.email'          => 'Please provide a valid email address.',
+        'email.max'            => 'The email must not exceed 255 characters.',
+
+        'selectedTeam.required'=> 'Please select a team for this appointment.',
+        'selectedTeam.integer' => 'Invalid team selection.',
+
+        'daySelected.required' => 'Please choose a day for your appointment.',
+
+        'startTime.required'   => 'Start time is required.',
+        'endTime.required'     => 'End time is required.',
+    ]
+);
+
     }
 }; ?>
 
@@ -221,7 +272,7 @@ new #[Layout('components.layouts.layout')] class extends Component {
                         <div class="col-lg-4 col-md-4">
                             <label class="block text-sm font-medium text-gray-300">End Time</label>
                             @if($endTime)
-                            <input type="time" class="form-control" value="{{ $endTime }}" disabled  wire:model='endTime'>
+                            <input type="time" class="form-control" value="{{ $endTime }}" disabled wire:model='endTime'>
                             @else
                             <input type="time" class="form-control" wire:model='endTime'>
                             @endif

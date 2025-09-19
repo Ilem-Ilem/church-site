@@ -11,7 +11,7 @@ class Appointment extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'title', 'description', 'date', 'start_time', 'end_time', 'team_id', 'user_id', 'status', 'location', 'attendees', 'allowed_days', 'chapter_id'
+        'title', 'description', 'day', 'start_time', 'end_time', 'team_id', 'user_id', 'status',  'chapter_id'
     ];
 
     protected $casts = [
