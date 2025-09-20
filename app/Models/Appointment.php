@@ -10,7 +10,7 @@ class Appointment extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = [
+    protected $fillable = ['username', 'email',
         'title', 'description', 'day', 'start_time', 'end_time', 'team_id', 'user_id', 'status',  'chapter_id'
     ];
 

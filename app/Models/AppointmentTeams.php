@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class AppointmentTeams extends Model
 {
-    protected $fillable = ['team_id', 'chapter_id', 'free_time', 'free_day'];
+    protected $fillable = [ 'team_id', 'chapter_id', 'free_time', 'free_day'];
 
     
     // Relationships
