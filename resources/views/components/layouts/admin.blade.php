@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
-
+{{-- 
+TODO: Add Active route indicators
+--}}
 <head>
     <tallstackui:script />
     {{-- <script src="/tinymce/js/tinymce/tinymce.min.js"></script> --}}

@@ -76,6 +76,7 @@
             }
         });
     </script>
+    <x-flash></x-flash>
     {{ $slot }}
 
     <footer class="main-footer">

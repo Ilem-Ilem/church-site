@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('description')->nullable();
             $table->date('day');
+            $table->dateTime('date')->nullable();
             $table->timestamp('start_time')->nullable();
             $table->timestamp('end_time')->nullable();
             $table->foreignId('team_id')->constrained()->onDelete('cascade');
@@ -26,7 +27,7 @@ return new class extends Migration
             $table->enum('status', ['pending', 'confirmed', 'cancelled'])->default('pending'); // e.g., 'pending', 'confirmed', 'cancelled'
             $table->timestamps();
             $table->softDeletes();
-            $table->index(['date', 'team_id']);
+            $table->index(['team_id']);
         });
     }
 

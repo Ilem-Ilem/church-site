@@ -1,9 +1,10 @@
 <?php
-
+/**
+ TODO: Fix the bug on the members page not showing for admin in the index and create page
+ */
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Livewire\Volt\Component;

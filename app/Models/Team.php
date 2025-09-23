@@ -36,6 +36,10 @@ class Team extends Model
         return $this->hasOne(AppointmentTeams::class);
     }
 
+    public function prayerRequests(){
+        return $this->hasMany(PrayerRequestTeam::class);
+    }
+
 
     public function leader(){
         return $this->hasOne(TeamUser::class)->where('role_in_team', 'team_lead');

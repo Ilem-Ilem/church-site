@@ -200,7 +200,7 @@ new #[Layout('components.layouts.layout')] class extends Component {
                             </div>
                         </div>
                         <div class="mt-3">
-                            <a href="#" class="btn btn-brand w-100 py-2">Submit Request</a>
+                            <a href="{{ route('prayer.request') }}" class="btn btn-brand w-100 py-2" wire:navigate>Submit Request</a>
                         </div>
                     </div>
                 </div>
@@ -237,7 +237,7 @@ new #[Layout('components.layouts.layout')] class extends Component {
                             </div>
                         </div>
                         <div class="mt-3">
-                            <a href="#" class="btn btn-brand w-100 py-2">Learn More</a>
+                            <a href="{{ route('believers.academy') }}" class="btn btn-brand w-100 py-2">Learn More</a>
                         </div>
                     </div>
                 </div>
