@@ -11,6 +11,7 @@ Route::prefix('admin/dashboard')
         //-------------------------------------------------------------------
         volt::route('settings/appointment', 'admin.dashboard.settings.appointment')->name('admin.dashboard.settings.appointment');
         Volt::route('prayer-request-teams', 'admin.dashboard.settings.request_teams')->name('admin.dashboard.prayer_requests.request_teams');
+        Volt::route('believers-academy', 'admin.dashboard.settings.believersclass')->name('admin.settings.believersclass');
         // -----------------------------------------------------------------
         //              MEMBERS SECTION
         //-------------------------------------------------------------------
@@ -28,11 +29,14 @@ Route::prefix('admin/dashboard')
         Volt::route('teams/{team}/edit', 'admin.dashboard.teams.edit')->name('admin.dashboard.teams.edit');
         Volt::route('teams/edit_lead', 'admin.dashboard.teams.leader')->name('admin.dashboard.teams.edit-leader');
         // -----------------------------------------------------------------
-        //              Prayer Request Section
+        //              PRAYER REQUEST SECTION
         //-------------------------------------------------------------------
         Volt::route('prayer-requests', 'admin.dashboard.prayer_request.index')->name('admin.dashboard.prayer_requests.index');
-        
-
+        // -----------------------------------------------------------------
+        //              BELIEVER'S ACADEMY
+        //-------------------------------------------------------------------
+        Volt::route('believers_academy', 'admin.dashboard.believers_class.academy')->name('admin.dashboard.believers_class.academy');
+        Volt::route('believers_academy/classes', 'admin.dashboard.believers_class.index')->name('admin.dashboard.believers_class.index');
         // Reports Routes
         Volt::route('reports', 'admin.dashboard.reports.index')->name('admin.dashboard.reports.index');
         Volt::route('create-report', 'admin.dashboard.reports.create-report')->name('admin.dashboard.reports.create-report');

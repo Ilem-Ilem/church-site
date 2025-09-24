@@ -20,6 +20,8 @@ Route::middleware(['auth'])->group(function () {
 Volt::route('appointments', 'home.appointment')->name('appointment');
 Volt::route('prayer_request', 'home.prayers.request')->name('prayer.request');
 Volt::route('believers_academy', 'home.believers.index')->name('believers.academy');
+Volt::route('belivers_academy/register', 'home.believers.register')->name('believer_academy.register');
+Volt::route('belivers_academy/dashbaord', 'home.believers.dashboard')->name('home.believers.dashboard');
 
 include __DIR__ .'/super_admin_route.php';
 

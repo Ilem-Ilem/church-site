@@ -7,7 +7,7 @@ use Stancl\Tenancy\Database\Concerns\BelongsToChapter;
 
 class Team extends Model
 {
-    protected $fillable = ['name', 'short', 'banner', 'has_team_lead'];
+    protected $fillable = ['name', 'short', 'banner', 'has_team_lead', 'chapter_id'];
 
     public function users()
     {
@@ -40,6 +40,10 @@ class Team extends Model
         return $this->hasMany(PrayerRequestTeam::class);
     }
 
+    public function believersAcademyTeam()
+    {
+        return $this->hasMany(BelieversAcademyTeams::class);
+    }
 
     public function leader(){
         return $this->hasOne(TeamUser::class)->where('role_in_team', 'team_lead');

@@ -1,14 +1,13 @@
 <?php
 
-use App\Models\Team;
+use App\Models\{Team, Chapter};
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Livewire\Volt\Component;
 use Livewire\WithFileUploads;
 use TallStackUi\Traits\Interactions;
 
-new #[Layout('components.layouts.admin')] class extends Component
-{
+new #[Layout('components.layouts.admin')] class extends Component {
     use WithFileUploads, Interactions;
 
     public $name;
@@ -17,7 +16,13 @@ new #[Layout('components.layouts.admin')] class extends Component
     public $has_team_lead = true;
 
     #[Url]
-    public ?string $chapter = null; // automatically populated from ?chapter=...
+    public ?string $chapter; // automatically populated from ?chapter=...
+    public $chapterId;
+
+    public function mount()
+    {
+        $this->chapterId = $this->chapter != null ? Chapter::where('name', $this->chapter)->firstOrFail()->id : null;
+    }
 
     public function save()
     {
@@ -27,10 +32,11 @@ new #[Layout('components.layouts.admin')] class extends Component
             'banner' => 'nullable|string',
         ]);
 
+
         Team::create([
             'name' => $this->name,
             'short' => $this->short,
-            'chapter_id' => $this->chapter, // assign chapter from URL
+            'chapter_id' => $this->chapterId, // assign chapter from URL
             'banner' => $this->banner,
             'has_team_lead' => $this->has_team_lead,
         ]);
@@ -56,7 +62,7 @@ new #[Layout('components.layouts.admin')] class extends Component
     <x-fancy-header title="Create Team" subtitle="Add a new team" :breadcrumbs="[
         ['label' => 'Home', 'url' => route('admin.dashboard')],
         ['label' => 'Teams', 'url' => route('admin.dashboard.teams', ['chapter' => request()->query('chapter')])],
-        ['label' => 'Create Team']
+        ['label' => 'Create Team'],
     ]" />
 
     <x-card class="dark:bg-dark-800">
@@ -71,13 +77,7 @@ new #[Layout('components.layouts.admin')] class extends Component
             <x-toggle label="Has Team Lead" wire:model.defer="has_team_lead" />
 
             {{-- Banner Upload --}}
-            <x-upload
-                label="Team Banner"
-                wire:model="banner"
-                preview
-                delete
-                delete-method="deleteUpload"
-            />
+            <x-upload label="Team Banner" wire:model="banner" preview delete delete-method="deleteUpload" />
 
             <x-button type="submit" class="mt-4">Create Team</x-button>
         </form>

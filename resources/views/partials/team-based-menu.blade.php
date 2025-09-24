@@ -1,5 +1,5 @@
 @php
-// TODO: Add active routes to this file, show expanded active route
+    // TODO: Add active routes to this file, show expanded active route
     $leadersTeam = Auth()->user()->teams->filter(fn($team) => $team->pivot->role_in_team === 'team-lead')->first();
     $chapterId = \App\Models\Chapter::where('name', '=', request()->get('chapter'))->first()->id;
     $appointment_teams = \App\Models\AppointmentTeams::where('chapter_id', $chapterId)
@@ -7,6 +7,10 @@
         ->pluck('team_id')
         ->toArray();
     $prayerRequestTeams = \App\Models\PrayerRequestTeam::where('chapter_id', $chapterId)
+        ->get()
+        ->pluck('team_id')
+        ->toArray();
+    $believersAcademyTeam = \App\Models\BelieversAcademyTeams::where('chapter_id', $chapterId)
         ->get()
         ->pluck('team_id')
         ->toArray();
@@ -50,8 +54,24 @@
             Prayer teams
         </flux:navlist.item>
 
+        <flux:navlist.item :href="route('admin.settings.believersclass', request()->query())" wire:navigate>
+            Believers Class Teams
+        </flux:navlist.item>
+
     </flux:navlist.group>
 @endrole
+@if (auth()->user()->hasRole('admin') || in_array($leadersTeam->id, $believersAcademyTeam))
+    <flux:navlist.group expandable heading="Believer's Academy">
+        <flux:navlist.item :href="route('admin.dashboard.believers_class.academy', request()->query())" wire:navigate>
+            Academy
+        </flux:navlist.item>
+        <flux:navlist.item :href="route('admin.dashboard.believers_class.index', request()->query())" wire:navigate>
+            Believer's Classes
+        </flux:navlist.item>
+
+    </flux:navlist.group>
+@else
+@endif
 <flux:navlist.group expandable heading="Report"
     :expanded="request()->routeIs('admin.dashboard.appointments.*') ? 'true' : 'false'">
 

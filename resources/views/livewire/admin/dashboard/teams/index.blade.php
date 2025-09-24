@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\Team;
-use App\Models\User;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Livewire\Volt\Component;
@@ -16,8 +15,8 @@ new #[Layout('components.layouts.admin')] class extends Component {
     public array $selected = [];
     public ?string $bulkAction = null;
 
-    #[Url]
-    public ?string $chapter = null;
+    #[Url(keep:true)]
+    public ?string $chapter;
 
     /**
      * Table headers
