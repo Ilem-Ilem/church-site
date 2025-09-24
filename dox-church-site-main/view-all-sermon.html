@@ -1217,150 +1217,151 @@
 
     <audio id="player-audio" src=""></audio>
 
-    <script>
-        // Get all relevant DOM elements
-        const audioPlayer = document.getElementById('player-audio');
-        const playPauseBtn = document.getElementById('play-pause-btn');
-        const playIcon = document.getElementById('play-icon');
-        const pauseIcon = document.getElementById('pause-icon');
-        const playerTitle = document.getElementById('player-title');
-        const playerArtist = document.getElementById('player-artist');
-        const playerAlbumArt = document.getElementById('player-album-art').querySelector('img');
-        const volumeSlider = document.getElementById('volume-slider');
-        const sermonCards = document.querySelectorAll('.sermon-card');
-        const currentTimeEl = document.getElementById('current-time');
-        const durationEl = document.getElementById('duration');
-        const audioPlayerBar = document.getElementById('audio-player-bar');
-        const seekBar = document.getElementById('seek-bar');
-        const closePlayerBtn = document.getElementById('close-player-btn');
+<script>
+    // Get all relevant DOM elements
+    const audioPlayer = document.getElementById('player-audio');
+    const playPauseBtn = document.getElementById('play-pause-btn');
+    const playIcon = document.getElementById('play-icon');
+    const pauseIcon = document.getElementById('pause-icon');
+    const playerTitle = document.getElementById('player-title');
+    const playerArtist = document.getElementById('player-artist');
+    const playerAlbumArt = document.getElementById('player-album-art').querySelector('img');
+    const volumeSlider = document.getElementById('volume-slider');
+    const sermonCards = document.querySelectorAll('.sermon-card');
+    const currentTimeEl = document.getElementById('current-time');
+    const durationEl = document.getElementById('duration');
+    const audioPlayerBar = document.getElementById('audio-player-bar');
+    const seekBar = document.getElementById('seek-bar');
+    const closePlayerBtn = document.getElementById('close-player-btn');
 
-        let currentSermonIndex = -1;
+    let currentSermonIndex = -1;
+    let isSeeking = false; // Flag to track dragging on seek bar
 
-        // Function to format time in minutes:seconds
-        function formatTime(seconds) {
-            const min = Math.floor(seconds / 60);
-            const sec = Math.floor(seconds % 60);
-            return `${min}:${sec < 10 ? '0' : ''}${sec}`;
-        }
+    // Function to format time in minutes:seconds
+    function formatTime(seconds) {
+        const min = Math.floor(seconds / 60);
+        const sec = Math.floor(seconds % 60);
+        return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+    }
 
-        // Play/Pause button functionality
-        playPauseBtn.addEventListener('click', () => {
-            if (audioPlayer.paused) {
-                if (audioPlayer.src) {
-                    audioPlayer.play();
-                }
-            } else {
-                audioPlayer.pause();
+    // Play/Pause button functionality
+    playPauseBtn.addEventListener('click', () => {
+        if (audioPlayer.paused) {
+            if (audioPlayer.src) {
+                audioPlayer.play().catch(err => console.log("Play blocked:", err));
             }
-        });
-
-        // Update icons on play/pause events
-        audioPlayer.addEventListener('play', () => {
-            playIcon.classList.add('d-none');
-            pauseIcon.classList.remove('d-none');
-        });
-
-        audioPlayer.addEventListener('pause', () => {
-            playIcon.classList.remove('d-none');
-            pauseIcon.classList.add('d-none');
-        });
-
-        // Update the current time display and seek bar as the audio plays
-        audioPlayer.addEventListener('timeupdate', () => {
-            currentTimeEl.textContent = formatTime(audioPlayer.currentTime);
-            // Only update the seek bar if the user isn't actively dragging it
-            if (!isSeeking) {
-                const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
-                seekBar.value = progress;
-            }
-        });
-
-        // Update the total duration when the audio loads metadata
-        audioPlayer.addEventListener('loadedmetadata', () => {
-            durationEl.textContent = formatTime(audioPlayer.duration);
-            seekBar.max = audioPlayer.duration; // Set the max value of the seek bar to the duration
-        });
-
-        // Add click event listeners to each sermon card
-        sermonCards.forEach((card, index) => {
-            card.addEventListener('click', () => {
-                const title = card.dataset.title;
-                const artist = card.dataset.artist;
-                const audioSrc = card.dataset.audioSrc;
-                // Get the image source from the data attribute. Corrected from 'image-src' to 'imageSrc'
-                const imageSrc = card.dataset.imageSrc;
-
-                console.log('Sermon card clicked! Showing audio bar.');
-                // Show the audio player bar when a card is clicked
-                audioPlayerBar.classList.remove('hidden');
-                audioPlayerBar.classList.add('visible');
-
-                // Update the player bar with the new sermon's info
-                playerTitle.textContent = title;
-                playerArtist.textContent = artist;
-
-                // Update the audio source and play
-                audioPlayer.src = audioSrc;
-                audioPlayer.play();
-
-                // Update the album art with the new image source
-                playerAlbumArt.src = imageSrc;
-
-                currentSermonIndex = index;
-            });
-        });
-
-        // Next button functionality
-        document.getElementById('next-btn').addEventListener('click', () => {
-            if (currentSermonIndex !== -1 && currentSermonIndex < sermonCards.length - 1) {
-                sermonCards[currentSermonIndex + 1].click();
-            } else if (currentSermonIndex === sermonCards.length - 1) {
-                // Loop back to the first sermon
-                sermonCards[0].click();
-            }
-        });
-
-        // Previous button functionality
-        document.getElementById('prev-btn').addEventListener('click', () => {
-            if (currentSermonIndex > 0) {
-                sermonCards[currentSermonIndex - 1].click();
-            } else if (currentSermonIndex === 0) {
-                // Loop back to the last sermon
-                sermonCards[sermonCards.length - 1].click();
-            }
-        });
-
-        // Volume slider functionality
-        volumeSlider.addEventListener('input', (event) => {
-            audioPlayer.volume = event.target.value;
-        });
-
-        // Close button functionality
-        closePlayerBtn.addEventListener('click', () => {
-            console.log('Close button clicked!');
+        } else {
             audioPlayer.pause();
-            // Explicitly remove 'visible' and add 'hidden' to ensure a smooth transition and reliable closing
-            audioPlayerBar.classList.remove('visible');
-            audioPlayerBar.classList.add('hidden');
+        }
+    });
+
+    // Update icons on play/pause events
+    audioPlayer.addEventListener('play', () => {
+        playIcon.classList.add('d-none');
+        pauseIcon.classList.remove('d-none');
+    });
+
+    audioPlayer.addEventListener('pause', () => {
+        playIcon.classList.remove('d-none');
+        pauseIcon.classList.add('d-none');
+    });
+
+    // Update the current time display and seek bar as the audio plays
+    audioPlayer.addEventListener('timeupdate', () => {
+        currentTimeEl.textContent = formatTime(audioPlayer.currentTime);
+        if (!isSeeking && audioPlayer.duration) {
+            const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+            seekBar.value = progress;
+        }
+    });
+
+    // Update the total duration when the audio loads metadata
+    audioPlayer.addEventListener('loadedmetadata', () => {
+        durationEl.textContent = formatTime(audioPlayer.duration);
+        seekBar.max = audioPlayer.duration;
+    });
+
+    // Add click event listeners to each sermon card
+    sermonCards.forEach((card, index) => {
+        card.addEventListener('click', () => {
+            const title = card.dataset.title;
+            const artist = card.dataset.artist;
+            const audioSrc = card.dataset.audioSrc;
+            const imageSrc = card.dataset.imageSrc;
+
+            console.log('Sermon card clicked! Showing audio bar.');
+
+            // Show the audio player bar
+            audioPlayerBar.classList.remove('hidden');
+            audioPlayerBar.classList.add('visible');
+
+            // Update the player bar UI
+            playerTitle.textContent = title;
+            playerArtist.textContent = artist;
+            playerAlbumArt.src = imageSrc;
+
+            currentSermonIndex = index;
+
+            // Load new audio safely
+            audioPlayer.pause();
+            audioPlayer.src = audioSrc;
+            audioPlayer.load();
+
+            // Only play after metadata is ready
+            audioPlayer.onloadedmetadata = () => {
+                audioPlayer.play().catch(err => console.log("Play interrupted:", err));
+            };
         });
+    });
 
-        // Flag to prevent the timeupdate listener from interfering with user dragging
-        let isSeeking = false;
+    // Next button functionality
+    document.getElementById('next-btn').addEventListener('click', () => {
+        if (currentSermonIndex !== -1 && currentSermonIndex < sermonCards.length - 1) {
+            sermonCards[currentSermonIndex + 1].click();
+        } else if (currentSermonIndex === sermonCards.length - 1) {
+            sermonCards[0].click(); // loop back
+        }
+    });
 
-        // Seek bar functionality
-        seekBar.addEventListener('mousedown', () => {
-            isSeeking = true;
-        });
+    // Previous button functionality
+    document.getElementById('prev-btn').addEventListener('click', () => {
+        if (currentSermonIndex > 0) {
+            sermonCards[currentSermonIndex - 1].click();
+        } else if (currentSermonIndex === 0) {
+            sermonCards[sermonCards.length - 1].click(); // loop back
+        }
+    });
 
-        seekBar.addEventListener('mouseup', () => {
-            isSeeking = false;
-        });
+    // Volume slider functionality
+    volumeSlider.addEventListener('input', (event) => {
+        audioPlayer.volume = event.target.value;
+    });
 
-        seekBar.addEventListener('input', () => {
-            // Update the current time of the audio player based on the seek bar value
+    // Close button functionality
+    closePlayerBtn.addEventListener('click', () => {
+        console.log('Close button clicked!');
+        audioPlayer.pause();
+        audioPlayerBar.classList.remove('visible');
+        audioPlayerBar.classList.add('hidden');
+    });
+
+    // Seek bar functionality
+    seekBar.addEventListener('mousedown', () => {
+        isSeeking = true;
+    });
+
+    seekBar.addEventListener('mouseup', () => {
+        isSeeking = false;
+        audioPlayer.currentTime = seekBar.value;
+    });
+
+    seekBar.addEventListener('input', () => {
+        if (isSeeking) {
             audioPlayer.currentTime = seekBar.value;
-        });
-    </script>
+        }
+    });
+</script>
+
 
 </body>
 

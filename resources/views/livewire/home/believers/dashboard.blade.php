@@ -1,19 +1,22 @@
 <?php
 //TODO: fix the classes dashboard for updating a class
-//TODO: complete this page
 use Livewire\Volt\Component;
 use Livewire\Attributes\{Layout};
-use App\Models\{BeliversAcademy, Chapter, BelieversAcademyTeams, User, StudentClasses , AcademyClases};
+use App\Models\{BeliversAcademy, Chapter, BelieversAcademyTeams, User, StudentClasses, AcademyClases};
 
 new #[Layout('components.layouts.layout')] class extends Component {
     public $classes;
     public $student_classes;
+    public $classDone;
     public $classNotDone;
 
     public function mount()
     {
         $this->classes = AcademyClases::all();
         $this->student_classes = StudentClasses::where('user_id', auth()->user()->id)->get();
+        $this->classDone = json_decode(StudentClasses::where('user_id', auth()->user()->id)->first()->class_completed);
+
+        $this->classNotDone = array_diff($this->classes->pluck('id')->toArray(), $this->classDone);
     }
 }; ?>
 
@@ -82,38 +85,72 @@ new #[Layout('components.layouts.layout')] class extends Component {
         .main-container {
             margin-top: 10rem;
         }
+
+        .btn-dark-blue {
+            background-color: #0B3D91;
+            /* Dark blue */
+            color: #ffffff;
+            border: none;
+            padding: 0.6rem 1.4rem;
+            font-weight: 600;
+            font-size: 1rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .btn-dark-blue:hover {
+            background-color: #092F6B;
+            /* Darker shade on hover */
+            transform: translateY(-2px);
+            color: #ffffff;
+        }
+
+        .btn-dark-blue:active {
+            background-color: #081F4F;
+            /* Even darker when clicked */
+            transform: translateY(0);
+        }
     </style>
 
     <div class="main-container">
         <div class="container">
             <div class="container mt-5">
-                <h2>Class Progress</h2>
-                <table class="table table-hover-zoom table-striped">
-                    <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Course</th>
-                            <th scope="col">Date</th>
-                            <th scope="col">Status</th>
-                            <th scope="col">Request Update</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($classes as $key=> $class)
+
+                <button class="btn btn-dark-blue float-right" {{ count($classNotDone) != 0 ? 'disabled' : '' }}>
+                    Print Certificate
+                </button>
+
+                <h2 class="mt-5">Class Progress</h2>
+                <div class="table-responsive-sm">
+                    <table class="table table-hover-zoom table-striped">
+                        <thead>
                             <tr>
-                                <th scope="row">{{ $key+1 }}</th>
-                                <td>{{ $class->name }}</td>
-                                <td>{{ $class->date }}</td>
-                                <td><span class="badge bg-success">Completed</span></td>
-                                <td>
-                                    <button type="button" class="btn btn-sm btn-primary">Request Update</button>
-                                </td>
+                                <th scope="col">#</th>
+                                <th scope="col">Course</th>
+                                <th scope="col">Date</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Request Update</th>
                             </tr>
-                        @endforeach
-
-
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach ($classes as $key => $class)
+                                <tr>
+                                    <th scope="row">{{ $key + 1 }}</th>
+                                    <td>{{ $class->name }}</td>
+                                    <td>{{ $class->date }}</td>
+                                    @if (in_array($class->id, $classDone))
+                                        <td><span class="badge bg-success">Completed</span></td>
+                                    @else
+                                        <td><span class="badge bg-danger">Pending</span></td>
+                                    @endif
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-primary">Request Update</button>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

@@ -21,4 +21,9 @@ class BeliversAcademy extends Model
     {
         return $this->belongsTo(Chapter::class);
     }
+
+    public function students()
+    {
+        return $this->hasMany(StudentClasses::class, 'academy_id');
+    }
 }

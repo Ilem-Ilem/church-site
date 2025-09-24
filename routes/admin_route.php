@@ -37,6 +37,7 @@ Route::prefix('admin/dashboard')
         //-------------------------------------------------------------------
         Volt::route('believers_academy', 'admin.dashboard.believers_class.academy')->name('admin.dashboard.believers_class.academy');
         Volt::route('believers_academy/classes', 'admin.dashboard.believers_class.index')->name('admin.dashboard.believers_class.index');
+        Volt::route('believers_academy/students', 'admin.dashboard.believers_class.student-monitor')->name('admin.dashboard.believers_class.student-monitor');
         // Reports Routes
         Volt::route('reports', 'admin.dashboard.reports.index')->name('admin.dashboard.reports.index');
         Volt::route('create-report', 'admin.dashboard.reports.create-report')->name('admin.dashboard.reports.create-report');

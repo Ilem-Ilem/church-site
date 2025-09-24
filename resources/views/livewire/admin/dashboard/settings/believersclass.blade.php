@@ -1,5 +1,4 @@
 <?php
-// TODO fix all the error that has to do with
 use Livewire\Volt\Component;
 use Livewire\Attributes\{Url, Layout};
 use App\Models\{Chapter, Team, BelieversAcademyTeams};

@@ -39,10 +39,18 @@ new #[Layout('components.layouts.admin')] class extends Component {
         ]);
 
         $academy = BeliversAcademy::first();
-        $academy->status = $this->academy['status'];
-        $academy->start_at = $this->academy['start_at'];
-        $academy->chapter_id = $this->chapterId;
-        $academy->save();
+        if (!$academy) {
+            $academy = BeliversAcademy::create([
+                'status' => $this->academy['status'],
+                'start_at' => $this->academy['start_at'],
+                'chapter_id' => $this->chapterId,
+            ]);
+        } else {
+            $academy->status = $this->academy['status'];
+            $academy->start_at = $this->academy['start_at'];
+            $academy->chapter_id = $this->chapterId;
+            $academy->save();
+        }
         $this->academy = $academy->toArray();
         $this->dispatch('$refresh');
         $this->toast()->success('Success', 'Class status Changed')->send();
@@ -51,7 +59,8 @@ new #[Layout('components.layouts.admin')] class extends Component {
 
 <div>
     <x-card class="darK:bg-zinc-900">
-        <x-link class="px-4 py-2 bg-blue-700 text-white font-semibold mt-3 mb-2 rounded" :href="route('admin.dashboard.believers_class.index', request()->query())">+ Add Classes</x-link>
+        <x-link class="px-4 py-2 bg-blue-700 text-white font-semibold mt-3 mb-2 rounded" :href="route('admin.dashboard.believers_class.index', request()->query())">+ Add
+            Classes</x-link>
         <form wire:submit.prevent='save'>
             <div>
                 <label for="status">Status</label>
@@ -76,7 +85,7 @@ new #[Layout('components.layouts.admin')] class extends Component {
             </div>
             <button type="submit" class="px-4 py-2 bg-blue-700 text-white font-semibold mt-3">
                 <span wire:loading.remove>Save</span>
-                <span wire:loading wire:target="save"> 
+                <span wire:loading wire:target="save">
                     <x-spinner-loader color="white" size="sm"></x-spinner-loader>saving
                 </span>
             </button>

@@ -1,73 +1,703 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bootstrap Table</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" >
-  </head> <style>
-    .table-hover-zoom tbody tr:hover {
-      transform: scale(1.02);
-      transition: transform 0.2s ease-in-out;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      z-index: 1; /* Ensures the expanded row appears on top */
-    }
-  </style>
-</head>
-<body>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Glassmorphic Portfolio</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Custom keyframes for a gentler bounce than default animate-bounce */
+        @keyframes gentle-bounce {
+            0%, 100% {
+                transform: translateY(-5%);
+                animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+            }
+            50% {
+                transform: translateY(0);
+                animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+            }
+        }
+        .animate-gentle-bounce {
+            animation: gentle-bounce 1.5s infinite;
+        }
 
-  <div class="container mt-5">
-    <h2>Course Progress</h2>
-    <table class="table table-hover-zoom table-striped">
-      <thead>
-        <tr>
-          <th scope="col">#</th>
-          <th scope="col">Course</th>
-          <th scope="col">Date</th>
-          <th scope="col">Status</th>
-          <th scope="col">Request Update</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th scope="row">1</th>
-          <td>Introduction to Web Development</td>
-          <td>2023-01-15</td>
-          <td><span class="badge bg-success">Completed</span></td>
-          <td>
-            <button type="button" class="btn btn-sm btn-primary">Request Update</button>
-          </td>
-        </tr>
-        <tr>
-          <th scope="row">2</th>
-          <td>Advanced JavaScript</td>
-          <td>2023-03-20</td>
-          <td><span class="badge bg-warning text-dark">Pending</span></td>
-          <td>
-            <button type="button" class="btn btn-sm btn-primary">Request Update</button>
-          </td>
-        </tr>
-        <tr>
-          <th scope="row">3</th>
-          <td>React Fundamentals</td>
-          <td>2023-05-10</td>
-          <td><span class="badge bg-success">Completed</span></td>
-          <td>
-            <button type="button" class="btn btn-sm btn-primary">Request Update</button>
-          </td>
-        </tr>
-        <tr>
-          <th scope="row">4</th>
-          <td>Database Management</td>
-          <td>2023-07-01</td>
-          <td><span class="badge bg-warning text-dark">Pending</span></td>
-          <td>
-            <button type="button" class="btn btn-sm btn-primary">Request Update</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" ></script>
-  </body>
+        /* prefers-reduced-motion: disable heavy motion/tilt/animations */
+        @media (prefers-reduced-motion: reduce) {
+            .no-motion-effect {
+                animation: none !important;
+                transition: none !important;
+                transform: none !important;
+            }
+            .animate-gentle-bounce {
+                animation: none;
+            }
+        }
+
+        /* Shimmer effect for CTA button */
+        .shimmer-button {
+            position: relative;
+            overflow: hidden;
+        }
+        .shimmer-button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.2),
+                transparent
+            );
+            transition: left 0.8s ease-in-out;
+        }
+        .shimmer-button:hover::after {
+            left: 100%;
+        }
+
+        /* Custom scrollbar for a sleek look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a; /* dark slate background */
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #22c1c3; /* accent color */
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #1a9c9e; /* darker accent on hover */
+        }
+
+    </style>
+</head>
+<body class="font-inter bg-gradient-to-br from-[#071025] to-[#121c3b] text-white min-h-screen">
+
+    <script type="application/json" id="skill-data">
+    {
+        "skills": [
+            {"id":"php","name":"PHP","pct":92, "logo":"<svg viewBox='0 0 24 24' fill='currentColor'><path d='M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-2.432 17.502c-.37.765-.892 1.487-1.446 2.039-1.282-1.298-2.316-2.583-2.316-4.529 0-1.898 1.139-3.21 2.378-3.414.204-.038.397-.076.602-.076h.639c.277 0 .506.229.506.506v1.177c0 .277-.229.506-.506.506h-.61c-.563 0-.756.402-.756.973 0 .571.193.963.756.963h.61c.277 0 .506.229.506.506v1.168c0 .277-.229.506-.506.506zm6.273-5.266c-.37.765-.892 1.487-1.446 2.039-1.282-1.298-2.316-2.583-2.316-4.529 0-1.898 1.139-3.21 2.378-3.414.204-.038.397-.076.602-.076h.639c.277 0 .506.229.506.506v1.177c0 .277-.229.506-.506.506h-.61c-.563 0-.756.402-.756.973 0 .571.193.963.756.963h.61c.277 0 .506.229.506.506v1.168c0 .277-.229.506-.506.506zm-1.83-4.996h-.63c-1.85 0-3.336 1.486-3.336 3.336s1.486 3.336 3.336 3.336h.63c.277 0 .506.229.506.506v1.168c0 .277-.229.506-.506.506h-1.144c-1.85 0-3.336-1.486-3.336-3.336s1.486-3.336 3.336-3.336h1.144c.277 0 .506.229.506.506v1.168c0 .277-.229.506-.506.506zm1.229 6.224c-.16-.019-.36-.029-.56-.029s-.4.01-.56.029l-.54.029h-.6c-1.85 0-3.336 1.486-3.336 3.336s1.486 3.336 3.336 3.336h.6c.277 0 .506.229.506.506v1.168c0 .277-.229.506-.506.506h-1.144c-1.85 0-3.336-1.486-3.336-3.336s1.486-3.336 3.336-3.336h1.144c.277 0 .506.229.506.506v1.168c0 .277-.229.506-.506.506zm-1.229-6.224z'/></svg>"},
+            {"id":"js","name":"JavaScript","pct":95, "logo":"<svg viewBox='0 0 24 24' fill='currentColor'><path d='M0 0h24v24H0z' fill='none'/><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2.8 14.5c-.32.32-.78.5-1.2.5-.42 0-.88-.18-1.2-.5-.32-.32-.5-.78-.5-1.2 0-.42.18-.88.5-1.2l3-3c.64-.64 1.76-.64 2.4 0l3 3c.32.32.5.78.5 1.2 0 .42-.18.88-.5 1.2-.32.32-.78.5-1.2.5-.42 0-.88-.18-1.2-.5L12 12.08l-1.6 1.6c-.32.32-.5.78-.5 1.2 0 .42.18.88.5 1.2zM12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5z'/></svg>"},
+            {"id":"react","name":"React","pct":88, "logo":"<svg viewBox='0 0 24 24' fill='currentColor'><path d='M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm0-14c-1.333 0-2.427.667-3.09 2h6.18c-.663-1.333-1.757-2-3.09-2zm-3.09 4c-.663 1.333-1.757 2-3.09 2h6.18c-.663-1.333-1.757-2-3.09-2zm-3.09 4c-.663 1.333-1.757 2-3.09 2h6.18c-.663-1.333-1.757-2-3.09-2zm3.09 4c-.663 1.333-1.757 2-3.09 2h6.18c-.663-1.333-1.757-2-3.09-2z'/></svg>"},
+            {"id":"py","name":"Python","pct":80, "logo":"<svg viewBox='0 0 24 24' fill='currentColor'><path d='M15.5 14.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zm-7-7c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zm-.5-5C6.47 2 5 3.47 5 5.5v5C5 12.03 6.47 13.5 8 13.5h.5v-2h-.5c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h.5V7.5c0-.28-.22-.5-.5-.5s-.5-.22-.5-.5v-.5c0-.28.22-.5.5-.5h.5V3.5c0-.28-.22-.5-.5-.5s-.5-.22-.5-.5v-.5c0-.28.22-.5.5-.5h2.5c1.1 0 2 .9 2 2v.5h-2c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h.5c.28 0 .5-.22.5-.5V3.5h2c.28 0 .5-.22.5-.5s-.22-.5-.5-.5v-.5c0-.28-.22-.5-.5-.5h-.5v-1c0-.28-.22-.5-.5-.5s-.5-.22-.5-.5v-.5c0-.28-.22-.5-.5-.5h-2.5zm11 11c1.1 0 2 .9 2 2v.5h-2c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h.5c.28 0 .5-.22.5-.5v-.5h-2c-.28 0-.5-.22-.5-.5s-.22-.5-.5-.5v-.5h2c.28 0 .5-.22.5-.5s-.22-.5-.5-.5v-.5h-.5c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h-2.5c-1.1 0-2-.9-2-2v-.5h2c.28 0 .5-.22.5-.5s-.22-.5-.5-.5h-.5c-.28 0-.5-.22-.5-.5V9.5h2c.28 0 .5-.22.5-.5s-.22-.5-.5-.5v-.5h-.5c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h.5V6.5c0-1.1.9-2 2-2h.5v-2h-.5c-.28 0-.5-.22-.5-.5s-.22-.5-.5-.5v-.5c0-.28-.22-.5-.5-.5h-2.5z'/></svg>"},
+            {"id":"laravel","name":"Laravel","pct":90, "logo":"<svg viewBox='0 0 24 24' fill='currentColor'><path d='M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm-1.042 16.516c.406.843 1.127 1.488 2.008 1.488 1.156 0 2.05-.724 2.05-1.996 0-1.22-.888-1.745-2.071-1.921l-.578-.088c-1.39-.211-2.152-.705-2.152-1.758 0-.965.704-1.564 1.705-1.564.843 0 1.517.406 1.956 1.127l-.602.406c-.328-.625-.797-.843-1.354-.843-.705 0-1.209.43-.843 1.042l.527.265c.965.406 2.05.625 2.05 1.922 0 1.096-.583 1.89-1.89 1.89-.989 0-1.681-.578-2.008-1.209l.602-.406z'/></svg>"},
+            {"id":"livewire","name":"Livewire","pct":78, "logo":"<svg viewBox='0 0 24 24' fill='currentColor'><path d='M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm-1.424 16.59c-.318.69-.738 1.3-.974 1.426-.677.34-1.396-.065-1.603-.418-.21-.363-.005-.826.51-1.056.126-.053.25-.11.378-.182l1.69-1.03c1.026-.62 1.32-.974 1.32-1.597 0-.546-.35-1.012-.974-1.012-.51 0-.915.263-1.125.56l-.423-.497c.31-.6.76-.948 1.25-.948.745 0 1.29.355 1.29 1.056 0 .805-.623 1.18-1.846 1.956l-.546.333c-.76.46-1.02.72-1.02 1.272 0 .5.333.82.775.82.427 0 .82-.236 1.03-.498l.424.498zm4.82-3.04c-.318.69-.738 1.3-.974 1.426-.677.34-1.396-.065-1.603-.418-.21-.363-.005-.826.51-1.056.126-.053.25-.11.378-.182l1.69-1.03c1.026-.62 1.32-.974 1.32-1.597 0-.546-.35-1.012-.974-1.012-.51 0-.915.263-1.125.56l-.423-.497c.31-.6.76-.948 1.25-.948.745 0 1.29.355 1.29 1.056 0 .805-.623 1.18-1.846 1.956l-.546.333c-.76.46-1.02.72-1.02 1.272 0 .5.333.82.775.82.427 0 .82-.236 1.03-.498l.424.498z'/></svg>"},
+            {"id":"bots","name":"Bot Creation","pct":85, "logo":"<svg viewBox='0 0 24 24' fill='currentColor'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-2-9h4v2h-4v-2zm-3-3h6V7h-6v-1zm0 9h6v-1h-6v1z'/></svg>"}
+        ]
+    }
+    </script>
+
+    <div x-data="{ scrolled: false, menuOpen: false, showTiltPermission: false }"
+        x-init="
+            window.addEventListener('scroll', () => { scrolled = window.scrollY > 24 });
+            // Initial check for DeviceOrientationEvent support
+            if (typeof DeviceOrientationEvent !== 'undefined' && DeviceOrientationEvent.requestPermission) {
+                // iOS 13+ requires permission
+                showTiltPermission = true; // Show the button to request permission
+            }
+        "
+        class="relative"
+    >
+
+        <nav :class="{ 'fixed top-0 left-0 right-0 z-50': scrolled, 'relative': !scrolled }"
+            class="transition-all duration-300 ease-in-out px-6 py-4 lg:px-12"
+            :class="scrolled ? 'bg-white/10 backdrop-blur-md shadow-lg transform translate-y-0' : 'bg-transparent backdrop-blur-sm transform -translate-y-2'"
+        >
+            <div class="container mx-auto flex justify-between items-center">
+                <a href="#" class="text-2xl font-bold text-teal-300 hover:text-teal-400 transition">MyPortfolio</a>
+
+                <div class="hidden lg:flex space-x-8 text-lg">
+                    <a href="#about" class="text-white hover:text-teal-300 transition">About</a>
+                    <a href="#skills" class="text-white hover:text-teal-300 transition">Skills</a>
+                    <a href="#projects" class="text-white hover:text-teal-300 transition">Projects</a>
+                    <a href="#contact" class="text-white hover:text-teal-300 transition">Contact</a>
+                </div>
+
+                <a href="#contact" class="hidden lg:block bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-6 rounded-full transition shimmer-button">
+                    Hire Me
+                </a>
+
+                <button @click="menuOpen = !menuOpen" class="lg:hidden text-white focus:outline-none z-50">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path x-show="!menuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        <path x-show="menuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div x-show="menuOpen"
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 -translate-y-4"
+                x-transition:enter-end="opacity-100 translate-y-0"
+                x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="opacity-100 translate-y-0"
+                x-transition:leave-end="opacity-0 -translate-y-4"
+                class="lg:hidden fixed inset-0 bg-gradient-to-br from-[#071025] to-[#121c3b] bg-opacity-95 backdrop-blur-xl flex flex-col items-center justify-center space-y-8 z-40"
+            >
+                <a href="#about" @click="menuOpen = false" class="text-white text-3xl hover:text-teal-300 transition">About</a>
+                <a href="#skills" @click="menuOpen = false" class="text-white text-3xl hover:text-teal-300 transition">Skills</a>
+                <a href="#projects" @click="menuOpen = false" class="text-white text-3xl hover:text-teal-300 transition">Projects</a>
+                <a href="#contact" @click="menuOpen = false" class="text-white text-3xl hover:text-teal-300 transition">Contact</a>
+                <a href="#contact" @click="menuOpen = false" class="bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-8 rounded-full text-2xl transition shimmer-button">
+                    Hire Me
+                </a>
+            </div>
+        </nav>
+
+        <section class="relative min-h-[calc(100vh-100px)] flex items-center justify-center p-6 lg:p-12 overflow-hidden">
+            <div class="relative z-10 text-center space-y-6 max-w-4xl mx-auto">
+                <h1 class="text-5xl lg:text-7xl font-extrabold leading-tight text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-cyan-500 animate-fade-in no-motion-effect">
+                    Hello, I'm [Your Name], a <br class="lg:hidden">
+                    <span class="text-white">Full-stack Developer.</span>
+                </h1>
+                <p class="text-lg lg:text-xl text-gray-300 max-w-2xl mx-auto">
+                    Crafting elegant and efficient web solutions with a focus on user experience and robust backend systems.
+                </p>
+                <div class="flex flex-wrap justify-center gap-4 pt-4">
+                    <a href="#projects" class="bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-8 rounded-full text-lg transition shimmer-button">
+                        View Projects
+                    </a>
+                    <a href="#contact" class="border border-white/20 text-white hover:border-teal-300 hover:text-teal-300 font-bold py-3 px-8 rounded-full text-lg transition">
+                        Get in Touch
+                    </a>
+                </div>
+            </div>
+
+            </section>
+
+        <div class="w-full bg-gradient-to-r from-red-600/20 to-pink-500/20 backdrop-blur-sm py-3 px-6 text-center text-red-200 text-sm relative z-20">
+            <p><strong>Heads Up:</strong> This site is under active development. Some features may be experimental!</p>
+        </div>
+
+        <div class="relative -mt-16 lg:-mt-20 z-30"> <div class="container mx-auto px-6">
+                <div class="bg-white/6 backdrop-blur-lg border border-white/20 rounded-2xl p-4 lg:p-6 shadow-xl
+                            flex flex-col lg:flex-row items-center justify-between gap-4 lg:gap-8 mx-auto max-w-5xl">
+                    <div class="flex flex-wrap gap-4 text-gray-200">
+                        <a href="#" class="hover:text-teal-300 transition flex items-center gap-1" aria-label="LinkedIn profile">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22.23 0H1.77C.79 0 0 .79 0 1.77v20.46C0 23.21.79 24 1.77 24h20.46c.98 0 1.77-.79 1.77-1.77V1.77c0-.98-.79-1.77-1.77-1.77zM7.17 20.44H3.5V9.4H7.17v11.04zM5.33 7.82c-1.2 0-2.18-.98-2.18-2.18S4.13 3.46 5.33 3.46c1.2 0 2.18.98 2.18 2.18s-.98 2.18-2.18 2.18zm15.11 12.62h-3.66v-5.3c0-1.26-.03-2.88-1.75-2.88-1.75 0-2.02 1.37-2.02 2.79v5.39h-3.66V9.4h3.51v1.61h.05c.49-.93 1.69-1.92 3.46-1.92 3.7 0 4.39 2.44 4.39 5.62v6.73z"/></svg>
+                            LinkedIn
+                        </a>
+                        <a href="#" class="hover:text-teal-300 transition flex items-center gap-1" aria-label="GitHub profile">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.387-1.334-1.757-1.334-1.757-1.09-.745.083-.73.083-.73 1.205.085 1.838 1.238 1.838 1.238 1.07 1.835 2.808 1.305 3.49.998.108-.775.419-1.305.762-1.605-2.665-.3-5.466-1.33-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.12-.3-.53-1.52.12-3.18 0 0 1-.32 3.3.12.96-.267 1.98-.4 3-.4.998 0 2.04.133 3 .4 2.295-.44 3.295-.12 3.295-.12.65 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.62-5.475 5.92.43.37.82 1.1.82 2.22 0 1.606-.015 2.896-.015 3.286 0 .32.22.695.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12z"/></svg>
+                            GitHub
+                        </a>
+                    </div>
+
+                    <div class="text-center lg:text-left flex-grow space-y-1">
+                        <h2 class="text-xl lg:text-2xl font-bold text-white">[Your Name Here]</h2>
+                        <span x-data="{ copied: false, email: 'your.email@domain.com' }"
+                            @click="navigator.clipboard.writeText(email); copied = true; setTimeout(() => copied = false, 2000)"
+                            class="text-gray-300 hover:text-teal-300 cursor-pointer flex items-center justify-center lg:justify-start gap-2 transition"
+                            tabindex="0" role="button" aria-label="Click to copy email address"
+                        >
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                            <span x-text="copied ? 'Copied!' : email"></span>
+                        </span>
+                    </div>
+
+                    <div class="lg:ml-auto">
+                        <button @click="showTiltPermission = true"
+                            class="bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-8 rounded-full text-lg transition animate-gentle-bounce no-motion-effect shimmer-button"
+                            aria-label="Hire Me button to request Device Orientation permission"
+                        >
+                            Hire Me
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section id="about" class="relative py-20 px-6 lg:py-32 lg:px-12 overflow-hidden">
+            <div class="container mx-auto max-w-5xl">
+                <span class="absolute text-[120px] lg:text-[180px] font-extrabold text-white opacity-5 -z-10 top-1/2 -translate-y-1/2 right-0 lg:-right-10 select-none">01</span>
+
+                <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+                    <div class="order-2 lg:order-1 text-gray-300 space-y-4">
+                        <h2 class="text-5xl lg:text-7xl font-bold text-teal-300">About Me</h2>
+                        <p class="text-lg leading-relaxed">
+                            I am a passionate full-stack developer with over 7 years of experience in building scalable web applications. My journey began with a curiosity for how things work, evolving into a dedicated pursuit of creating intuitive and efficient digital experiences.
+                        </p>
+                        <p class="text-lg leading-relaxed">
+                            I thrive on challenges and continuously explore new technologies to enhance my craft. From conceptualization to deployment, I am committed to delivering high-quality solutions that not only meet but exceed expectations.
+                        </p>
+                    </div>
+                    <div class="order-1 lg:order-2 flex justify-center">
+                        <img src="https://via.placeholder.com/400x400/0f172a/22c1c3?text=Profile+Pic" alt="Your profile picture" class="rounded-3xl shadow-2xl border border-white/20" loading="lazy">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="relative py-20 px-6 lg:py-32 lg:px-12 overflow-hidden">
+            <div class="container mx-auto max-w-5xl">
+                <span class="absolute text-[120px] lg:text-[180px] font-extrabold text-white opacity-5 -z-10 top-1/2 -translate-y-1/2 left-0 lg:-left-10 select-none">02</span>
+
+                <div class="relative z-10 space-y-8">
+                    <h2 class="text-5xl lg:text-7xl font-bold text-teal-300">My Journey</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-gray-300">
+                        <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-6 shadow-xl space-y-3">
+                            <h3 class="text-2xl font-semibold text-white">The Early Days</h3>
+                            <p>Started coding with basic HTML/CSS, then quickly moved to JavaScript to bring interactivity to life. These initial steps cemented my love for web development.</p>
+                        </div>
+                        <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-6 shadow-xl space-y-3">
+                            <h3 class="text-2xl font-semibold text-white">Diving into Frameworks</h3>
+                            <p>Embraced frameworks like Laravel for robust backend logic and React for dynamic front-end experiences. This significantly boosted my development speed and code quality.</p>
+                        </div>
+                        <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-6 shadow-xl space-y-3">
+                            <h3 class="text-2xl font-semibold text-white">Beyond the Web</h3>
+                            <p>Explored other areas like bot creation and API integrations, extending my capabilities beyond traditional web applications and into automation.</p>
+                        </div>
+                        <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-6 shadow-xl space-y-3">
+                            <h3 class="text-2xl font-semibold text-white">Continuous Learning</h3>
+                            <p>The tech landscape is ever-evolving. I dedicate time weekly to learning new tools, best practices, and innovative approaches to stay ahead of the curve.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="skills" class="relative py-20 px-6 lg:py-32 lg:px-12 overflow-hidden min-h-[700px]">
+            <div class="container mx-auto max-w-6xl">
+                <span class="absolute text-[120px] lg:text-[180px] font-extrabold text-white opacity-5 -z-10 top-1/2 -translate-y-1/2 right-0 lg:-right-10 select-none">03</span>
+
+                <h2 class="relative z-10 text-5xl lg:text-7xl font-bold text-teal-300 mb-12">My Skills</h2>
+
+                <div x-data="skillsData()"
+                    x-init="
+                        // Check if prefers-reduced-motion is enabled
+                        const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+                        if (reducedMotionQuery.matches) {
+                            enableMotion = false; // Disable motion effects
+                        }
+
+                        init();
+
+                        // Request DeviceOrientation permission on user gesture (e.g., from Hire Me button)
+                        $watch('showTiltPermission', value => {
+                            if (value && typeof DeviceOrientationEvent !== 'undefined' && DeviceOrientationEvent.requestPermission) {
+                                DeviceOrientationEvent.requestPermission()
+                                    .then(permissionState => {
+                                        if (permissionState === 'granted') {
+                                            console.log('DeviceMotion permission granted.');
+                                            setupMotionListeners();
+                                        } else {
+                                            console.warn('DeviceMotion permission denied.');
+                                            setupMouseListeners(); // Fallback to mouse
+                                        }
+                                        showTiltPermission = false; // Hide permission prompt after action
+                                    })
+                                    .catch(error => {
+                                        console.error('Error requesting DeviceOrientation permission:', error);
+                                        setupMouseListeners(); // Fallback to mouse on error
+                                        showTiltPermission = false;
+                                    });
+                            } else if (!value && !enableMotion) {
+                                setupMouseListeners(); // Setup mouse listeners if no permission needed/granted
+                            } else if (!value && enableMotion && !('DeviceOrientationEvent' in window && DeviceOrientationEvent.requestPermission)) {
+                                // If no permission required (e.g., Android, desktop browser without iOS 13+ requirement)
+                                setupMotionListeners();
+                            }
+                        });
+                        // Initial setup for non-iOS devices or if permission is not needed
+                        if (!showTiltPermission) {
+                            setupMotionListeners();
+                        }
+                    "
+                    @resize.window="placeBalls"
+                    class="relative w-full h-[500px] lg:h-[700px] border border-white/10 bg-white/5 backdrop-blur-md rounded-2xl p-4 lg:p-8 mt-10 shadow-xl overflow-hidden"
+                    tabindex="0" role="region" aria-label="Interactive skills showcase"
+                >
+                    <div x-show="showTiltPermission" class="absolute inset-0 bg-black/70 flex flex-col items-center justify-center z-50 rounded-2xl text-center p-4">
+                        <p class="text-lg mb-4">To enable device tilt for interactive skills, please grant motion permission.</p>
+                        <button @click="showTiltPermission = false" class="bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-6 rounded-full transition shimmer-button">
+                            Enable Tilt
+                        </button>
+                        <button @click="setupMouseListeners(); showTiltPermission = false" class="mt-4 text-gray-400 hover:text-gray-200">
+                            No thanks, use mouse
+                        </button>
+                    </div>
+
+                    <template x-for="(skill, index) in skills" :key="skill.id">
+                        <div class="absolute rounded-full bg-white/10 border border-white/20 shadow-lg flex items-center justify-center cursor-pointer transition-colors duration-200 ease-in-out hover:bg-teal-400/20"
+                            :class="{
+                                'w-10 h-10 text-sm': window.innerWidth < 768,
+                                'w-12 h-12 text-base': window.innerWidth >= 768 && window.innerWidth < 1024,
+                                'w-16 h-16 text-lg': window.innerWidth >= 1024
+                            }"
+                            :style="{
+                                transform: `translate3d(${positions[index] ? positions[index].x + tilt.x * skill.depth : 0}px, ${positions[index] ? positions[index].y + tilt.y * skill.depth : 0}px, 0)`,
+                                zIndex: skill.pct // Higher percentage means higher z-index, appears on top
+                            }"
+                            @click="openSkill(skill)"
+                            tabindex="0"
+                            @keydown.enter="openSkill(skill)"
+                            role="button"
+                            :aria-label="`Skill: ${skill.name}, Proficiency: ${skill.pct}%`"
+                        >
+                            <div class="text-white text-center" x-html="skill.logo"></div>
+                            <span class="absolute bottom-1 right-1 text-xs text-gray-300 font-semibold" x-text="`${skill.pct}%`"></span>
+                        </div>
+                    </template>
+
+                    <div x-show="modalOpen"
+                        x-transition:enter="transition ease-out duration-300"
+                        x-transition:enter-start="opacity-0 scale-90"
+                        x-transition:enter-end="opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-200"
+                        x-transition:leave-start="opacity-100 scale-100"
+                        x-transition:leave-end="opacity-0 scale-90"
+                        class="fixed inset-0 z-[100] bg-black bg-opacity-70 flex items-center justify-center p-4"
+                        role="dialog" aria-modal="true" :aria-labelledby="`skill-title-${selectedSkill?.id}`"
+                        @click.self="closeSkill()"
+                        @keydown.escape="closeSkill()"
+                    >
+                        <div x-trap.noscroll.inert="modalOpen" class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl p-8 shadow-2xl max-w-lg w-full relative">
+                            <button @click="closeSkill()" class="absolute top-4 right-4 text-gray-400 hover:text-white transition" aria-label="Close skill details">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </button>
+                            <h3 :id="`skill-title-${selectedSkill?.id}`" class="text-3xl font-bold text-teal-300 mb-4" x-text="selectedSkill?.name"></h3>
+                            <p class="text-lg text-gray-200 mb-2">Proficiency: <span class="font-semibold" x-text="`${selectedSkill?.pct}%`"></span></p>
+                            <div class="w-full bg-gray-700 rounded-full h-2.5 mb-4">
+                                <div class="bg-teal-500 h-2.5 rounded-full" :style="`width: ${selectedSkill?.pct}%`"></div>
+                            </div>
+                            <p class="text-gray-300">
+                                This is a detailed description for <span x-text="selectedSkill?.name"></span>. It would include information about years of experience, specific projects, and areas of expertise.
+                            </p>
+                            <ul class="list-disc list-inside text-gray-300 mt-4">
+                                <li>Project A: Utilized <span x-text="selectedSkill?.name"></span> for core logic.</li>
+                                <li>Project B: Implemented features with <span x-text="selectedSkill?.name"></span> and other technologies.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects" class="relative py-20 px-6 lg:py-32 lg:px-12 overflow-hidden">
+            <div class="container mx-auto max-w-5xl">
+                <span class="absolute text-[120px] lg:text-[180px] font-extrabold text-white opacity-5 -z-10 top-1/2 -translate-y-1/2 left-0 lg:-left-10 select-none">04</span>
+
+                <h2 class="relative z-10 text-5xl lg:text-7xl font-bold text-teal-300 mb-12">Projects</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-white/6 backdrop-blur-lg border border-white/20 rounded-xl p-6 shadow-xl flex flex-col">
+                        <img src="https://via.placeholder.com/400x200/0f172a/22c1c3?text=Project+1" alt="Project 1 thumbnail" class="rounded-lg mb-4 w-full h-40 object-cover" loading="lazy">
+                        <h3 class="text-2xl font-semibold text-white mb-2">Project Name One</h3>
+                        <p class="text-gray-300 flex-grow mb-4">A brief description of Project One, highlighting key features and technologies used like React and Laravel.</p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="bg-teal-500/20 text-teal-200 text-xs font-medium px-2.5 py-0.5 rounded-full">React</span>
+                            <span class="bg-teal-500/20 text-teal-200 text-xs font-medium px-2.5 py-0.5 rounded-full">Laravel</span>
+                            <span class="bg-teal-500/20 text-teal-200 text-xs font-medium px-2.5 py-0.5 rounded-full">Tailwind CSS</span>
+                        </div>
+                        <a href="#" class="inline-flex items-center text-teal-300 hover:text-teal-400 font-semibold transition">
+                            View Project
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                        </a>
+                    </div>
+
+                    <div class="bg-white/6 backdrop-blur-lg border border-white/20 rounded-xl p-6 shadow-xl flex flex-col">
+                        <img src="https://via.placeholder.com/400x200/0f172a/22c1c3?text=Project+2" alt="Project 2 thumbnail" class="rounded-lg mb-4 w-full h-40 object-cover" loading="lazy">
+                        <h3 class="text-2xl font-semibold text-white mb-2">Project Name Two</h3>
+                        <p class="text-gray-300 flex-grow mb-4">Description of Project Two, focusing on backend efficiency and API development using Python and Flask.</p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="bg-teal-500/20 text-teal-200 text-xs font-medium px-2.5 py-0.5 rounded-full">Python</span>
+                            <span class="bg-teal-500/20 text-teal-200 text-xs font-medium px-2.5 py-0.5 rounded-full">Flask</span>
+                            <span class="bg-teal-500/20 text-teal-200 text-xs font-medium px-2.5 py-0.5 rounded-full">PostgreSQL</span>
+                        </div>
+                        <a href="#" class="inline-flex items-center text-teal-300 hover:text-teal-400 font-semibold transition">
+                            View Project
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                        </a>
+                    </div>
+
+                    <div class="bg-white/6 backdrop-blur-lg border border-white/20 rounded-xl p-6 shadow-xl flex flex-col">
+                        <img src="https://via.placeholder.com/400x200/0f172a/22c1c3?text=Project+3" alt="Project 3 thumbnail" class="rounded-lg mb-4 w-full h-40 object-cover" loading="lazy">
+                        <h3 class="text-2xl font-semibold text-white mb-2">Project Name Three</h3>
+                        <p class="text-gray-300 flex-grow mb-4">Details about Project Three, including bot creation for automation and integration with third-party services.</p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="bg-teal-500/20 text-teal-200 text-xs font-medium px-2.5 py-0.5 rounded-full">Bot Creation</span>
+                            <span class="bg-teal-500/20 text-teal-200 text-xs font-medium px-2.5 py-0.5 rounded-full">Node.js</span>
+                            <span class="bg-teal-500/20 text-teal-200 text-xs font-medium px-2.5 py-0.5 rounded-full">APIs</span>
+                        </div>
+                        <a href="#" class="inline-flex items-center text-teal-300 hover:text-teal-400 font-semibold transition">
+                            View Project
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="relative py-20 px-6 lg:py-32 lg:px-12 overflow-hidden">
+            <div class="container mx-auto max-w-4xl text-center">
+                <span class="absolute text-[120px] lg:text-[180px] font-extrabold text-white opacity-5 -z-10 top-1/2 -translate-y-1/2 right-0 lg:-right-10 select-none">05</span>
+
+                <h2 class="relative z-10 text-5xl lg:text-7xl font-bold text-teal-300 mb-8">Get in Touch</h2>
+                <p class="text-lg lg:text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
+                    I'm always open to new opportunities, collaborations, and interesting projects. Feel free to reach out!
+                </p>
+                <div class="flex flex-wrap justify-center gap-6">
+                    <a href="mailto:your.email@domain.com" class="bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-8 rounded-full text-lg transition shimmer-button">
+                        Email Me
+                    </a>
+                    <a href="#" class="border border-white/20 text-white hover:border-teal-300 hover:text-teal-300 font-bold py-3 px-8 rounded-full text-lg transition">
+                        Connect on LinkedIn
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <footer class="bg-white/5 backdrop-blur-md border-t border-white/10 py-10 px-6 lg:px-12 mt-20">
+            <div class="container mx-auto text-center text-gray-400 space-y-4">
+                <p>&copy; 2023 [Your Name]. All rights reserved.</p>
+                <div class="flex justify-center space-x-6">
+                    <a href="#" class="hover:text-teal-300 transition" aria-label="Privacy Policy">Privacy Policy</a>
+                    <a href="#" class="hover:text-teal-300 transition" aria-label="Terms of Service">Terms of Service</a>
+                </div>
+                <p class="text-xs">
+                    Built with <span class="text-red-500">&hearts;</span> using Tailwind CSS and AlpineJS.
+                </p>
+            </div>
+        </footer>
+
+    </div> <script>
+        // AlpineJS data for skills section
+        function skillsData() {
+            return {
+                skills: [],
+                positions: [], // Stores {x, y, radius} for each skill ball
+                tilt: { x: 0, y: 0 },
+                velocity: { x: 0, y: 0 }, // For physics simulation
+                targetTilt: { x: 0, y: 0 },
+                damping: 0.1, // Controls how quickly motion decays
+                stiffness: 0.1, // How quickly it moves towards target
+                enableMotion: true, // Controls if motion/tilt is active
+                activeListener: null, // To manage which event listener is active
+
+                selectedSkill: null,
+                modalOpen: false,
+
+                // --- Initialization ---
+                init() {
+                    // Load skills data from the JSON script tag
+                    const skillDataElement = document.getElementById('skill-data');
+                    if (skillDataElement) {
+                        try {
+                            const data = JSON.parse(skillDataElement.textContent);
+                            this.skills = data.skills.map(s => ({
+                                ...s,
+                                // Add a depth property for parallax effect (e.g., 1 to 3)
+                                depth: Math.random() * 2 + 1
+                            }));
+                        } catch (e) {
+                            console.error('Error parsing skill data:', e);
+                            this.skills = []; // Fallback to empty if parsing fails
+                        }
+                    }
+
+                    // Place balls initially
+                    this.placeBalls();
+                    // Start animation loop
+                    this.animate();
+
+                    // Check for prefers-reduced-motion
+                    const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+                    if (reducedMotionQuery.matches) {
+                        this.enableMotion = false;
+                        console.log('Reduced motion detected. Disabling tilt/parallax effects.');
+                    }
+                },
+
+                // --- Skill Ball Placement Algorithm ---
+                placeBalls() {
+                    const container = this.$el;
+                    const containerRect = container.getBoundingClientRect();
+                    const containerWidth = containerRect.width;
+                    const containerHeight = containerRect.height;
+
+                    this.positions = []; // Reset positions
+
+                    // Determine base ball size for collision detection (using max desktop size for safety)
+                    const baseBallSize = window.innerWidth >= 1024 ? 64 : (window.innerWidth >= 768 ? 48 : 40);
+                    const ballRadius = baseBallSize / 2;
+
+                    this.skills.forEach((skill, index) => {
+                        let placed = false;
+                        let attempts = 0;
+                        const maxAttempts = 200; // Max attempts to place a single ball
+
+                        while (!placed && attempts < maxAttempts) {
+                            // Generate random coordinates within container bounds
+                            // Ensure ball is fully inside container
+                            const x = Math.random() * (containerWidth - baseBallSize) + ballRadius;
+                            const y = Math.random() * (containerHeight - baseBallSize) + ballRadius;
+
+                            let overlap = false;
+                            // Check for overlap with already placed balls
+                            for (let i = 0; i < this.positions.length; i++) {
+                                const existing = this.positions[i];
+                                const distance = Math.sqrt(
+                                    Math.pow(x - existing.x, 2) +
+                                    Math.pow(y - existing.y, 2)
+                                );
+                                // If distance is less than sum of radii, there's an overlap
+                                if (distance < (ballRadius + existing.radius) * 1.5) { // Use 1.5 for some padding
+                                    overlap = true;
+                                    break;
+                                }
+                            }
+
+                            if (!overlap) {
+                                this.positions.push({ x: x - ballRadius, y: y - ballRadius, radius: ballRadius }); // Store top-left for translate
+                                placed = true;
+                            }
+                            attempts++;
+                        }
+
+                        // Fallback to grid placement if random placement fails too many times
+                        if (!placed) {
+                            console.warn(`Failed to place skill '${skill.name}' randomly. Falling back to grid.`);
+                            const gridX = (index % Math.floor(containerWidth / baseBallSize)) * baseBallSize + ballRadius;
+                            const gridY = Math.floor(index / Math.floor(containerWidth / baseBallSize)) * baseBallSize + ballRadius;
+                            this.positions.push({ x: gridX - ballRadius, y: gridY - ballRadius, radius: ballRadius });
+                        }
+                    });
+                },
+
+                // --- Motion/Tilt Handlers ---
+                setupMotionListeners() {
+                    if (!this.enableMotion) {
+                        this.removeListeners();
+                        return;
+                    }
+                    this.removeListeners(); // Clean up existing listeners
+
+                    if (typeof DeviceOrientationEvent !== 'undefined' && 'ondeviceorientation' in window) {
+                        this.activeListener = 'deviceorientation';
+                        window.addEventListener('deviceorientation', this.onDeviceMove.bind(this));
+                        console.log('Using DeviceOrientationEvent for motion.');
+                    } else {
+                        this.setupMouseListeners(); // Fallback if deviceorientation is not available
+                    }
+                },
+
+                setupMouseListeners() {
+                    if (!this.enableMotion) {
+                        this.removeListeners();
+                        return;
+                    }
+                    this.removeListeners(); // Clean up existing listeners
+                    this.activeListener = 'mousemove';
+                    window.addEventListener('mousemove', this.onMouseMove.bind(this));
+                    console.log('Using mousemove for parallax effect.');
+                },
+
+                removeListeners() {
+                    if (this.activeListener === 'deviceorientation') {
+                        window.removeEventListener('deviceorientation', this.onDeviceMove.bind(this));
+                    } else if (this.activeListener === 'mousemove') {
+                        window.removeEventListener('mousemove', this.onMouseMove.bind(this));
+                    }
+                    this.activeListener = null;
+                },
+
+                onDeviceMove(event) {
+                    if (!this.enableMotion) return;
+
+                    // event.beta: front-to-back tilt (-180 to 180, front is positive)
+                    // event.gamma: left-to-right tilt (-90 to 90, right is positive)
+                    // We want horizontal movement from gamma, vertical from beta
+                    // Normalizing and inverting as needed for intuitive parallax
+                    const gamma = event.gamma; // -90 (left) to 90 (right)
+                    const beta = event.beta;   // -180 (upside down) to 180 (upside down), 0 (flat)
+
+                    // Adjust sensitivity and range
+                    const sensitivity = 0.5; // How much the balls move per degree of tilt
+                    const maxMovement = 20; // Max pixels movement
+
+                    // Map gamma to x (left/right motion)
+                    let targetX = -gamma * sensitivity; // Invert for natural parallax (tilt right, objects move left relative to screen)
+                    targetX = Math.max(-maxMovement, Math.min(maxMovement, targetX));
+
+                    // Map beta to y (up/down motion)
+                    // Beta can be tricky; let's simplify for common use cases (phone upright)
+                    let targetY = -beta * sensitivity;
+                    // Clamp beta to a reasonable range for tilt
+                    if (beta > 90) beta = 90; // Prevent upside down weirdness
+                    if (beta < -90) beta = -90;
+                    targetY = Math.max(-maxMovement, Math.min(maxMovement, targetY));
+
+                    this.targetTilt.x = targetX;
+                    this.targetTilt.y = targetY;
+                },
+
+                onMouseMove(event) {
+                    if (!this.enableMotion) return;
+
+                    const container = this.$el;
+                    const containerRect = container.getBoundingClientRect();
+
+                    // Calculate mouse position relative to the center of the skills container
+                    const centerX = containerRect.left + containerRect.width / 2;
+                    const centerY = containerRect.top + containerRect.height / 2;
+
+                    const mouseX = event.clientX - centerX;
+                    const mouseY = event.clientY - centerY;
+
+                    // Normalize mouse position to a range (e.g., -1 to 1) and scale for effect
+                    const strength = 0.05; // Adjust for desired parallax intensity
+                    const maxMovement = 20; // Max pixels movement
+
+                    let targetX = -mouseX * strength; // Invert for parallax effect
+                    let targetY = -mouseY * strength;
+
+                    targetX = Math.max(-maxMovement, Math.min(maxMovement, targetX));
+                    targetY = Math.max(-maxMovement, Math.min(maxMovement, targetY));
+
+                    this.targetTilt.x = targetX;
+                    this.targetTilt.y = targetY;
+                },
+
+                // --- Animation Loop ---
+                animate() {
+                    // Apply physics to smoothly move current tilt towards target tilt
+                    this.velocity.x += (this.targetTilt.x - this.tilt.x) * this.stiffness;
+                    this.velocity.y += (this.targetTilt.y - this.tilt.y) * this.stiffness;
+
+                    this.velocity.x *= (1 - this.damping);
+                    this.velocity.y *= (1 - this.damping);
+
+                    this.tilt.x += this.velocity.x;
+                    this.tilt.y += this.velocity.y;
+
+                    requestAnimationFrame(this.animate.bind(this));
+                },
+
+                // --- Modal Handlers ---
+                openSkill(skill) {
+                    this.selectedSkill = skill;
+                    this.modalOpen = true;
+                    // Focus on the modal for accessibility
+                    this.$nextTick(() => {
+                        const modal = this.$el.querySelector('[role="dialog"]');
+                        if (modal) {
+                            modal.focus();
+                        }
+                    });
+                },
+
+                closeSkill() {
+                    this.modalOpen = false;
+                    this.selectedSkill = null;
+                }
+            };
+        }
+    </script>
+</body>
 </html>

@@ -1,8 +1,6 @@
 <?php
 /**
    TODO: notify missions team when prayer request is sent
-   TODO: work on the prayer request admin for missions team
-   TODO: create the prayer request_teams table with fields for id, team_id, chapter_id, created_at, updated_at
  */
 use Livewire\Volt\Component;
 use Livewire\Attributes\{Layout, Url};

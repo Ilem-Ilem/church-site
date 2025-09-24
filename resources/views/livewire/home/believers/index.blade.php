@@ -1,9 +1,7 @@
 <?php
-// TODO: create the sign up for believers class
 //TODO: create the notification to the team lead for the registration of  new user
 // TODO:create the track my progress page
 
-//TODO: create a student monitor dashboard for classes to allow student monitor their classes, nad give room to allow student request cert and request admin to allow them add a class like completed
 //TODO: allow student to lay complain and take permission if they will be absent and the reason
 //TODO: allow the team lead to accept the permission when needed or reject
 use Livewire\Volt\Component;
@@ -28,7 +26,7 @@ new #[Layout('components.layouts.layout')] class extends Component {
                 $this->isRegistered = true;
             }
             $this->student = $student;
-        }
+        } 
     }
 }; ?>
 

@@ -17,6 +17,143 @@
     <script src="assets/vendor/bootstrap/js/bootstrap.bundle.js"></script>
     <script src="assets/vendor/aos/aos.js"></script>
 </head>
+<style>
+    /* Custom styling for the volume slider track and thumb */
+    input[type="range"]::-webkit-slider-runnable-track {
+        background: #4b5563;
+        /* Gray-600 equivalent */
+        border-radius: 9999px;
+        height: 4px;
+    }
+
+    input[type="range"]::-moz-range-track {
+        background: #4b5563;
+        border-radius: 9999px;
+        height: 4px;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        height: 14px;
+        width: 14px;
+        background-color: #dc3545;
+        /* Bootstrap's danger color */
+        border-radius: 50%;
+        margin-top: -5px;
+        box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+        height: 14px;
+        width: 14px;
+        background-color: #dc3545;
+        border-radius: 50%;
+        border: none;
+    }
+
+    /* Custom styles for the seek bar track and thumb */
+    #seek-bar {
+        -webkit-appearance: none;
+        appearance: none;
+        background: transparent;
+        cursor: pointer;
+        width: 100%;
+    }
+
+    #seek-bar::-webkit-slider-runnable-track {
+        background: #e5e7eb;
+        /* A lighter gray for the track */
+        border-radius: 9999px;
+        height: 6px;
+        /* Slightly thicker track for easier interaction */
+    }
+
+    #seek-bar::-moz-range-track {
+        background: #e5e7eb;
+        border-radius: 9999px;
+        height: 6px;
+    }
+
+    #seek-bar::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        height: 14px;
+        width: 14px;
+        background-color: #dc3545;
+        border-radius: 50%;
+        margin-top: -4px;
+        box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+    }
+
+    #seek-bar::-moz-range-thumb {
+        height: 14px;
+        width: 14px;
+        background-color: #dc3545;
+        border-radius: 50%;
+        border: none;
+    }
+
+    /* Add a transition for the player bar to make it slide in smoothly */
+    .audio-player-bar.hidden {
+        transform: translateY(100%);
+        opacity: 0;
+        transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+    }
+
+    .audio-player-bar.visible {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    /* Style for the overlay play button */
+    .play-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .sermon-card:hover .play-overlay {
+        opacity: 1;
+    }
+
+    /* Custom hover effect for buttons, replacing Tailwind's hover-text-white */
+    .btn-hover-white:hover {
+        color: #fff !important;
+    }
+    .yellow{
+        border: 2px solid yellow;
+    }
+    .green{
+        width: 30%;
+        border: 2px solid green;
+    }
+    .blue{
+        width: 40%;
+        border: 2px solid blue;
+
+    }
+    .white{
+        width: 40%;
+        border: 2px solid white;
+    }
+    .red{
+        border: 2px solid red;
+    }
+    @media (max-width:600px) {
+        body{
+            border: 2px solid red;
+        }
+    }
+</style>
 
 <body class="d-flex flex-column h-100">
     <main class="flex-shrink-0">
@@ -315,7 +452,10 @@
             <div class="row align-items-stretch">
 
                 <!-- Card 1 -->
-                <div class="col-lg-4 col-md-6 col-sm-12 mb-4 ">
+                <div class="sermon-card col-lg-4 col-md-6 col-sm-12 mb-4 cursor-pointer"
+                    data-title="Don't Escape, Engage" data-artist="Dr. Flourish Peters"
+                    data-audio-src="Samantha-Ebert-Flowers-Intimate-Version-(CeeNaija.com).mp3"
+                    data-image-src="Img/1720935393094.jpg">
                     <div class="card card-container">
                         <div class="image-wrapper">
                             <img src="/Img/1720935393094.jpg" class="card-img" alt="Card Image 1">
@@ -343,7 +483,10 @@
                 </div>
 
                 <!-- Card 2 -->
-                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                <div class="sermon-card col-lg-4 col-md-6 col-sm-12 mb-4 cursor-pointer"
+                    data-title="Don't Escape, Engage" data-artist="Dr. Flourish Peters"
+                    data-audio-src="Samantha-Ebert-Flowers-Intimate-Version-(CeeNaija.com).mp3"
+                    data-image-src="Img/IMG-20250130-WA0014.jpg">
                     <div class="card card-container">
                         <div class="image-wrapper">
                             <img src="/Img/IMG-20250130-WA0014.jpg" class="card-img" alt="Card Image 2">
@@ -372,37 +515,11 @@
                     </div>
                 </div>
 
-                <!-- Card 3 -->
-                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
-                    <div class="card card-container">
-                        <div class="image-wrapper">
-                            <img src="/Img/IMG-20250101-WA0021.jpg" class="card-img" alt="Card Image 3">
-                            <div class="play-button-overlay">
-                                <i class="fas fa-play"></i>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <h5 class="card-title">One Man 2</h5>
-                            <p class="card-text">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Unde delectus
-                                quasi dolorum recusandae, numquam repudiandae nesciunt dignissimos doloremque similique
-                                maxime!</p>
-                            <div class="card-details">
-                                <div class="detail-item">
-                                    <i class="fas fa-user-circle"></i> <span>Pastor Lanre Olubaji</span>
-                                </div>
-                                <div class="detail-item">
-                                    <i class="fas fa-clock"></i> <span>189:41</span>
-                                </div>
-                                <div class="detail-item">
-                                    <i class="fas fa-calendar-alt"></i> <span>Jun 22, 2025</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 4 -->
-                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                <!-- Card 3-->
+                <div class="sermon-card col-lg-4 col-md-6 col-sm-12 mb-4 cursor-pointer"
+                    data-title="Don't Escape, Engage" data-artist="Dr. Flourish Peters"
+                    data-audio-src="Samantha-Ebert-Flowers-Intimate-Version-(CeeNaija.com).mp3"
+                    data-image-src="Img/1720965759253.jpg">
                     <div class="card card-container">
                         <div class="image-wrapper">
                             <img src="/Img/1720965759253.jpg" class="card-img" alt="Card Image 4">
@@ -429,8 +546,11 @@
                     </div>
                 </div>
 
-                <!-- Card 5 -->
-                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                <!-- Card 4 -->
+                <div class="sermon-card col-lg-4 col-md-6 col-sm-12 mb-4 cursor-pointer"
+                    data-title="Don't Escape, Engage" data-artist="Dr. Flourish Peters"
+                    data-audio-src="Samantha-Ebert-Flowers-Intimate-Version-(CeeNaija.com).mp3"
+                    data-image-src="Img/IMG-20250130-WA0038.jpg">
                     <div class="card card-container">
                         <div class="image-wrapper">
                             <img src="/Img/IMG-20250130-WA0038.jpg" class="card-img" alt="Card Image 5">
@@ -457,8 +577,11 @@
                     </div>
                 </div>
 
-                <!-- Card 6 -->
-                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                <!-- Card 5 -->
+                <div class="sermon-card col-lg-4 col-md-6 col-sm-12 mb-4 cursor-pointer"
+                    data-title="Don't Escape, Engage" data-artist="Dr. Flourish Peters"
+                    data-audio-src="Samantha-Ebert-Flowers-Intimate-Version-(CeeNaija.com).mp3"
+                    data-image-src="Img/IMG-20250130-WA0023.jpg">
                     <div class="card card-container">
                         <div class="image-wrapper">
                             <img src="/Img/IMG-20250130-WA0023.jpg" class="card-img" alt="Card Image 6">
@@ -485,8 +608,11 @@
                     </div>
                 </div>
 
-                <!-- Card 7 -->
-                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                <!-- Card 6 -->
+                <div class="sermon-card col-lg-4 col-md-6 col-sm-12 mb-4 cursor-pointer"
+                    data-title="Don't Escape, Engage" data-artist="Dr. Flourish Peters"
+                    data-audio-src="Samantha-Ebert-Flowers-Intimate-Version-(CeeNaija.com).mp3"
+                    data-image-src="Img/1720935361532.jpg">
                     <div class="card card-container">
                         <div class="image-wrapper">
                             <img src="/Img/1720935361532.jpg" class="card-img" alt="Card Image 7">
@@ -513,8 +639,11 @@
                     </div>
                 </div>
 
-                <!-- Card 8 -->
-                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                <!-- Card 7 -->
+                <div class="sermon-card col-lg-4 col-md-6 col-sm-12 mb-4 cursor-pointer"
+                    data-title="Don't Escape, Engage" data-artist="Dr. Flourish Peters"
+                    data-audio-src="Samantha-Ebert-Flowers-Intimate-Version-(CeeNaija.com).mp3"
+                    data-image-src="Img/1731874997821.jpg">
                     <div class="card card-container">
                         <div class="image-wrapper">
                             <img src="/Img/1731874997821.jpg" class="card-img" alt="Card Image 8">
@@ -627,6 +756,222 @@
 
         </footer>
     </main>
+
+    <!-- audio -->
+    <div id="audio-player-bar"
+        class="audio-player-bar fixed-bottom hidden d-flex flex-column align-items-center justify-content-between bg-dark text-white py-4 px-4 px-lg-5 rounded-top-3 shadow-lg">
+        <div class="yellow d-flex align-items-center justify-content-between w-100">
+
+            <div class="green d-flex align-items-center flex-grow-0">
+                <div id="player-album-art" class="bg-secondary rounded me-3 d-none d-sm-block"
+                    style="width: 3rem; height: 3rem;">
+                    <!-- The image source will now be updated by the JavaScript -->
+                    <img src="" class="w-100 h-100 object-fit-cover rounded" alt="Album Art">
+                </div>
+                <div class="d-flex flex-column text-truncate">
+                    <span id="player-title" class="fw-bold small text-truncate">Select a Sermon</span>
+                    <span id="player-artist" class="text-secondary small mt-1 text-truncate">--</span>
+                </div>
+            </div>
+
+            <div class="blue d-flex justify-content-center align-items-center flex-grow-1">
+                <button id="prev-btn" class="btn text-secondary btn-hover-white me-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                        <path fill="none" stroke="#d6d6d6" stroke-linecap="round" stroke-linejoin="round"
+                            stroke-width="2" d="M22 5v14l-9-7ZM11 5v14l-9-7Z" />
+                    </svg>
+                </button>
+                <button id="play-pause-btn" class="btn text-secondary btn-hover-white">
+                    <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                        <path fill="#d6d6d6" d="M18.25 12L8.5 17.629V6.37z" />
+                    </svg>
+                    <svg id="pause-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                        <path fill="#d6d6d6"
+                            d="M13.5 18V6H18v12zM6 18V6h4.5v12zm8.5-1H17V7h-2.5zM7 17h2.5V7H7zM7 7v10zm7.5 0v10z" />
+                    </svg>
+                </button>
+                <button id="next-btn" class="btn text-secondary btn-hover-white ms-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                        <path fill="#d6d6d6"
+                            d="m20.51 11.45l-7.47-7a.76.76 0 0 0-.81-.14c-.27.12-.45.39-.45.69v6.27L4.51 4.45a.76.76 0 0 0-.81-.14c-.27.12-.45.39-.45.69v14c0 .3.18.57.45.69q.15.06.3.06c.19 0 .37-.07.51-.2l7.27-6.82V19c0 .3.18.57.45.69q.15.06.3.06c.19 0 .37-.07.51-.2l7.47-7c.15-.14.24-.34.24-.55s-.09-.41-.24-.55M4.75 17.27V6.73L10.37 12zm8.53 0V6.73L18.9 12z" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="white d-flex align-items-center justify-content-end flex-grow-0">
+                <div class="d-flex align-items-center">
+                    <svg class="text-secondary me-2" style="width: 1.25rem; height: 1.25rem;" fill="currentColor"
+                        viewBox="0 0 20 20">
+                        <path
+                            d="M7 11.5c.34-.111.666-.239.99-.38l.01-.005a1.002 1.002 0 011.01-1.625l4.636-2.583A1 1 0 0115 7.5v5a1 1 0 01-1.555.853l-4.637-2.583a1.001 1.001 0 01-1.01-1.625l-.01-.005zM15 16a1 1 0 00.555.853l3.618 2A1 1 0 0020 18.5V2.5a1 1 0 00-1.827-.577l-3.618 2a1 1 0 00-.555.853v11.724z" />
+                    </svg>
+                    <input id="volume-slider" type="range" min="0" max="1" step="0.01" value="1" class="form-range">
+                </div>
+                <button id="close-player-btn" class="btn text-secondary btn-hover-white ms-3">
+                    <svg style="width: 1.5rem; height: 1.5rem;" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="red d-flex align-items-center w-100 mt-2">
+            <span id="current-time" class="small text-secondary text-end me-2" style="width: 3rem;">0:00</span>
+            <input id="seek-bar" type="range" min="0" max="100" value="0" step="0.1" class="form-range">
+            <span id="duration" class="small text-secondary ms-2" style="width: 3rem;">--:--</span>
+        </div>
+    </div>
+
+    <audio id="player-audio" src=""></audio>
+
+    <script>
+        // Get all relevant DOM elements
+        const audioPlayer = document.getElementById('player-audio');
+        const playPauseBtn = document.getElementById('play-pause-btn');
+        const playIcon = document.getElementById('play-icon');
+        const pauseIcon = document.getElementById('pause-icon');
+        const playerTitle = document.getElementById('player-title');
+        const playerArtist = document.getElementById('player-artist');
+        const playerAlbumArt = document.getElementById('player-album-art').querySelector('img');
+        const volumeSlider = document.getElementById('volume-slider');
+        const sermonCards = document.querySelectorAll('.sermon-card');
+        const currentTimeEl = document.getElementById('current-time');
+        const durationEl = document.getElementById('duration');
+        const audioPlayerBar = document.getElementById('audio-player-bar');
+        const seekBar = document.getElementById('seek-bar');
+        const closePlayerBtn = document.getElementById('close-player-btn');
+
+        let currentSermonIndex = -1;
+
+        // Function to format time in minutes:seconds
+        function formatTime(seconds) {
+            const min = Math.floor(seconds / 60);
+            const sec = Math.floor(seconds % 60);
+            return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+        }
+
+        // Play/Pause button functionality
+        playPauseBtn.addEventListener('click', () => {
+            if (audioPlayer.paused) {
+                if (audioPlayer.src) {
+                    audioPlayer.play();
+                }
+            } else {
+                audioPlayer.pause();
+            }
+        });
+
+        // Update icons on play/pause events
+        audioPlayer.addEventListener('play', () => {
+            playIcon.classList.add('d-none');
+            pauseIcon.classList.remove('d-none');
+        });
+
+        audioPlayer.addEventListener('pause', () => {
+            playIcon.classList.remove('d-none');
+            pauseIcon.classList.add('d-none');
+        });
+
+        // Update the current time display and seek bar as the audio plays
+        audioPlayer.addEventListener('timeupdate', () => {
+            currentTimeEl.textContent = formatTime(audioPlayer.currentTime);
+            // Only update the seek bar if the user isn't actively dragging it
+            if (!isSeeking) {
+                const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+                seekBar.value = progress;
+            }
+        });
+
+        // Update the total duration when the audio loads metadata
+        audioPlayer.addEventListener('loadedmetadata', () => {
+            durationEl.textContent = formatTime(audioPlayer.duration);
+            seekBar.max = audioPlayer.duration; // Set the max value of the seek bar to the duration
+        });
+
+        // Add click event listeners to each sermon card
+        sermonCards.forEach((card, index) => {
+            card.addEventListener('click', () => {
+                const title = card.dataset.title;
+                const artist = card.dataset.artist;
+                const audioSrc = card.dataset.audioSrc;
+                // Get the image source from the data attribute. Corrected from 'image-src' to 'imageSrc'
+                const imageSrc = card.dataset.imageSrc;
+
+                console.log('Sermon card clicked! Showing audio bar.');
+                // Show the audio player bar when a card is clicked
+                audioPlayerBar.classList.remove('hidden');
+                audioPlayerBar.classList.add('visible');
+
+                // Update the player bar with the new sermon's info
+                playerTitle.textContent = title;
+                playerArtist.textContent = artist;
+
+                // Update the audio source and play
+                audioPlayer.src = audioSrc;
+                audioPlayer.play();
+
+                // Update the album art with the new image source
+                playerAlbumArt.src = imageSrc;
+
+                currentSermonIndex = index;
+            });
+        });
+
+        // Next button functionality
+        document.getElementById('next-btn').addEventListener('click', () => {
+            if (currentSermonIndex !== -1 && currentSermonIndex < sermonCards.length - 1) {
+                sermonCards[currentSermonIndex + 1].click();
+            } else if (currentSermonIndex === sermonCards.length - 1) {
+                // Loop back to the first sermon
+                sermonCards[0].click();
+            }
+        });
+
+        // Previous button functionality
+        document.getElementById('prev-btn').addEventListener('click', () => {
+            if (currentSermonIndex > 0) {
+                sermonCards[currentSermonIndex - 1].click();
+            } else if (currentSermonIndex === 0) {
+                // Loop back to the last sermon
+                sermonCards[sermonCards.length - 1].click();
+            }
+        });
+
+        // Volume slider functionality
+        volumeSlider.addEventListener('input', (event) => {
+            audioPlayer.volume = event.target.value;
+        });
+
+        // Close button functionality
+        closePlayerBtn.addEventListener('click', () => {
+            console.log('Close button clicked!');
+            audioPlayer.pause();
+            // Explicitly remove 'visible' and add 'hidden' to ensure a smooth transition and reliable closing
+            audioPlayerBar.classList.remove('visible');
+            audioPlayerBar.classList.add('hidden');
+        });
+
+        // Flag to prevent the timeupdate listener from interfering with user dragging
+        let isSeeking = false;
+
+        // Seek bar functionality
+        seekBar.addEventListener('mousedown', () => {
+            isSeeking = true;
+        });
+
+        seekBar.addEventListener('mouseup', () => {
+            isSeeking = false;
+        });
+
+        seekBar.addEventListener('input', () => {
+            // Update the current time of the audio player based on the seek bar value
+            audioPlayer.currentTime = seekBar.value;
+        });
+    </script>
+
+
     <script src="js/scripts.js"></script>
 </body>
 

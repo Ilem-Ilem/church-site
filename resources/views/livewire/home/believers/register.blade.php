@@ -157,6 +157,7 @@ new #[Layout('components.layouts.layout')] class extends Component {
             'interest' => $this->interest,
             'how_did_you_know_about_us' => $this->howDidYouKnowAboutUs,
             'phone' => $this->number,
+            'academy_id'=>$this->academy->id
         ]);
         $this->reset(['name', 'email', 'number', 'howDidYouKnowAboutUs', 'interest', 'selectedChapter', 'statusMessage', 'statusType', 'academy', 'academyTeam']);
         $this->errorMessages = [];
