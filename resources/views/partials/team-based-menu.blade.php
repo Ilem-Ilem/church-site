@@ -1,19 +1,20 @@
 @php
-    // TODO: Add active routes to this file, show expanded active route
-    $leadersTeam = Auth()->user()->teams->filter(fn($team) => $team->pivot->role_in_team === 'team-lead')->first();
-    $chapterId = \App\Models\Chapter::where('name', '=', request()->get('chapter'))->first()->id;
-    $appointment_teams = \App\Models\AppointmentTeams::where('chapter_id', $chapterId)
-        ->get()
-        ->pluck('team_id')
-        ->toArray();
-    $prayerRequestTeams = \App\Models\PrayerRequestTeam::where('chapter_id', $chapterId)
-        ->get()
-        ->pluck('team_id')
-        ->toArray();
-    $believersAcademyTeam = \App\Models\BelieversAcademyTeams::where('chapter_id', $chapterId)
-        ->get()
-        ->pluck('team_id')
-        ->toArray();
+    $leadersTeam = auth()->user()
+        ->teams
+        ->firstWhere(fn($team) => $team->pivot->role_in_team === 'team-lead');
+
+    $chapterId = \App\Models\Chapter::where('name', request('chapter'))->value('id');
+
+    $relations = [
+        'appointment_teams'   => \App\Models\AppointmentTeams::class,
+        'prayerRequestTeams'  => \App\Models\PrayerRequestTeam::class,
+        'believersAcademyTeam'=> \App\Models\BelieversAcademyTeams::class,
+        'eventTeams'         => \App\Models\EventTeam::class,
+    ];
+
+    foreach ($relations as $var => $model) {
+        $$var = $model::where('chapter_id', $chapterId)->pluck('team_id')->all();
+    }
 @endphp
 
 @if ($leadersTeam && in_array($leadersTeam->id, $appointment_teams))
@@ -57,7 +58,9 @@
         <flux:navlist.item :href="route('admin.settings.believersclass', request()->query())" wire:navigate>
             Believers Class Teams
         </flux:navlist.item>
-
+        <flux:navlist.item :href="route('admin.dashboard.settings.event-teams', request()->query())" wire:navigate>
+            Event Teams
+        </flux:navlist.item>
     </flux:navlist.group>
 @endrole
 @if (auth()->user()->hasRole('admin') || in_array($leadersTeam->id, $believersAcademyTeam))
@@ -85,3 +88,14 @@
     </flux:navlist.item>
 
 </flux:navlist.group>
+@if (auth()->user()->hasRole('admin') || in_array($leadersTeam->id, $eventTeams))
+    <flux:navlist.group expandable :expanded="false" heading="Events">
+        <flux:navlist.item :href="route('admin.dashboard.events.index', request()->query())" wire:navigate>
+            All Events
+        </flux:navlist.item>
+        <flux:navlist.item :href="route('admin.dashboard.events.create', request()->query())" wire:navigate>
+            Create Event
+        </flux:navlist.item>
+
+    </flux:navlist.group>
+@endif

@@ -12,6 +12,8 @@ Route::prefix('admin/dashboard')
         volt::route('settings/appointment', 'admin.dashboard.settings.appointment')->name('admin.dashboard.settings.appointment');
         Volt::route('prayer-request-teams', 'admin.dashboard.settings.request_teams')->name('admin.dashboard.prayer_requests.request_teams');
         Volt::route('believers-academy', 'admin.dashboard.settings.believersclass')->name('admin.settings.believersclass');
+        // Settings - Event Teams
+        Volt::route('/settings/event-teams', 'admin.dashboard.settings.event-teams')->name('admin.dashboard.settings.event-teams');
         // -----------------------------------------------------------------
         //              MEMBERS SECTION
         //-------------------------------------------------------------------
@@ -38,17 +40,37 @@ Route::prefix('admin/dashboard')
         Volt::route('believers_academy', 'admin.dashboard.believers_class.academy')->name('admin.dashboard.believers_class.academy');
         Volt::route('believers_academy/classes', 'admin.dashboard.believers_class.index')->name('admin.dashboard.believers_class.index');
         Volt::route('believers_academy/students', 'admin.dashboard.believers_class.student-monitor')->name('admin.dashboard.believers_class.student-monitor');
-        // Reports Routes
+        // -----------------------------------------------------------------
+        //             REPORT SECTION
+        //-------------------------------------------------------------------
         Volt::route('reports', 'admin.dashboard.reports.index')->name('admin.dashboard.reports.index');
         Volt::route('create-report', 'admin.dashboard.reports.create-report')->name('admin.dashboard.reports.create-report');
         Volt::route('reports/compile-report', 'admin.dashboard.reports.compile-report')->name('admin.dashboard.reports.compile-report');
         Volt::route('reports/report-sent-to-hq', 'admin.dashboard.reports.report-sent-to-hq')->name('admin.dashboard.reports.report-sent-to-hq');
 
+        // -----------------------------------------------------------------
+        //              PARTNERSHIP SECTION
+        //-------------------------------------------------------------------
+        Volt::route('partnerships', 'admin.dashboard.partnership.index')->name('admin.dashboard.partnerships.index');
+
+        //--------------------------------------------------------------------
+        //             EVENTS SECTION
+        //--------------------------------------------------------------------
+        Volt::route('/events', 'admin.dashboard.event.index')->name('admin.dashboard.events.index');
+
+        // Event Create Form
+        Volt::route('/events/create', 'admin.dashboard.event.create-form')->name('admin.dashboard.events.create');
+
+
+        
         // Finance Routes
         Volt::route('finance', 'admin.dashboard.finance.index')->name('admin.dashboard.finance.index');
         Volt::route('finance/payment-details', 'admin.dashboard.finance.payment-details')->name('admin.dashboard.finance.payment-details');
         Volt::route('finance/givings', 'admin.dashboard.finance.givings')->name('admin.dashboard.finance.givings');
         Volt::route('finance/add-givings-details', 'admin.dashboard.finance.add-givings-details')->name('admin.dashboard.finance.add-givings-details');
+
+        // Event Gallery
+        Volt::route('/events/gallery', 'admin.dashboard.event.event-gallery')->name('admin.dashboard.events.gallery');
 
         // Appointments Routes
         Volt::route('appointments', 'admin.dashboard.appointments.index')->name('admin.dashboard.appointments.index');

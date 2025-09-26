@@ -256,7 +256,7 @@ new #[Layout('components.layouts.layout')] class extends Component {
                             </div>
                         </div>
                         <div class="mt-3">
-                            <a href="#" class="btn btn-brand w-100 py-2">Apply Now</a>
+                            <a href="{{ route('home.partnership.index', request()->query()) }}" class="btn btn-brand w-100 py-2">Apply Now</a>
                         </div>
                     </div>
                 </div>

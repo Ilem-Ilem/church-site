@@ -18,9 +18,10 @@ new #[Layout('components.layouts.layout')] class extends Component {
     public function mount()
     {
         $this->user = auth()->user();
-        $this->chapter = Chapter::where('id', $this->user->chapter_id)->first()->name ?? 'No Chapter';
-
+      
         if ($this->user) {
+            $this->chapter = Chapter::where('id', $this->user->chapter_id)->first()->name ?? 'No Chapter';
+
             $student = StudentClasses::where('user_id', $this->user->id)->first();
             if ($student) {
                 $this->isRegistered = true;

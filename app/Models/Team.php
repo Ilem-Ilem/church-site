@@ -45,6 +45,11 @@ class Team extends Model
         return $this->hasMany(BelieversAcademyTeams::class);
     }
 
+    public function eventTeams()
+    {
+        return $this->hasMany(EventTeam::class);
+    }
+
     public function leader(){
         return $this->hasOne(TeamUser::class)->where('role_in_team', 'team_lead');
     }
