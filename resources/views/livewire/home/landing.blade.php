@@ -217,7 +217,8 @@ new #[Layout('components.layouts.layout')] class extends Component {
                             </div>
                         </div>
                         <div class="mt-3">
-                            <button class="btn btn-ghost w-100 py-2" disabled>Coming Soon</button>
+                            <a href="{{ route('events.index') }}" class="btn btn-brand w-100 py-2">Learn More</a>
+                            
                         </div>
                     </div>
                 </div>

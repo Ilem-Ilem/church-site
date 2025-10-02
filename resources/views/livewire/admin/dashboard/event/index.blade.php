@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\{Events, Chapter};
+use App\Models\{Events, Chapter, Accounts, AccountEvent};
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Livewire\Volt\Component;
@@ -42,10 +42,13 @@ new #[Layout('components.layouts.admin')] class extends Component {
     // Management
     public $capacity;
     public $registration_required = false;
+    public $accounts;
+    public array $account_id=[];
 
     public function mount()
     {
         $this->chapterId = Chapter::where('name', '=', $this->chapter)->firstOrFail()->id;
+        $this->accounts = Accounts::where('is_active', 1)->get();
         $this->rows();
     }
 
@@ -129,6 +132,7 @@ new #[Layout('components.layouts.admin')] class extends Component {
             abort(404, 'No Such Event Found');
         }
         $this->event = $event;
+        $this->account_id = AccountEvent::where('event_id', $this->event->id)->first()->pluck('id')->toArray();
         $this->fill([
             'title' => $event->title,
             'slug' => $event->slug,
@@ -190,140 +194,222 @@ new #[Layout('components.layouts.admin')] class extends Component {
         $this->dispatch('Edited');
         $this->dispatch('$closeModal', 'event-edit-modal');
     }
+
+    public function addAccount(){
+        foreach($this->account_id as $account){
+            AccountEvent::create([
+                'account_id'=>$account,
+                'event_id'=>$this->event->id
+            ]);
+        }
+        $this->toast()->success('Event updated', 'Account Added to Event  successfully')->send();
+        $this->dispatch('$refresh');
+        $this->dispatch('Edited');
+    }
 };
 ?>
 <div>
     <x-fancy-header title="Events" subtitle="View and Manage All Events" :breadcrumbs="[['label' => 'Home', 'url' => route('admin.dashboard', request()->query())], ['label' => 'Events']]" />
 
-    <x-modal id="event-edit-modal" title="Edit Event Details" size="2xl">
-        <form wire:submit.prevent="edit" class="space-y-6 bg-zinc-50 dark:bg-zinc-800 p-6 rounded-2xl shadow-sm">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium mb-1">Title</label>
-                    <input wire:model.lazy="title" type="text"
-                        class="w-full px-3 py-2 rounded-lg bg-white dark:bg-zinc-900 border" />
-                    @error('title')
-                        <span class="text-xs text-red-400">{{ $message }}</span>
-                    @enderror
-                </div>
+    <x-modal id="event-edit-modal" title="Event Management" size="2xl">
+        <div x-data="{ openSection: 'edit' }" class="space-y-4">
 
-                <div>
-                    <label class="block text-sm font-medium mb-1">Slug (optional)</label>
-                    <input wire:model.lazy="slug" type="text"
-                        class="w-full px-3 py-2 rounded-lg bg-white dark:bg-zinc-900 border" />
-                    @error('slug')
-                        <span class="text-xs text-red-400">{{ $message }}</span>
-                    @enderror
+            <!-- Accordion: Edit Event -->
+            <div class="border rounded-lg overflow-hidden">
+                <button type="button" @click="openSection = (openSection === 'edit' ? null : 'edit')"
+                    class="w-full flex justify-between items-center px-4 py-3 bg-zinc-100 dark:bg-zinc-700 text-left">
+                    <span class="font-medium text-gray-800 dark:text-gray-200">✏️ Edit Event Details</span>
+                    <p>scroll to bottom to attach an account to the event</p>
+                    <svg :class="{ 'rotate-180': openSection==='edit' }" class="w-5 h-5 transform transition-transform"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div x-show="openSection==='edit'" x-collapse>
+                    <form wire:submit.prevent="edit" class="space-y-6 bg-zinc-50 dark:bg-zinc-800 p-6">
+                        {{-- Title + Slug --}}
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Title</label>
+                                <input wire:model.lazy="title" type="text"
+                                    class="w-full px-3 py-2 rounded-lg bg-white dark:bg-zinc-900 border" />
+                                @error('title')
+                                    <span class="text-xs text-red-400">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Slug (optional)</label>
+                                <input wire:model.lazy="slug" type="text"
+                                    class="w-full px-3 py-2 rounded-lg bg-white dark:bg-zinc-900 border" />
+                                @error('slug')
+                                    <span class="text-xs text-red-400">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- Description --}}
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Description</label>
+                            <textarea wire:model.lazy="description" rows="4"
+                                class="w-full px-3 py-2 rounded-lg bg-white dark:bg-zinc-900 border"></textarea>
+                            @error('description')
+                                <span class="text-xs text-red-400">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        {{-- Start/End --}}
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Start</label>
+                                <input wire:model.lazy="start_at" type="datetime-local"
+                                    class="w-full px-3 py-2 rounded-lg bg-white dark:bg-zinc-900 border" />
+                                @error('start_at')
+                                    <span class="text-xs text-red-400">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">End (optional)</label>
+                                <input wire:model.lazy="end_at" type="datetime-local"
+                                    class="w-full px-3 py-2 rounded-lg bg-white dark:bg-zinc-900 border" />
+                                @error('end_at')
+                                    <span class="text-xs text-red-400">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- Timezone / Location --}}
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Timezone</label>
+                                <input wire:model.lazy="timezone" type="text"
+                                    placeholder="e.g. UTC, America/New_York"
+                                    class="w-full px-3 py-2 rounded-lg bg-white dark:bg-zinc-900 border" />
+                                @error('timezone')
+                                    <span class="text-xs text-red-400">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Location</label>
+                                <input wire:model.lazy="location" type="text"
+                                    class="w-full px-3 py-2 rounded-lg bg-white dark:bg-zinc-900 border" />
+                                @error('location')
+                                    <span class="text-xs text-red-400">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- Checkboxes --}}
+                        <div class="flex items-center gap-4">
+                            <label class="inline-flex items-center">
+                                <input wire:model="is_online" type="checkbox" class="mr-2" />
+                                <span>Is online</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input wire:model="registration_required" type="checkbox" class="mr-2" />
+                                <span>Registration required</span>
+                            </label>
+                        </div>
+
+                        {{-- Livestream URL --}}
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Livestream URL</label>
+                            <input wire:model.lazy="livestream_url" type="url"
+                                class="w-full px-3 py-2 rounded-lg bg-white dark:bg-zinc-900 border" />
+                            @error('livestream_url')
+                                <span class="text-xs text-red-400">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        {{-- Banner --}}
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Banner (image)</label>
+                            <input wire:model="banner" type="file" accept="image/*" />
+                            @error('banner')
+                                <span class="text-xs text-red-400">{{ $message }}</span>
+                            @enderror
+
+                            <div class="mt-3">
+                                <template x-if="$wire.banner">
+                                    <img :src="$wire.banner ? URL.createObjectURL($wire.banner) : ''"
+                                        class="max-h-40 rounded-md" />
+                                </template>
+                            </div>
+                        </div>
+
+                        {{-- Status / Capacity / Submit --}}
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Status</label>
+                                <select wire:model="status"
+                                    class="w-full px-3 py-2 rounded-lg bg-white dark:bg-zinc-900 border">
+                                    <option value="draft">Draft</option>
+                                    <option value="published">Published</option>
+                                    <option value="cancelled">Cancelled</option>
+                                    <option value="archived">Archived</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Capacity</label>
+                                <input wire:model.lazy="capacity" type="number" min="1"
+                                    class="w-full px-3 py-2 rounded-lg bg-white dark:bg-zinc-900 border" />
+                            </div>
+
+                            <div class="text-right">
+                                <button type="submit"
+                                    class="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white">Save
+                                    Changes</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
 
-            <div>
-                <label class="block text-sm font-medium mb-1">Description</label>
-                <textarea wire:model.lazy="description" rows="4"
-                    class="w-full px-3 py-2 rounded-lg bg-white dark:bg-zinc-900 border"></textarea>
-                @error('description')
-                    <span class="text-xs text-red-400">{{ $message }}</span>
-                @enderror
-            </div>
+            <!-- Accordion: Add Account -->
+            <div class="border rounded-lg overflow-hidden">
+                <button type="button" @click="openSection = (openSection === 'account' ? null : 'account')"
+                    class="w-full flex justify-between items-center px-4 py-3 bg-zinc-100 dark:bg-zinc-700 text-left">
+                    <span class="font-medium text-gray-800 dark:text-gray-200">➕ Add Account</span>
+                    <svg :class="{ 'rotate-180': openSection==='account' }"
+                        class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div x-show="openSection==='account'" x-collapse>
+                    <form wire:submit.prevent="addAccount" class="space-y-6 bg-zinc-50 dark:bg-zinc-800 p-6">
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium mb-1">Start</label>
-                    <input wire:model.lazy="start_at" type="datetime-local"
-                        class="w-full px-3 py-2 rounded-lg bg-white dark:bg-zinc-900 border" />
-                    @error('start_at')
-                        <span class="text-xs text-red-400">{{ $message }}</span>
-                    @enderror
-                </div>
-                <div>
-                    <label class="block text-sm font-medium mb-1">End (optional)</label>
-                    <input wire:model.lazy="end_at" type="datetime-local"
-                        class="w-full px-3 py-2 rounded-lg bg-white dark:bg-zinc-900 border" />
-                    @error('end_at')
-                        <span class="text-xs text-red-400">{{ $message }}</span>
-                    @enderror
-                </div>
-            </div>
+                        <!-- Select Existing Account -->
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Select Existing Account</label>
+                            <x-select.styled wire:model="account_id" multiple searchable :options="$accounts
+                                ->map(
+                                    fn($acc) => [
+                                        'label' => $acc->account_name . ' (' . $acc->account_number . ')',
+                                        'value' => $acc->id,
+                                    ],
+                                )
+                                ->toArray()" />
+                            @error('account_id')
+                                <span class="text-xs text-red-400">{{ $message }}</span>
+                            @enderror
+                        </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium mb-1">Timezone</label>
-                    <input wire:model.lazy="timezone" type="text" placeholder="e.g. UTC, America/New_York"
-                        class="w-full px-3 py-2 rounded-lg bg-white dark:bg-zinc-900 border" />
-                    @error('timezone')
-                        <span class="text-xs text-red-400">{{ $message }}</span>
-                    @enderror
-                </div>
 
-                <div>
-                    <label class="block text-sm font-medium mb-1">Location</label>
-                    <input wire:model.lazy="location" type="text"
-                        class="w-full px-3 py-2 rounded-lg bg-white dark:bg-zinc-900 border" />
-                    @error('location')
-                        <span class="text-xs text-red-400">{{ $message }}</span>
-                    @enderror
+                        <!-- Submit -->
+                        <div class="text-right">
+                            <button type="submit"
+                                class="px-4 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white">
+                                Add Account
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
 
-            <div class="flex items-center gap-4">
-                <label class="inline-flex items-center">
-                    <input wire:model="is_online" type="checkbox" class="mr-2" />
-                    <span>Is online</span>
-                </label>
-
-                <label class="inline-flex items-center">
-                    <input wire:model="registration_required" type="checkbox" class="mr-2" />
-                    <span>Registration required</span>
-                </label>
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium mb-1">Livestream URL</label>
-                <input wire:model.lazy="livestream_url" type="url"
-                    class="w-full px-3 py-2 rounded-lg bg-white dark:bg-zinc-900 border" />
-                @error('livestream_url')
-                    <span class="text-xs text-red-400">{{ $message }}</span>
-                @enderror
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium mb-1">Banner (image)</label>
-                <input wire:model="banner" type="file" accept="image/*" />
-                @error('banner')
-                    <span class="text-xs text-red-400">{{ $message }}</span>
-                @enderror
-
-                <div class="mt-3">
-                    <template x-if="$wire.banner">
-                        <img :src="$wire.banner ? URL.createObjectURL($wire.banner) : ''" class="max-h-40 rounded-md" />
-                    </template>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                <div>
-                    <label class="block text-sm font-medium mb-1">Status</label>
-                    <select wire:model="status" class="w-full px-3 py-2 rounded-lg bg-white dark:bg-zinc-900 border">
-                        <option value="draft">Draft</option>
-                        <option value="published">Published</option>
-                        <option value="cancelled">Cancelled</option>
-                        <option value="archived">Archived</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium mb-1">Capacity</label>
-                    <input wire:model.lazy="capacity" type="number" min="1"
-                        class="w-full px-3 py-2 rounded-lg bg-white dark:bg-zinc-900 border" />
-                </div>
-
-                <div class="text-right">
-                    <button type="submit"
-                        class="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white">Edit</button>
-                </div>
-            </div>
-        </form>
+        </div>
     </x-modal>
+
 
     <x-card class="relative dark:bg-dark-800">
         <x-table :$headers :$rows :filter="['quantity' => 'quantity', 'search' => 'search']" :quantity="[5, 15, 50, 100, 250]" paginate persistent selectable
@@ -359,11 +445,11 @@ new #[Layout('components.layouts.admin')] class extends Component {
             @endinteract
         </x-table>
     </x-card>
-    @scripts
+    @script
         <script>
             Livewire.on('Edited', () => {
-                $closeModal('event-edit-modal');
+                $modalClose('event-edit-modal');
             });
         </script>
-    @endscripts
+    @endscript
 </div>

@@ -1,15 +1,13 @@
 @php
-    $leadersTeam = auth()->user()
-        ->teams
-        ->firstWhere(fn($team) => $team->pivot->role_in_team === 'team-lead');
+    $leadersTeam = auth()->user()->teams->firstWhere(fn($team) => $team->pivot->role_in_team === 'team-lead');
 
     $chapterId = \App\Models\Chapter::where('name', request('chapter'))->value('id');
 
     $relations = [
-        'appointment_teams'   => \App\Models\AppointmentTeams::class,
-        'prayerRequestTeams'  => \App\Models\PrayerRequestTeam::class,
-        'believersAcademyTeam'=> \App\Models\BelieversAcademyTeams::class,
-        'eventTeams'         => \App\Models\EventTeam::class,
+        'appointment_teams' => \App\Models\AppointmentTeams::class,
+        'prayerRequestTeams' => \App\Models\PrayerRequestTeam::class,
+        'believersAcademyTeam' => \App\Models\BelieversAcademyTeams::class,
+        'eventTeams' => \App\Models\EventTeam::class,
     ];
 
     foreach ($relations as $var => $model) {
@@ -62,6 +60,13 @@
             Event Teams
         </flux:navlist.item>
     </flux:navlist.group>
+
+    <flux:navlist.group expandable heading="Partnerships">
+        <flux:navlist.item :href="route('admin.dashboard.partnership.accounts', request()->query())" wire:navigate
+            :active="request()->routeIs('admin.dashboard.partnership.account') ? 'true' : 'false'">
+            Accounts
+        </flux:navlist.item>
+    </flux:navlist.group>
 @endrole
 @if (auth()->user()->hasRole('admin') || in_array($leadersTeam->id, $believersAcademyTeam))
     <flux:navlist.group expandable heading="Believer's Academy">
@@ -75,6 +80,7 @@
     </flux:navlist.group>
 @else
 @endif
+
 <flux:navlist.group expandable heading="Report"
     :expanded="request()->routeIs('admin.dashboard.appointments.*') ? 'true' : 'false'">
 

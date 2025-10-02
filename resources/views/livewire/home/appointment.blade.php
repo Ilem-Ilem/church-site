@@ -4,9 +4,12 @@
     -TODO: Implement email confirmation after booking an appointment.
     -TODO: Add notification system for admins on new appointments.
  */
-use Livewire\Volt\Component;
-use Livewire\Attributes\{Layout, Url};
+use App\Models\Team;
+use App\Models\TeamUser;
 use App\Models\{Chapter, AppointmentTeams, Appointment};
+use App\Notifications\AppointmentScheduled;
+use Livewire\Attributes\{Layout, Url};
+use Livewire\Volt\Component;
 
 new #[Layout('components.layouts.layout')] class extends Component {
     public ?string $name = null;
@@ -101,7 +104,7 @@ new #[Layout('components.layouts.layout')] class extends Component {
 
         $chapter = Chapter::where('name', $this->chapter)->first();
 
-        Appointment::create([
+        $appointment = Appointment::create([
             'title' => $this->title,
             'description' => $this->description,
             'day' => $this->date, // ✅ Now taken directly from calendar
@@ -114,7 +117,8 @@ new #[Layout('components.layouts.layout')] class extends Component {
             'email' => $this->email,
             'status' => 'pending',
         ]);
-
+        $team_lead = TeamUser::where('team_id', $this->selectedTeam)->where('role_in_team', 'team-lead')->with('user')->first()?->user;
+        $team_lead->notify(new AppointmentScheduled($appointment));
         session()->flash('success', 'Appointment booked successfully!');
         $this->resetExcept(['user', 'chapter', 'name', 'email']);
         $this->redirect(route('home'));
@@ -249,8 +253,7 @@ new #[Layout('components.layouts.layout')] class extends Component {
 
                     <!-- Date + Time -->
                     <div class="col-12 row g-3">
-                        <div 
-                        x-data="{
+                        <div x-data="{
                             selectedDate: null,
                             enabledDays: {{ Js::from($freeDays) }},
                             init() {
@@ -264,7 +267,7 @@ new #[Layout('components.layouts.layout')] class extends Component {
                                     saturday: 6
                                 };
                                 const numericDays = this.enabledDays.map(d => dayMap[d.toLowerCase()]);
-                    
+                        
                                 flatpickr(this.$refs.datePicker, {
                                     dateFormat: 'Y-m-d',
                                     disable: [(date) => !numericDays.includes(date.getDay())],
@@ -275,19 +278,12 @@ new #[Layout('components.layouts.layout')] class extends Component {
                                     }
                                 });
                             }
-                        }" 
-                        class="bg-white p-4 rounded-2xl shadow w-96"
-                    >
-                        <h2 class="text-xl font-bold mb-3 text-gray-800">Pick an Available Date</h2>
-                        <input 
-                            x-ref="datePicker"
-                            x-model="selectedDate"
-                            type="text"
-                            class="w-full border rounded-lg p-2"
-                            placeholder="Select a date"
-                        >
-                    </div>
-                                       
+                        }" class="bg-white p-4 rounded-2xl shadow w-96">
+                            <h2 class="text-xl font-bold mb-3 text-gray-800">Pick an Available Date</h2>
+                            <input x-ref="datePicker" x-model="selectedDate" type="text"
+                                class="w-full border rounded-lg p-2" placeholder="Select a date">
+                        </div>
+
                         <!-- Start Time -->
                         <div class="col-lg-4 col-md-4">
                             <label class="form-label text-dark">Start Time</label>

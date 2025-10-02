@@ -8,12 +8,7 @@ class TeamUser extends Model
 {
     protected $table = 'team_user';
 
-    protected $fillable = [
-        'user_id',
-        'team_id',
-        'chapter_id',
-        'unit_id',
-    ];
+    protected $fillable = ['user_id', 'team_id', 'chapter_id', 'unit_id', 'role_in_team'];
 
     public function user()
     {
@@ -33,5 +28,10 @@ class TeamUser extends Model
     public function unit()
     {
         return $this->belongsTo(Unit::class);
+    }
+
+    public function leader()
+    {
+        return $this->hasOne(TeamUser::class)->where('role_in_team', 'team_lead');
     }
 }

@@ -52,7 +52,7 @@ Route::prefix('admin/dashboard')
         //              PARTNERSHIP SECTION
         //-------------------------------------------------------------------
         Volt::route('partnerships', 'admin.dashboard.partnership.index')->name('admin.dashboard.partnerships.index');
-
+        Volt::route('partnership/accounts', 'admin.dashboard.partnership.accounts')->name('admin.dashboard.partnership.accounts');
         //--------------------------------------------------------------------
         //             EVENTS SECTION
         //--------------------------------------------------------------------
