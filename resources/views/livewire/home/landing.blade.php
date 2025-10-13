@@ -2,18 +2,54 @@
 
 use Livewire\Volt\Component;
 use Livewire\Attributes\{Layout};
-use App\MOdels\{LandingPageSetting};
+use App\Models\{LandingPageSetting, Testimony};
+use Livewire\WithFileUploads;
 
 new #[Layout('components.layouts.layout')] class extends Component {
-    public $landing;
+    use WithFileUploads;
 
+    public $landing;
     public $carousels;
+
+    // Testimony form fields
+    public $name = '';
+    public $email = '';
+    public $testimony = '';
+    public $image;
 
     public function mount()
     {
         $this->landing = LandingPageSetting::first();
-
         $this->carousels = $this->landing->carousel;
+    }
+
+    public function submitTestimony()
+    {
+        $this->validate([
+            'email' => 'required|email',
+            'testimony' => 'required|min:10',
+            'name' => 'nullable|string|max:255',
+            'image' => 'nullable|image|max:2048',
+        ]);
+
+        $imagePath = null;
+        if ($this->image) {
+            $imagePath = $this->image->store('testimonies', 'public');
+        }
+
+        Testimony::create([
+            'name' => $this->name,
+            'email' => $this->email,
+            'testimony' => $this->testimony,
+            'image' => $imagePath,
+            'status' => 'pending',
+        ]);
+
+        // Reset form
+        $this->reset(['name', 'email', 'testimony', 'image']);
+
+        // Show success message
+        $this->dispatch('testimony-submitted');
     }
 }; ?>
 
@@ -61,21 +97,28 @@ new #[Layout('components.layouts.layout')] class extends Component {
 
     <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="3000">
         <div class="carousel-inner">
-            @foreach ($carousels as $index => $carousel)
-                @php
-                    $carousel_image = $carousel['image'];
-                @endphp
-                <div class="carousel-item @if($index == 0)
-                    active
-                @endif"
-                    style="background-image: url('@if ($carousel_image) {{ asset("/storage/$carousel_image") }}@else
-                {{ asset('/Img/IMG-20250101-WA0021.jpg') }} @endif');">
-                    <div class="carousel-caption">
-                        <h1>{{ $carousel['title'] }}</h1>
-                        <p>{{ $carousel['subtitle'] }}</p>
-                    </div>
-                </div>
-            @endforeach
+         @foreach ($carousels as $index => $carousel)
+    @php
+        $carousel_image = $carousel['image'] ?? null;
+        $defaultImage = asset('/Img/IMG-20250101-WA0021.jpg');
+
+        // Check if image exists in storage
+        if ($carousel_image && Storage::disk('public')->exists($carousel_image)) {
+            $imageUrl = asset("storage/{$carousel_image}");
+        } else {
+            $imageUrl = $defaultImage;
+        }
+    @endphp
+
+    <div class="carousel-item {{ $index === 0 ? 'active' : '' }}"
+         style="background-image: url('{{ $imageUrl }}'); background-size: cover; background-position: center;">
+        <div class="carousel-caption">
+            <h1>{{ $carousel['title'] }}</h1>
+            <p>{{ $carousel['subtitle'] }}</p>
+        </div>
+    </div>
+@endforeach
+
 
 
         </div>
@@ -218,7 +261,7 @@ new #[Layout('components.layouts.layout')] class extends Component {
                         </div>
                         <div class="mt-3">
                             <a href="{{ route('events.index') }}" class="btn btn-brand w-100 py-2">Learn More</a>
-                            
+
                         </div>
                     </div>
                 </div>
@@ -394,47 +437,53 @@ new #[Layout('components.layouts.layout')] class extends Component {
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="">
+                    <form wire:submit.prevent="submitTestimony">
                         <div class="row">
                             <div>
                                 <label for="name" class="form-label">Your Name (Optional)</label>
                                 <div class="form-floating mb-3">
-                                    <input type="text" class="form-control " name="formId1" id="formId1"
+                                    <input type="text" class="form-control" wire:model="name" id="testimonyName"
                                         placeholder="" />
-                                    <label for="formId1">Name</label>
+                                    <label for="testimonyName">Name</label>
                                 </div>
-
+                                @error('name') <span class="text-danger small">{{ $message }}</span> @enderror
                             </div>
                             <div>
-                                <label for="Emai" class="form-label">Your Email</label>
+                                <label for="testimonyEmail" class="form-label">Your Email *</label>
                                 <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="formId1" id="formId1"
-                                        placeholder="" />
-                                    <label for="formId1">Email</label>
+                                    <input type="email" class="form-control" wire:model="email" id="testimonyEmail"
+                                        placeholder="" required />
+                                    <label for="testimonyEmail">Email</label>
                                 </div>
-
+                                @error('email') <span class="text-danger small">{{ $message }}</span> @enderror
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label for="testimony" class="form-label">testimony</label>
-                            <textarea class="form-control" name="" id="" rows="3"></textarea>
+                            <label for="testimonyText" class="form-label">Testimony *</label>
+                            <textarea class="form-control" wire:model="testimony" id="testimonyText" rows="5" required></textarea>
+                            @error('testimony') <span class="text-danger small">{{ $message }}</span> @enderror
                         </div>
-                        <!-- <div class="mb-3">
-                            <img src="" alt="" id="test-image">
-                            <input type="file" name="image" id="upload" accept="image/*">
-                        </div> -->
                         <div class="mb-3">
-                            <label for="" class="form-label">Choose file(optional)</label>
-                            <input type="file" class="form-control" name="" id="" placeholder=""
-                                aria-describedby="fileHelpId" />
+                            <label for="testimonyImage" class="form-label">Choose file (optional)</label>
+                            <input type="file" class="form-control" wire:model="image" id="testimonyImage"
+                                aria-describedby="fileHelpId" accept="image/*" />
                             <div id="fileHelpId" class="form-text">Upload image (e.g Before and after, Doctor report
                                 etc)</div>
+                            @error('image') <span class="text-danger small">{{ $message }}</span> @enderror
+                            @if ($image)
+                                <div class="mt-2">
+                                    <small class="text-success">Image selected: {{ $image->getClientOriginalName() }}</small>
+                                </div>
+                            @endif
                         </div>
-
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary">Submit Testimony</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" wire:click="submitTestimony" wire:loading.attr="disabled">
+                        <span wire:loading.remove>Submit Testimony</span>
+                        <span wire:loading>Submitting...</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -447,6 +496,19 @@ new #[Layout('components.layouts.layout')] class extends Component {
             document.getElementById("modalId"),
             // opti/ons,
         );
+
+        // Listen for testimony submission success
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('testimony-submitted', () => {
+                // Close modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('modalId'));
+                if (modal) {
+                    modal.hide();
+                }
+                // Show success alert
+                alert('Thank you for sharing your testimony! It will be reviewed before being published.');
+            });
+        });
     </script>
 
     @fluxScripts

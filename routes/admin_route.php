@@ -35,6 +35,10 @@ Route::prefix('admin/dashboard')
         //-------------------------------------------------------------------
         Volt::route('prayer-requests', 'admin.dashboard.prayer_request.index')->name('admin.dashboard.prayer_requests.index');
         // -----------------------------------------------------------------
+        //              TESTIMONIES SECTION
+        //-------------------------------------------------------------------
+        Volt::route('testimonies', 'admin.dashboard.testimonies.index')->name('admin.dashboard.testimonies.index');
+        // -----------------------------------------------------------------
         //              BELIEVER'S ACADEMY
         //-------------------------------------------------------------------
         Volt::route('believers_academy', 'admin.dashboard.believers_class.academy')->name('admin.dashboard.believers_class.academy');

@@ -76,7 +76,9 @@
         <flux:navlist.item :href="route('admin.dashboard.believers_class.index', request()->query())" wire:navigate>
             Believer's Classes
         </flux:navlist.item>
-
+        <flux:navlist.item :href="route('admin.dashboard.believers_class.student-monitor', request()->query())" wire:navigate>
+            Students Monitor
+        </flux:navlist.item>
     </flux:navlist.group>
 @else
 @endif
