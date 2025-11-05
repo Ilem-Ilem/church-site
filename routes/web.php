@@ -19,6 +19,7 @@ Route::middleware(['auth'])->group(function () {
 
 Volt::route('appointments', 'home.appointment')->name('appointment');
 Volt::route('prayer_request', 'home.prayers.request')->name('prayer.request');
+Volt::route('sermons', 'home.sermons.index')->name('sermons.index');
 //-----------------------------------------------------------------------------------
 //BELIEVERS ACADEMY ROUTE
 //------------------------------------------------------------------------------------

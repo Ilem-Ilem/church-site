@@ -66,7 +66,7 @@ Route::prefix('admin/dashboard')
         Volt::route('/events/create', 'admin.dashboard.event.create-form')->name('admin.dashboard.events.create');
 
 
-        
+
         // Finance Routes
         Volt::route('finance', 'admin.dashboard.finance.index')->name('admin.dashboard.finance.index');
         Volt::route('finance/payment-details', 'admin.dashboard.finance.payment-details')->name('admin.dashboard.finance.payment-details');
@@ -110,4 +110,12 @@ Route::prefix('admin/dashboard')
         Volt::route('missions/new-members', 'admin.dashboard.missions.new-members')->name('admin.dashboard.missions.new-members');
         Volt::route('missions/out-reach-details', 'admin.dashboard.missions.out-reach-details')->name('admin.dashboard.missions.out-reach-details');
         Volt::route('missions/outreach-report', 'admin.dashboard.missions.outreach-report')->name('admin.dashboard.missions.outreach-report');
+
+        //SERMON ROUTES 
+        Volt::route(
+            'sermons',
+            'admin.dashboard.sermons.index'   // <- dot-notation path to the .blade.php
+        )
+            ->name('admin.sermons')
+            ->middleware(['auth', 'admin']);
     });

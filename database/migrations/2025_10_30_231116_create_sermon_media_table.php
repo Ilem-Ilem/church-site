@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('media', function (Blueprint $table) {
+        Schema::create('sermon_medias', function (Blueprint $table) {
             $table->id();
             $table->morphs('mediable'); // polymorphic: sermon_id, sermon_type
             $table->string('file_name');
