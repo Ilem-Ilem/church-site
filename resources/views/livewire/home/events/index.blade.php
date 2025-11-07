@@ -4,18 +4,22 @@
 use Livewire\Volt\Component;
 use Livewire\Attributes\{Layout, Url};
 use App\Models\{Chapter, Events};
+// use
 
 new #[Layout('components.layouts.layout')] class extends Component {
     public $chapters;
 
     public $events;
-    #[Url(keep:true)]
+    public $selectedEvent;
+
+    public $accounts;
+    #[Url(keep: true)]
     public $sc;
 
     public function mount()
     {
         $this->chapters = Chapter::all();
-        $this->events = Events::with('chapter')->get();
+        $this->events = Events::with('chapter', 'accounts')->get();
     }
 
     public function filterChapter($id)
@@ -23,10 +27,23 @@ new #[Layout('components.layouts.layout')] class extends Component {
         if ($id != 0) {
             $this->sc = $id;
             $this->events = Events::with('chapter')->where('chapter_id', $id)->get();
-        }else{
+        } else {
             $this->sc = '';
             $this->events = Events::with('chapter')->get();
         }
+    }
+
+    // Called when modal opens
+    public function openEventModal($id)
+    {
+        $this->selectedEvent = Events::where('id', $id)->firstOrFail();
+        $this->dispatch('show-event-modal');
+    }
+
+    public function closeEventModal()
+    {
+        $this->selectedEvent = null;
+        $this->dispatch('hide-event-modal');
     }
 }; ?>
 
@@ -581,6 +598,45 @@ new #[Layout('components.layouts.layout')] class extends Component {
                 transform: translateY(0);
             }
         }
+
+        /* Event Modal Styles */
+        #eventModal .modal-content {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+        }
+
+        #eventModal .event-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        #eventModal .event-meta i {
+            color: #667eea;
+        }
+
+        #eventModal .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+        }
+
+        #eventModal .btn-modern {
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        #eventModal .btn-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
     </style>
 
 
@@ -601,14 +657,12 @@ new #[Layout('components.layouts.layout')] class extends Component {
             <p>Find and join the perfect events that match your interests and passions</p>
             <p wire:loading wire:target="filterChapter">Loading</p>
             <div class="event-type-selector">
-                <button class="event-type-btn @if($sc == 0)
-                    active
-                @endif" data-type="all" x-on:click="$wire.call('filterChapter', 0)">All
+                <button class="event-type-btn @if ($sc == 0) active @endif" data-type="all"
+                    x-on:click="$wire.call('filterChapter', 0)">All
                     Events</button>
                 @foreach ($chapters as $chapter)
-                    <button class="event-type-btn  @if($sc == $chapter->id)
-                    active
-                @endif" x-on:click="$wire.call('filterChapter', {{ $chapter->id }})"
+                    <button class="event-type-btn  @if ($sc == $chapter->id) active @endif"
+                        x-on:click="$wire.call('filterChapter', {{ $chapter->id }})"
                         data-type="{{ $chapter->name }}">{{ $chapter->name }}</button>
                 @endforeach
             </div>
@@ -654,7 +708,8 @@ new #[Layout('components.layouts.layout')] class extends Component {
                 <div class="col-lg-4 col-md-6">
                     <div class="card event-card fade-in">
                         <div class="position-relative">
-                            <img src="{{ asset($event->banner) }}" class="card-img-top" alt="{{ $event->title }} Image">
+                            <img src="{{ asset('storage/' . $event->banner) }}" class="card-img-top"
+                                alt="{{ $event->title }} Image">
                             <span class="event-badge">{{ $event->chapter->name }}</span>
                         </div>
                         <div class="card-body p-4">
@@ -664,14 +719,9 @@ new #[Layout('components.layouts.layout')] class extends Component {
                             <div class="event-meta">{{ $event->location ?? 'DOXA COSMOS' }}</div>
                             <div class="event-meta">Dr. Sarah Johnson</div>
                             <p class="card-text mt-3 text-muted">{{ \Str($event->description)->substr(0, 20) }}..</p>
-                            <button class="btn btn-modern mt-3 view-details-btn" data-bs-toggle="modal"
-                                data-bs-target="#eventDetailModal" data-title="{{ $event->title }}"
-                                data-date="{{ \Carbon\Carbon::parse($event->start_at)->format('M d Y • h:i A') }}"
-                                data-location="{{ $event->location ?? 'DOXA COSMOS' }}"
-                                data-description="{{ $event->description }}" data-image="{{ asset($event->banner) }}">
+                            <button wire:click="openEventModal({{ $event->id }})" class="btn btn-modern mt-3">
                                 View Details
                             </button>
-
                         </div>
                     </div>
                 </div>
@@ -697,49 +747,85 @@ new #[Layout('components.layouts.layout')] class extends Component {
         </div>
     </div>
     <!-- Event Details Modal -->
-    <div class="modal fade" id="eventDetailModal" tabindex="-1" aria-labelledby="eventDetailModalLabel"
+    @if($selectedEvent)
+    <div wire:ignore.self class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content rounded-4 shadow-lg">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title fw-bold" id="eventDetailModalLabel">Event Details</h5>
+            <div class="modal-content rounded-4 shadow-lg border-0">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-primary" id="eventModalLabel">Event Details</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body px-4 py-3">
-                    <img id="eventImage" src="" alt="Event Image" class="img-fluid rounded mb-3">
-                    <h3 id="eventTitle" class="fw-bold"></h3>
-                    <div id="eventDate" class="text-muted mb-2"></div>
-                    <div id="eventLocation" class="text-muted mb-3"></div>
-                    <p id="eventDescription"></p>
+                    @if($selectedEvent->banner)
+                        <img src="{{ asset('storage/' . $selectedEvent->banner) }}"
+                             alt="{{ $selectedEvent->title }}"
+                             class="img-fluid rounded-3 mb-4 w-100"
+                             style="max-height: 300px; object-fit: cover;">
+                    @endif
+
+                    <h3 class="fw-bold mb-3">{{ $selectedEvent->title }}</h3>
+
+                    <div class="event-meta mb-2">
+                        <i class="bi bi-calendar-event"></i>
+                        {{ \Carbon\Carbon::parse($selectedEvent->start_at)->format('F d, Y') }} •
+                        {{ \Carbon\Carbon::parse($selectedEvent->start_at)->format('h:i A') }}
+                    </div>
+
+                    <div class="event-meta mb-2">
+                        <i class="bi bi-geo-alt"></i>
+                        {{ $selectedEvent->location ?? 'DOXA COSMOS' }}
+                    </div>
+
+                    <div class="event-meta mb-3">
+                        <i class="bi bi-building"></i>
+                        {{ $selectedEvent->chapter->name }}
+                    </div>
+
+                    @if($selectedEvent->is_online)
+                        <div class="alert alert-info mb-3">
+                            <i class="bi bi-camera-video"></i> This is an online event
+                        </div>
+                    @endif
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold mb-2">Description</h6>
+                        <p class="text-muted">{{ $selectedEvent->description }}</p>
+                    </div>
+
+                    @if($selectedEvent->capacity)
+                        <div class="mb-3">
+                            <h6 class="fw-bold mb-2">Capacity</h6>
+                            <p class="text-muted">Maximum {{ $selectedEvent->capacity }} attendees</p>
+                        </div>
+                    @endif
                 </div>
-                <div class="modal-footer border-0">
-                    <button type="button" class="btn btn-modern" data-bs-dismiss="modal">Close</button>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    @if($selectedEvent->form_schema && $selectedEvent->registration_required)
+                        <a href="{{ route('events.register', ['event_id' => $selectedEvent->id]) }}"
+                           class="btn btn-modern">
+                            Register Now
+                        </a>
+                    @endif
                 </div>
             </div>
         </div>
     </div>
+    @endif
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const detailModal = document.getElementById('eventDetailModal');
-            detailModal.addEventListener('show.bs.modal', function(event) {
-                const button = event.relatedTarget; // Button that triggered modal
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('show-event-modal', () => {
+                const modal = new bootstrap.Modal(document.getElementById('eventModal'));
+                modal.show();
+            });
 
-                // Get data from button
-                const title = button.getAttribute('data-title');
-                const date = button.getAttribute('data-date');
-                const location = button.getAttribute('data-location');
-                const description = button.getAttribute('data-description');
-                const image = button.getAttribute('data-image');
-
-                // Update modal content
-                detailModal.querySelector('#eventTitle').textContent = title;
-                detailModal.querySelector('#eventDate').textContent = date;
-                detailModal.querySelector('#eventLocation').textContent = location;
-                detailModal.querySelector('#eventDescription').textContent = description;
-                detailModal.querySelector('#eventImage').src = image;
+            Livewire.on('hide-event-modal', () => {
+                const modalEl = document.getElementById('eventModal');
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                if (modal) modal.hide();
             });
         });
     </script>
-
 
 </div>

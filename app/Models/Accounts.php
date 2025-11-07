@@ -32,6 +32,7 @@ class Accounts extends Model
         'contact_person',
         'contact_email',
         'contact_phone',
+        'chapter_id'
     ];
     
     protected $casts = [
@@ -112,27 +113,33 @@ class Accounts extends Model
         return $flags[$this->region] ?? '🏦';
     }
     
+    // Relationships
+    public function events()
+    {
+        return $this->belongsToMany(Events::class, 'account_events', 'account_id', 'event_id');
+    }
+
     // Methods
     public function activate()
     {
         $this->update(['is_active' => true]);
     }
-    
+
     public function deactivate()
     {
         $this->update(['is_active' => false]);
     }
-    
+
     public function supportsPaymentMethod($method)
     {
         return in_array($method, $this->supported_payment_methods ?? []);
     }
-    
+
     public function isWithinAmountLimits($amount)
     {
         $withinMin = !$this->minimum_amount || $amount >= $this->minimum_amount;
         $withinMax = !$this->maximum_amount || $amount <= $this->maximum_amount;
-        
+
         return $withinMin && $withinMax;
     }
 }

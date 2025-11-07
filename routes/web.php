@@ -38,7 +38,7 @@ Volt::route('/events', 'home.events.index')
     ->name('events.index');
 
 // Event Registration (takes event slug or id)
-Volt::route('/events/{event}/register', 'home.events.register')
+Volt::route('/events/{event_id}/register', 'home.event.register')
     ->name('events.register');
 
 // Event Gallery (takes event slug or id)

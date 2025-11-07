@@ -20,7 +20,28 @@ new #[Layout('components.layouts.layout')] class extends Component {
     public function mount()
     {
         $this->landing = LandingPageSetting::first();
-        $this->carousels = $this->landing->carousel;
+        $this->carousels = $this->landing->carousel ?? [
+            [
+                'title' => 'Welcome to Our Church Family',
+                'subtitle' => 'A place where faith, hope, and love come together.',
+                'image' => 'https://images.unsplash.com/photo-1502086223501-9d45c7c9b2b6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80',
+            ],
+            [
+                'title' => 'Sunday Worship Service',
+                'subtitle' => 'Join us every Sunday at 10:00 AM for uplifting worship and teaching.',
+                'image' => 'https://images.unsplash.com/photo-1511795409834-ef04e53d9a6f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80',
+            ],
+            [
+                'title' => 'Grow in Faith Together',
+                'subtitle' => 'Bible studies, youth groups, and community outreach every week.',
+                'image' => 'https://images.unsplash.com/photo-1505455184862-5547d9e4f6b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80',
+            ],
+            [
+                'title' => 'Celebrating God’s Love',
+                'subtitle' => 'Baptisms, weddings, and special events — we rejoice in every milestone.',
+                'image' => 'https://images.unsplash.com/photo-1511795409834-ef04e53d9a6f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80',
+            ],
+        ];
     }
 
     public function submitTestimony()
@@ -97,27 +118,27 @@ new #[Layout('components.layouts.layout')] class extends Component {
 
     <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="3000">
         <div class="carousel-inner">
-         @foreach ($carousels as $index => $carousel)
-    @php
-        $carousel_image = $carousel['image'] ?? null;
-        $defaultImage = asset('/Img/IMG-20250101-WA0021.jpg');
+            @foreach ($carousels as $index => $carousel)
+                @php
+                    $carousel_image = $carousel['image'] ?? null;
+                    $defaultImage = asset('/Img/IMG-20250101-WA0021.jpg');
 
-        // Check if image exists in storage
-        if ($carousel_image && Storage::disk('public')->exists($carousel_image)) {
-            $imageUrl = asset("storage/{$carousel_image}");
-        } else {
-            $imageUrl = $defaultImage;
-        }
-    @endphp
+                    // Check if image exists in storage
+                    if ($carousel_image && Storage::disk('public')->exists($carousel_image)) {
+                        $imageUrl = asset("storage/{$carousel_image}");
+                    } else {
+                        $imageUrl = $defaultImage;
+                    }
+                @endphp
 
-    <div class="carousel-item {{ $index === 0 ? 'active' : '' }}"
-         style="background-image: url('{{ $imageUrl }}'); background-size: cover; background-position: center;">
-        <div class="carousel-caption">
-            <h1>{{ $carousel['title'] }}</h1>
-            <p>{{ $carousel['subtitle'] }}</p>
-        </div>
-    </div>
-@endforeach
+                <div class="carousel-item {{ $index === 0 ? 'active' : '' }}"
+                    style="background-image: url('{{ $imageUrl }}'); background-size: cover; background-position: center;">
+                    <div class="carousel-caption">
+                        <h1>{{ $carousel['title'] }}</h1>
+                        <p>{{ $carousel['subtitle'] }}</p>
+                    </div>
+                </div>
+            @endforeach
 
 
 
@@ -225,7 +246,8 @@ new #[Layout('components.layouts.layout')] class extends Component {
                                 </div>
                             </div>
                             <div class="mt-3">
-                                <a href="{{ route('appointment') }}" class="btn btn-brand w-100 py-2" wire:navigate>Book Now</a>
+                                <a href="{{ route('appointment') }}" class="btn btn-brand w-100 py-2"
+                                    wire:navigate>Book Now</a>
                             </div>
                         </div>
                     </div>
@@ -243,7 +265,8 @@ new #[Layout('components.layouts.layout')] class extends Component {
                             </div>
                         </div>
                         <div class="mt-3">
-                            <a href="{{ route('prayer.request') }}" class="btn btn-brand w-100 py-2" wire:navigate>Submit Request</a>
+                            <a href="{{ route('prayer.request') }}" class="btn btn-brand w-100 py-2"
+                                wire:navigate>Submit Request</a>
                         </div>
                     </div>
                 </div>
@@ -300,7 +323,8 @@ new #[Layout('components.layouts.layout')] class extends Component {
                             </div>
                         </div>
                         <div class="mt-3">
-                            <a href="{{ route('home.partnership.index', request()->query()) }}" class="btn btn-brand w-100 py-2">Apply Now</a>
+                            <a href="{{ route('home.partnership.index', request()->query()) }}"
+                                class="btn btn-brand w-100 py-2">Apply Now</a>
                         </div>
                     </div>
                 </div>
@@ -446,22 +470,28 @@ new #[Layout('components.layouts.layout')] class extends Component {
                                         placeholder="" />
                                     <label for="testimonyName">Name</label>
                                 </div>
-                                @error('name') <span class="text-danger small">{{ $message }}</span> @enderror
+                                @error('name')
+                                    <span class="text-danger small">{{ $message }}</span>
+                                @enderror
                             </div>
                             <div>
                                 <label for="testimonyEmail" class="form-label">Your Email *</label>
                                 <div class="form-floating mb-3">
-                                    <input type="email" class="form-control" wire:model="email" id="testimonyEmail"
-                                        placeholder="" required />
+                                    <input type="email" class="form-control" wire:model="email"
+                                        id="testimonyEmail" placeholder="" required />
                                     <label for="testimonyEmail">Email</label>
                                 </div>
-                                @error('email') <span class="text-danger small">{{ $message }}</span> @enderror
+                                @error('email')
+                                    <span class="text-danger small">{{ $message }}</span>
+                                @enderror
                             </div>
                         </div>
                         <div class="mb-3">
                             <label for="testimonyText" class="form-label">Testimony *</label>
                             <textarea class="form-control" wire:model="testimony" id="testimonyText" rows="5" required></textarea>
-                            @error('testimony') <span class="text-danger small">{{ $message }}</span> @enderror
+                            @error('testimony')
+                                <span class="text-danger small">{{ $message }}</span>
+                            @enderror
                         </div>
                         <div class="mb-3">
                             <label for="testimonyImage" class="form-label">Choose file (optional)</label>
@@ -469,10 +499,13 @@ new #[Layout('components.layouts.layout')] class extends Component {
                                 aria-describedby="fileHelpId" accept="image/*" />
                             <div id="fileHelpId" class="form-text">Upload image (e.g Before and after, Doctor report
                                 etc)</div>
-                            @error('image') <span class="text-danger small">{{ $message }}</span> @enderror
+                            @error('image')
+                                <span class="text-danger small">{{ $message }}</span>
+                            @enderror
                             @if ($image)
                                 <div class="mt-2">
-                                    <small class="text-success">Image selected: {{ $image->getClientOriginalName() }}</small>
+                                    <small class="text-success">Image selected:
+                                        {{ $image->getClientOriginalName() }}</small>
                                 </div>
                             @endif
                         </div>
@@ -480,7 +513,8 @@ new #[Layout('components.layouts.layout')] class extends Component {
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" wire:click="submitTestimony" wire:loading.attr="disabled">
+                    <button type="button" class="btn btn-primary" wire:click="submitTestimony"
+                        wire:loading.attr="disabled">
                         <span wire:loading.remove>Submit Testimony</span>
                         <span wire:loading>Submitting...</span>
                     </button>

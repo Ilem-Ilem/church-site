@@ -24,6 +24,7 @@ class EventForm extends Model
     ];
 
     protected $casts = [
+        'form' => 'array',
         'answers' => 'array',
         'guests' => 'integer',
     ];

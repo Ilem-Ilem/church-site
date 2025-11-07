@@ -1,10 +1,73 @@
 <?php
 
 use Livewire\Volt\Component;
-use Livewire\Attributes\{Layout};
+use Livewire\Attributes\{Layout, Rule, Comoputed};
+use App\Models\Accounts;
+use App\Models\Events;
+use App\Models\Partnership;
+use App\Models\Chapter;
 
-new  #[Layout('components.layouts.layout')]  class extends Component {
-    //
+new #[Layout('components.layouts.layout')] class extends Component {
+    public $selected_chapter = '';
+    public $name;
+    public $email;
+    public $phone;
+    public $preferred_location;
+    public $partnership_interests;
+    public $organization;
+    public $website;
+    public $partnership_type;
+    public $proposed_amount;
+    public $conclaves;
+    public $donationAccounts;
+
+    public function mount()
+    {
+        $this->conclaves = Chapter::all();
+        $this->donationAccounts = collect();
+    }
+
+    public function updatedSelectedChapter($value)
+    {
+        if ($value) {
+            $this->donationAccounts = Accounts::where('account_type', 'donation')->where('chapter_id', $value)
+            ->get();
+        } else {
+            $this->donationAccounts = collect();
+        }
+    }
+
+    public function submit()
+    {
+        $this->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'phone' => 'nullable|string|max:20',
+            'preferred_location' => 'nullable|string|max:255',
+            'partnership_interests' => 'nullable|string',
+            'organization' => 'nullable|string|max:255',
+            'website' => 'nullable|url|max:255',
+            'partnership_type' => 'nullable|in:financial,strategic,ministry,technology,other',
+            'proposed_amount' => 'nullable|numeric|min:0',
+        ]);
+
+        Partnership::create([
+            'name' => $this->name,
+            'email' => $this->email,
+            'phone' => $this->phone,
+            'preferred_location' => $this->preferred_location,
+            'partnership_interests' => $this->partnership_interests,
+            'organization' => $this->organization,
+            'website' => $this->website,
+            'partnership_type' => $this->partnership_type,
+            'proposed_amount' => $this->proposed_amount,
+        ]);
+
+        session()->flash('message', 'Partnership inquiry submitted successfully!');
+
+        // Reset form
+        $this->reset(['name', 'email', 'phone', 'preferred_location', 'partnership_interests', 'organization', 'website', 'partnership_type', 'proposed_amount']);
+    }
 }; ?>
 
 <div>
@@ -36,22 +99,59 @@ new  #[Layout('components.layouts.layout')]  class extends Component {
                                 <p class="text-muted mt-2">Select a location to view details on supported payment
                                     methods, fees, and currencies.</p>
                                 <div class="col-12 mt-3">
-                                    <label class="form-label text-muted" for="conclave-location">Select Location</label>
+                                    <label class="form-label text-muted" for="conclave-location">Select Conclave</label>
                                     <select class="form-select rounded-lg" id="conclave-location"
-                                        name="conclave-location">
-                                        <option value="">Select a location</option>
-                                        <option value="North America">North America</option>
-                                        <option value="Europe">Europe</option>
-                                        <option value="Asia-Pacific">Asia-Pacific</option>
-                                        <option value="Latin America">Latin America</option>
-                                        <option value="Middle East & Africa">Middle East & Africa</option>
+                                        name="conclave-location" wire:model.live="selected_chapter">
+                                        <option value="">Select a Conclave</option>
+                                        @foreach ($this->conclaves as $conclave)
+                                            <option value="{{ $conclave->id }}">{{ $conclave->name }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div id="payment-details" class="mt-4">
-                                    <div class="text-center text-muted">
-                                        <p>Please select a location from the dropdown above to view payment information.
-                                        </p>
-                                    </div>
+                                    @if ($donationAccounts->isNotEmpty())
+                                        <h5 class="fw-bold">Donation Accounts for
+                                            {{ $this->conclaves->where('id', $this->selected_chapter)->first()->name ?? 'Selected Conclave' }}:
+                                        </h5>
+                                        @foreach ($donationAccounts as $account)
+                                            <div class="card mb-3 p-3">
+                                                <h6>{{ $account->account_name }}</h6>
+                                                <ul class="list-unstyled">
+                                                    <li><strong>Account Number:</strong>
+                                                        {{ $account->formatted_account_number }}</li>
+                                                    <li><strong>Bank:</strong> {{ $account->bank_name }}</li>
+                                                    <li><strong>Currency:</strong> {{ $account->currency }}</li>
+                                                    @if ($account->supported_payment_methods)
+                                                        <li><strong>Supported Payment Methods:</strong>
+                                                            {{ implode(', ', $account->supported_payment_methods) }}
+                                                        </li>
+                                                    @endif
+                                                    @if ($account->minimum_amount)
+                                                        <li><strong>Minimum Amount:</strong> {{ $account->currency }}
+                                                            {{ number_format($account->minimum_amount, 2) }}</li>
+                                                    @endif
+                                                    @if ($account->maximum_amount)
+                                                        <li><strong>Maximum Amount:</strong> {{ $account->currency }}
+                                                            {{ number_format($account->maximum_amount, 2) }}</li>
+                                                    @endif
+                                                    @if ($account->special_instructions)
+                                                        <li><strong>Special Instructions:</strong>
+                                                            {{ $account->special_instructions }}</li>
+                                                    @endif
+                                                    <li><strong>Contact:</strong> {{ $account->contact_email }}</li>
+                                                </ul>
+                                            </div>
+                                        @endforeach
+                                    @elseif($this->selected_chapter)
+                                        <div class="text-center text-muted">
+                                            <p>No donation accounts available for this location.</p>
+                                        </div>
+                                    @else
+                                        <div class="text-center text-muted">
+                                            <p>Please select a location from the dropdown above to view payment
+                                                information.</p>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -61,40 +161,101 @@ new  #[Layout('components.layouts.layout')]  class extends Component {
                             <h2 class="fs-3 fw-bold">Partnership Form</h2>
                             <p class="text-muted mt-2">Fill out the form below to get in touch with our partnerships
                                 team.</p>
-                            <form class="mt-4 row g-3">
+                            <form class="mt-4 row g-3" wire:submit.prevent="submit">
+                                @if (session('message'))
+                                    <div class="alert alert-success">
+                                        {{ session('message') }}
+                                    </div>
+                                @endif
                                 <div class="col-12">
                                     <label class="form-label text-muted" for="company-name">Name</label>
                                     <input class="form-control rounded-lg" id="company-name" name="company-name"
-                                        placeholder="Your name" type="text" />
+                                        placeholder="Your name" type="text" wire:model="name" />
+                                    @error('name')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label text-muted" for="email">Email Address</label>
                                     <input class="form-control rounded-lg" id="email" name="email"
-                                        placeholder="you@example.com" type="email" />
+                                        placeholder="you@example.com" type="email" wire:model="email" />
+                                    @error('email')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label text-muted" for="phone">Phone Number</label>
-                                    <input class="form-control rounded-lg" id="phone" name="number"
-                                        placeholder="(123) 456-7890" type="number" />
+                                    <input class="form-control rounded-lg" id="phone" name="phone"
+                                        placeholder="(123) 456-7890" type="text" wire:model="phone" />
+                                    @error('phone')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="col-12">
-                                    <label class="form-label text-muted" for="location">Preferred Location
+                                    <label class="form-label text-muted" for="preferred_location">Preferred Location
                                         Conclave</label>
-                                    <select class="form-select rounded-lg" id="location" name="location">
-                                        <option>Select a Conclave</option>
-                                        <option>North America</option>
-                                        <option>Europe</option>
-                                        <option>Asia-Pacific</option>
-                                        <option>Latin America</option>
-                                        <option>Middle East & Africa</option>
+                                    <select class="form-select rounded-lg" id="preferred_location"
+                                        name="preferred_location" wire:model="preferred_location">
+                                        <option value="">Select a Conclave</option>
+                                        @foreach ($this->conclaves as $conclave)
+                                            <option value="{{ $conclave->name }}">{{ $conclave->name }}</option>
+                                        @endforeach
                                     </select>
+                                    @error('preferred_location')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label text-muted" for="organization">Organization</label>
+                                    <input class="form-control rounded-lg" id="organization" name="organization"
+                                        placeholder="Your organization" type="text" wire:model="organization" />
+                                    @error('organization')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label text-muted" for="website">Website</label>
+                                    <input class="form-control rounded-lg" id="website" name="website"
+                                        placeholder="https://yourwebsite.com" type="url" wire:model="website" />
+                                    @error('website')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label text-muted" for="partnership_type">Partnership
+                                        Type</label>
+                                    <select class="form-select rounded-lg" id="partnership_type"
+                                        name="partnership_type" wire:model="partnership_type">
+                                        <option value="">Select Type</option>
+                                        <option value="financial">Financial</option>
+                                        <option value="strategic">Strategic</option>
+                                        <option value="ministry">Ministry</option>
+                                        <option value="technology">Technology</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                    @error('partnership_type')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label text-muted" for="proposed_amount">Proposed Amount</label>
+                                    <input class="form-control rounded-lg" id="proposed_amount"
+                                        name="proposed_amount" placeholder="0.00" type="number" step="0.01"
+                                        wire:model="proposed_amount" />
+                                    @error('proposed_amount')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label text-muted" for="message">Briefly describe your
                                         partnership
                                         interests</label>
                                     <textarea class="form-control rounded-lg" id="message" name="message"
-                                        placeholder="Tell us what you're looking for in a partnership." rows="4"></textarea>
+                                        placeholder="Tell us what you're looking for in a partnership." rows="4"
+                                        wire:model="partnership_interests"></textarea>
+                                    @error('partnership_interests')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="col-12">
                                     <button class="btn custom-primary text-white w-100 rounded-lg fw-bold"
@@ -195,58 +356,6 @@ new  #[Layout('components.layouts.layout')]  class extends Component {
     </div>
 
 
-    <script>
-        const locationDropdown = document.getElementById('conclave-location');
-        const paymentDetails = document.getElementById('payment-details');
 
-        const paymentData = {
-            "North America": {
-                accountNumber: "987-654-321-0",
-                accountName: "InnovateTech Holdings",
-                bank: "Global Union Bank"
-            },
-            "Europe": {
-                accountNumber: "EUR-123-456-789",
-                accountName: "InnovateTech Europe",
-                bank: "EuroLink Financial"
-            },
-            "Asia-Pacific": {
-                accountNumber: "APAC-456-789-012",
-                accountName: "InnovateTech Asia",
-                bank: "Pacific Capital Bank"
-            },
-            "Latin America": {
-                accountNumber: "LA-789-012-345",
-                accountName: "InnovateTech LatAm",
-                bank: "South American Trust"
-            },
-            "Middle East & Africa": {
-                accountNumber: "MEA-012-345-678",
-                accountName: "InnovateTech MEA",
-                bank: "Desert Financial Services"
-            }
-        };
-
-        locationDropdown.addEventListener('change', (event) => {
-            const selectedLocation = event.target.value;
-            if (selectedLocation) {
-                const data = paymentData[selectedLocation];
-                paymentDetails.innerHTML = `
-                    <h5 class="fw-bold">Details for ${selectedLocation}:</h5>
-                    <ul class="list-unstyled">
-                        <li><strong>Account Number:</strong> ${data.accountNumber}</li>
-                        <li><strong>Account Name:</strong> ${data.accountName}</li>
-                        <li><strong>Bank:</strong> ${data.bank}</li>
-                    </ul>
-                `;
-            } else {
-                paymentDetails.innerHTML = `
-                    <div class="text-center text-muted">
-                        <p>Please select a location from the dropdown above to view payment information.</p>
-                    </div>
-                `;
-            }
-        });
-    </script>
 
 </div>

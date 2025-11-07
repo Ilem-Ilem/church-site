@@ -45,7 +45,7 @@ new #[Layout('components.layouts.admin')] class extends Component
             'title'       => 'required|string|max:255',
             'description' => 'nullable|string',
             'event_type'  => 'nullable|string|max:100',
-            'report_path' => 'nullable|image|max:2048', // <= 2MB
+            'report_path' => 'nullable|file|mimes:pdf,doc,docx|max:10240', // PDF, DOC, DOCX only, max 10MB
             'content'     => 'nullable|string',
             'level'       => 'required|in:team,chapter,hq',
             'chapter_id'  => 'nullable|exists:chapters,id',
@@ -54,21 +54,10 @@ new #[Layout('components.layouts.admin')] class extends Component
 
         $path = null;
         if ($this->report_path) {
-            $path = $this->report_path->store('reports', 'public'); 
+            $path = $this->report_path->store('reports', 'public');
             // stored in storage/app/public/reports
         }
-        dd([
-            'report_date' =>now(),
-            'title'       => $this->title,
-            'description' => $this->description,
-            'event_type'  => $this->event_type,
-            'report_path' => $path,
-            'report'      => $this->content,
-            'level'       => $this->level,
-            'chapter_id'  => $this->chapter_id,
-            'team_id'     => $this->team_id,
-            'created_by'  => auth()->id(),
-        ]);
+
         try {
             Report::create([
             'report_date' =>now(),
@@ -119,9 +108,9 @@ new #[Layout('components.layouts.admin')] class extends Component
 
         {{-- File Upload --}}
         <div>
-            <x-input type="file" label="Report File" wire:model="report_path" />
+            <x-input type="file" label="Report File" wire:model="report_path" accept=".pdf,.doc,.docx" />
             @error('report_path') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-            <p class="text-gray-300 text-xs"> This will be used for Uploading report in PDF of Document format, it can be left blank if the report will be written instead</p>
+            <p class="text-gray-300 text-xs">Upload report in PDF or Document format (PDF, DOC, DOCX only - max 10MB). Can be left blank if the report will be written instead.</p>
         </div>
 
         @if(auth()->user()->hasRole('team-lead'))

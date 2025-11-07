@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 new #[Layout('components.layouts.admin')] class extends Component {
     use Interactions;
 
-    #[Url]
+    #[Url(keep:true)]
     public $chapter;
 
     public $leadersTeam;
@@ -59,6 +59,7 @@ new #[Layout('components.layouts.admin')] class extends Component {
         return [
             'headers' => [['index' => 'title', 'label' => 'Title'], ['index' => 'report_date', 'label' => 'Date'], ['index' => 'team.name', 'label' => 'Team'], ['index' => 'level', 'label' => 'Report Level'], ['index' => 'createdBy.name', 'label' => 'Created By'], ['index' => 'actions', 'label' => 'Actions']],
             'rows' => $this->getReports(),
+            'branch'=> $this->chapter
         ];
     }
 
@@ -180,8 +181,10 @@ new #[Layout('components.layouts.admin')] class extends Component {
 
         {{-- Actions --}}
         @interact('column_actions', $row)
-            <x-button.circle color="red" icon="trash" label="View" wire:click='deleteReport({{ $row->id }})'
-                class="mr-2" />
+            <a href="{{ route('admin.dashboard.reports.view-report', request()->query()) }}">
+                <x-button.circle color="primary" icon="eye" label="View" class="mr-2" />
+            </a>
+            <x-button.circle color="red" icon="trash" wire:click='deleteReport({{ $row->id }})' />
         @endinteract
     </x-table>
 </div>

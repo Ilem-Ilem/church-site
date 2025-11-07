@@ -7,9 +7,10 @@ use Livewire\Volt\Component;
 use Livewire\WithPagination;
 use Illuminate\Validation\Rule;
 use TallStackUi\Traits\Interactions;
+use Livewire\WithFileUploads;
 
 new #[Layout('components.layouts.admin')] class extends Component {
-    use Interactions, WithPagination;
+    use Interactions, WithPagination, WithFileUploads;
 
     public ?int $quantity = 10;
     public ?string $search = null;
@@ -132,7 +133,8 @@ new #[Layout('components.layouts.admin')] class extends Component {
             abort(404, 'No Such Event Found');
         }
         $this->event = $event;
-        $this->account_id = AccountEvent::where('event_id', $this->event->id)->first()->pluck('id')->toArray();
+        // Get account IDs associated with this event
+        $this->account_id = AccountEvent::where('event_id', $this->event->id)->pluck('account_id')->toArray();
         $this->fill([
             'title' => $event->title,
             'slug' => $event->slug,
@@ -426,22 +428,33 @@ new #[Layout('components.layouts.admin')] class extends Component {
             </x-slot:header>
 
             @interact('column_action', $row)
-                <x-button.circle color="red" icon="trash" wire:click="deleteEvent('{{ $row->id }}')" />
+                <div class="flex items-center space-x-2">
+                    <x-button.circle color="green" icon="eye"
+                        x-on:click="$modalOpen('event-modal');$wire.call('loadEvent', {{ $row->id }})"
+                        title="View Details" />
 
-                {{-- @if ($row?->status !== 'published')
-                    <x-button wire:click='changeStatus({{ $row->id }}, "published")'>Publish</x-button>
-                @endif
-                @if ($row?->status !== 'archived')
-                    <x-button color="gray" wire:click='changeStatus({{ $row->id }}, "archived")'>Archive</x-button>
-                @endif --}}
-                <x-button color="blue" icon="pencil"
-                    x-on:click="$wire.call('selectedEvent', {{ $row?->id }}).then(() => $modalOpen('event-edit-modal'))">
-                    Edit Event
-                </x-button>
+                    <x-button color="blue" icon="pencil" sm
+                        x-on:click="$wire.call('selectedEvent', {{ $row?->id }}).then(() => $modalOpen('event-edit-modal'))">
+                        Edit
+                    </x-button>
 
+                    @if($row->registration_required)
+                        <a href="{{ route('admin.dashboard.event.form-builder', array_merge(['event_id' => $row->id], request()->query())) }}">
+                            <x-button color="purple" sm>
+                                Build Form
+                            </x-button>
+                        </a>
 
-                <x-button.circle color="green" icon="eye"
-                    x-on:click="$modalOpen('event-modal');$wire.call('loadEvent', {{ $row->id }})" />
+                        <a href="{{ route('admin.dashboard.event.registrations', array_merge(['event_id' => $row->id], request()->query())) }}">
+                            <x-button color="orange" icon="users" sm>
+                                Registrations
+                            </x-button>
+                        </a>
+                    @endif
+
+                    <x-button.circle color="red" icon="trash" wire:click="deleteEvent('{{ $row->id }}')"
+                        title="Delete Event" />
+                </div>
             @endinteract
         </x-table>
     </x-card>

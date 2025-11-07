@@ -49,6 +49,7 @@ Route::prefix('admin/dashboard')
         //-------------------------------------------------------------------
         Volt::route('reports', 'admin.dashboard.reports.index')->name('admin.dashboard.reports.index');
         Volt::route('create-report', 'admin.dashboard.reports.create-report')->name('admin.dashboard.reports.create-report');
+        Volt::route('reports/view-report', 'admin.dashboard.reports.view-report')->name('admin.dashboard.reports.view-report');
         Volt::route('reports/compile-report', 'admin.dashboard.reports.compile-report')->name('admin.dashboard.reports.compile-report');
         Volt::route('reports/report-sent-to-hq', 'admin.dashboard.reports.report-sent-to-hq')->name('admin.dashboard.reports.report-sent-to-hq');
 
@@ -64,6 +65,12 @@ Route::prefix('admin/dashboard')
 
         // Event Create Form
         Volt::route('/events/create', 'admin.dashboard.event.create-form')->name('admin.dashboard.events.create');
+
+        // Event Form Builder
+        Volt::route('/events/form-builder', 'admin.dashboard.event.form-builder')->name('admin.dashboard.event.form-builder');
+
+        // Event Registrations
+        Volt::route('/events/registrations', 'admin.dashboard.event.registrations')->name('admin.dashboard.event.registrations');
 
 
 

@@ -6,6 +6,7 @@ use Livewire\Attributes\Url;
 use Livewire\Volt\Component;
 use Livewire\WithPagination;
 use TallStackUi\Traits\Interactions;
+use App\Models\Chapter;
 
 new #[Layout('components.layouts.admin')] class extends Component {
     use Interactions, WithPagination;
@@ -15,6 +16,8 @@ new #[Layout('components.layouts.admin')] class extends Component {
     public array $selected = [];
     public ?string $bulkAction = null;
 
+    #[Url(keep:true)]
+    public $chapter;
     // For modals
     public bool $showModal = false;
     public ?int $editingId = null;
@@ -45,6 +48,8 @@ new #[Layout('components.layouts.admin')] class extends Component {
     #[Url(keep:true)]
     public ?string $filterRegion = null;
 
+
+
     /**
      * Table headers
      */
@@ -70,7 +75,12 @@ new #[Layout('components.layouts.admin')] class extends Component {
      */
     public function rows()
     {
+        $chapter = Chapter::where('name', $this->chapter)->first();
+        if(!$chapter){
+            abort(403, "Wrong Chapter");
+        }
         return Accounts::query()
+            ->where('chapter_id', $chapter->id)
             ->when($this->search, function ($q) {
                 $q->where('account_name', 'like', "%{$this->search}%")
                   ->orWhere('account_number', 'like', "%{$this->search}%")
@@ -138,7 +148,7 @@ new #[Layout('components.layouts.admin')] class extends Component {
             'contact_email' => 'nullable|email',
             'contact_phone' => 'nullable|string|max:255',
         ]);
-
+        $data['chapter_id'] =  Chapter::where('name', $this->chapter)->first()->id;
         if ($this->editingId) {
             Accounts::findOrFail($this->editingId)->update($data);
         } else {

@@ -27,6 +27,7 @@ class Events extends Model
         'status',
         'capacity',
         'registration_required',
+        'form_schema',
     ];
 
     protected $casts = [
@@ -34,6 +35,7 @@ class Events extends Model
         'end_at' => 'datetime',
         'is_online' => 'boolean',
         'registration_required' => 'boolean',
+        'form_schema' => 'array',
     ];
 
     // Relationships
@@ -55,5 +57,9 @@ class Events extends Model
     public function galleries()
     {
         return $this->hasMany(EventGallery::class, 'event_id');
+    }
+
+    public function accounts(){
+        return $this->belongsToMany(Accounts::class, 'account_events', 'event_id', 'account_id');
     }
 }
