@@ -714,14 +714,28 @@ new #[Layout('components.layouts.layout')] class extends Component {
                         </div>
                         <div class="card-body p-4">
                             <h5 class="card-title fw-bold mb-3">{{ $event->title }}</h5>
-                            <div class="event-meta">{{ \Carbon\Carbon::parse($event->start_at)->format('M d Y') }} •
-                                {{ \Carbon\Carbon::parse($event->start_at)->format('h:i A') }}</div>
+                            <div class="event-meta">
+                                {{ \Carbon\Carbon::parse($event->start_at)->format('M d Y') }} •
+                                {{ \Carbon\Carbon::parse($event->start_at)->format('h:i A') }}
+                                @if($event->end_at)
+                                    - {{ \Carbon\Carbon::parse($event->end_at)->format('h:i A') }}
+                                @endif
+                                @if($event->timezone)
+                                    <small>({{ $event->timezone }})</small>
+                                @endif
+                            </div>
                             <div class="event-meta">{{ $event->location ?? 'DOXA COSMOS' }}</div>
-                            <div class="event-meta">Dr. Sarah Johnson</div>
                             <p class="card-text mt-3 text-muted">{{ \Str($event->description)->substr(0, 20) }}..</p>
-                            <button wire:click="openEventModal({{ $event->id }})" class="btn btn-modern mt-3">
-                                View Details
-                            </button>
+                            <div class="d-grid gap-2 mt-3">
+                                <button wire:click="openEventModal({{ $event->id }})" class="btn btn-modern">
+                                    View Details
+                                </button>
+                                @if($event->hasStarted())
+                                    <a href="{{ route('events.gallery', ['event' => $event->slug ?? $event->id]) }}" class="btn btn-outline-primary" style="border-color: #667eea; color: #667eea;">
+                                        <i class="bi bi-images me-1"></i> View Gallery
+                                    </a>
+                                @endif
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -768,8 +782,18 @@ new #[Layout('components.layouts.layout')] class extends Component {
 
                     <div class="event-meta mb-2">
                         <i class="bi bi-calendar-event"></i>
-                        {{ \Carbon\Carbon::parse($selectedEvent->start_at)->format('F d, Y') }} •
+                        {{ \Carbon\Carbon::parse($selectedEvent->start_at)->format('F d, Y') }}
+                    </div>
+
+                    <div class="event-meta mb-2">
+                        <i class="bi bi-clock"></i>
                         {{ \Carbon\Carbon::parse($selectedEvent->start_at)->format('h:i A') }}
+                        @if($selectedEvent->end_at)
+                            - {{ \Carbon\Carbon::parse($selectedEvent->end_at)->format('h:i A') }}
+                        @endif
+                        @if($selectedEvent->timezone)
+                            <small class="text-muted">({{ $selectedEvent->timezone }})</small>
+                        @endif
                     </div>
 
                     <div class="event-meta mb-2">

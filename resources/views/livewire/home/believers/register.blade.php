@@ -3,6 +3,8 @@
 use Livewire\Volt\Component;
 use Livewire\Attributes\{Layout, Url};
 use App\Models\{BeliversAcademy, Chapter, BelieversAcademyTeams, User, StudentClasses};
+use App\Events\StudentRegisteredToAcademy;
+use App\Notifications\StudentEnrolledNotification;
 use Carbon\Carbon;
 
 new #[Layout('components.layouts.layout')] class extends Component {
@@ -143,13 +145,19 @@ new #[Layout('components.layouts.layout')] class extends Component {
             }
         }
 
+        // Check if user is a member of the selected chapter
+        if ($user->chapter_id !== (int)$this->selectedChapter) {
+            $this->errorMessages[] = 'You are not a member of the selected chapter. Please select your chapter.';
+            return;
+        }
+
         // Prevent duplicate enrollment
         if (StudentClasses::where('user_id', $user->id)->exists()) {
             $this->errorMessages[] = 'You are already registered for the Believers Academy.';
             return;
         }
 
-        StudentClasses::create([
+        $studentClass = StudentClasses::create([
             'user_id' => $user->id,
             'class_completed' => json_encode([]),
             'status' => 'started',
@@ -159,10 +167,17 @@ new #[Layout('components.layouts.layout')] class extends Component {
             'phone' => $this->number,
             'academy_id'=>$this->academy->id
         ]);
+
+        // Send enrollment confirmation to student
+        $user->notify(new StudentEnrolledNotification($this->academy));
+
+        // Dispatch event to notify team lead
+        StudentRegisteredToAcademy::dispatch($user, $this->academy, $studentClass);
+
         $this->reset(['name', 'email', 'number', 'howDidYouKnowAboutUs', 'interest', 'selectedChapter', 'statusMessage', 'statusType', 'academy', 'academyTeam']);
         $this->errorMessages = [];
         session()->flash('success', 'Registration successful!');
-        $this->redirect(route('home', request()->query()));
+        $this->redirect(route('believers_academy.dashboard', request()->query()));
     }
 };
 ?>

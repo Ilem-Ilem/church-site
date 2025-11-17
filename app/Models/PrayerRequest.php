@@ -12,7 +12,9 @@ class PrayerRequest extends Model
         'request',
         'is_addressed',
         'chapter_id',
-        'user_id'
+        'user_id',
+        'admin_notes',
+        'notification_sent_at'
     ];
 
     public function user()

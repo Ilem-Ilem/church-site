@@ -6,6 +6,7 @@
 //TODO:: allow filter by date to allow print of curent month students
 
 use App\Models\{BeliversAcademy, StudentClasses, AcademyClases, Chapter};
+use App\Notifications\ClassCompletedByStudent;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Livewire\Volt\Component;
@@ -97,6 +98,14 @@ new #[Layout('components.layouts.admin')] class extends Component {
         $student->class_completed = json_encode(array_merge($this->studentProgress, [$id]));
         $student->save();
         $this->student = $student;
+
+        // Get the class that was marked complete
+        $class = AcademyClases::find($id);
+
+        // Notify student about class completion
+        if ($class && $student->user) {
+            $student->user->notify(new ClassCompletedByStudent($student->user, $class, 'completed'));
+        }
 
         $this->loadClasses();
         $this->loadStudentProgress();

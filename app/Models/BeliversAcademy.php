@@ -1,29 +1,10 @@
 <?php
 
-//TODO: create the class_table with columns('id', 'name', 'date', 'time')
-//TODO: create the student class table with column('id', 'user_id', 'class_completed', 'status'. 'cert')
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class BeliversAcademy extends Model
+/**
+ * @deprecated Use BelieversAcademy instead (this is a backward compatibility alias)
+ */
+class BeliversAcademy extends BelieversAcademy
 {
-    public $fillable = [
-        'status', 'chapter_id', 'start_at'
-    ];
-
-    public function classes()
-    {
-        return $this->hasMany(AcademyClases::class);
-    }
-
-    public function chapter()
-    {
-        return $this->belongsTo(Chapter::class);
-    }
-
-    public function students()
-    {
-        return $this->hasMany(StudentClasses::class, 'academy_id');
-    }
 }

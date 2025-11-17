@@ -10,6 +10,11 @@ class AcademyClases extends Model
 
     public function academy()
     {
-        return $this->belongsTo(BeliversAcademy::class);
+        return $this->belongsTo(BelieversAcademy::class, 'academy_id');
+    }
+
+    public function tutorUser()
+    {
+        return $this->belongsTo(User::class, 'tutor');
     }
 }

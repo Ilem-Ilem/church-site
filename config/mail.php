@@ -18,6 +18,15 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Mail Log Channel
+    |--------------------------------------------------------------------------
+    |
+    | Log all emails to storage/logs/ for development/testing.
+    |
+    */
+
+    /*
+    |--------------------------------------------------------------------------
     | Mailer Configurations
     |--------------------------------------------------------------------------
     |
@@ -72,11 +81,16 @@ return [
 
         'log' => [
             'transport' => 'log',
-            'channel' => env('MAIL_LOG_CHANNEL'),
+            'channel' => env('MAIL_LOG_CHANNEL', 'single'),
         ],
 
         'array' => [
             'transport' => 'array',
+        ],
+
+        'file' => [
+            'transport' => 'file',
+            'path' => storage_path('app/mail'),
         ],
 
         'failover' => [

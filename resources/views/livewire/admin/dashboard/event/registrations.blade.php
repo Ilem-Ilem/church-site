@@ -1,36 +1,41 @@
 <?php
 
-use App\Models\{Events, EventForm};
-use Livewire\Attributes\{Layout, Url};
+use App\Models\EventForm;
+use App\Models\Events;
+use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Url;
 use Livewire\Volt\Component;
 use Livewire\WithPagination;
 use TallStackUi\Traits\Interactions;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 
 new #[Layout('components.layouts.admin')] class extends Component
 {
-    use WithPagination, Interactions;
+    use Interactions, WithPagination;
 
     #[Url]
     public $event_id;
 
     public $event;
+
     public $selectedRegistration = null;
+
     public $showDetailsModal = false;
+
     public $searchTerm = '';
+
     public $filterStatus = '';
 
     public function mount()
     {
-        if (!$this->event_id) {
+        if (! $this->event_id) {
             abort(404, 'Event not found');
         }
 
         $this->event = Events::with('chapter')->findOrFail($this->event_id);
 
         // Check permissions
-        if (!Auth::user()->hasRole(['admin', 'super-admin'])) {
+        if (! Auth::user()->hasRole(['admin', 'super-admin'])) {
             abort(403, 'Unauthorized');
         }
     }
@@ -42,10 +47,10 @@ new #[Layout('components.layouts.admin')] class extends Component
 
         // Search
         if ($this->searchTerm) {
-            $query->where(function($q) {
-                $q->where('name', 'like', '%' . $this->searchTerm . '%')
-                  ->orWhere('email', 'like', '%' . $this->searchTerm . '%')
-                  ->orWhere('phone', 'like', '%' . $this->searchTerm . '%');
+            $query->where(function ($q) {
+                $q->where('name', 'like', '%'.$this->searchTerm.'%')
+                    ->orWhere('email', 'like', '%'.$this->searchTerm.'%')
+                    ->orWhere('phone', 'like', '%'.$this->searchTerm.'%');
             });
         }
 
@@ -95,16 +100,17 @@ new #[Layout('components.layouts.admin')] class extends Component
 
         if ($registrations->isEmpty()) {
             $this->toast()->warning('No Data', 'No registrations to export')->send();
+
             return;
         }
 
-        $filename = 'event-' . $this->event_id . '-registrations-' . now()->format('Y-m-d') . '.csv';
+        $filename = 'event-'.$this->event_id.'-registrations-'.now()->format('Y-m-d').'.csv';
         $headers = [
             'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
         ];
 
-        $callback = function() use ($registrations) {
+        $callback = function () use ($registrations) {
             $file = fopen('php://output', 'w');
 
             // Headers

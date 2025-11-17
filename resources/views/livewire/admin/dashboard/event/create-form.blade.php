@@ -161,7 +161,25 @@ new #[Layout('components.layouts.admin')] class extends Component
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium mb-1">Timezone</label>
-                        <input wire:model.lazy="timezone" type="text" placeholder="e.g. UTC, America/New_York" class="w-full px-3 py-2 rounded-lg bg-white dark:bg-zinc-900 border" />
+                        <select wire:model.lazy="timezone" class="w-full px-3 py-2 rounded-lg bg-white dark:bg-zinc-900 border">
+                            <option value="">Select timezone...</option>
+                            <option value="UTC">UTC</option>
+                            <option value="Africa/Lagos">Africa/Lagos (WAT)</option>
+                            <option value="Africa/Johannesburg">Africa/Johannesburg (SAST)</option>
+                            <option value="Africa/Cairo">Africa/Cairo (EET)</option>
+                            <option value="Africa/Nairobi">Africa/Nairobi (EAT)</option>
+                            <option value="America/New_York">America/New York (EST/EDT)</option>
+                            <option value="America/Chicago">America/Chicago (CST/CDT)</option>
+                            <option value="America/Denver">America/Denver (MST/MDT)</option>
+                            <option value="America/Los_Angeles">America/Los Angeles (PST/PDT)</option>
+                            <option value="Europe/London">Europe/London (GMT/BST)</option>
+                            <option value="Europe/Paris">Europe/Paris (CET/CEST)</option>
+                            <option value="Asia/Dubai">Asia/Dubai (GST)</option>
+                            <option value="Asia/Kolkata">Asia/Kolkata (IST)</option>
+                            <option value="Asia/Singapore">Asia/Singapore (SGT)</option>
+                            <option value="Asia/Tokyo">Asia/Tokyo (JST)</option>
+                            <option value="Australia/Sydney">Australia/Sydney (AEDT/AEST)</option>
+                        </select>
                         @error('timezone') <span class="text-xs text-red-400">{{ $message }}</span> @enderror
                     </div>
 

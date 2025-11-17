@@ -1,51 +1,55 @@
 <?php
 
-use App\Models\{Events, EventForm};
-use Livewire\Attributes\{Layout, Url};
+use App\Models\EventForm;
+use App\Models\Events;
+use App\Models\User;
+use App\Notifications\EventRegistered;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Url;
 use Livewire\Volt\Component;
 use Livewire\WithFileUploads;
 use TallStackUi\Traits\Interactions;
 
 new #[Layout('components.layouts.layout')] class extends Component
 {
-    use WithFileUploads, Interactions;
+    use Interactions, WithFileUploads;
 
     #[Url]
     public $event_id;
 
     public $event;
+
     public $formData = [];
+
     public $uploadedFiles = [];
 
     public function mount()
     {
-        if (!$this->event_id) {
+        if (! $this->event_id) {
             abort(404, 'Event not found');
         }
 
         $this->event = Events::findOrFail($this->event_id);
 
         // Check if event requires registration
-        if (!$this->event->registration_required) {
+        if (! $this->event->registration_required) {
             abort(403, 'This event does not require registration');
         }
 
-        // Check if event is published
-        if ($this->event->status !== 'published') {
-            abort(403, 'This event is not currently accepting registrations');
+        // Check if registration is open using the model method
+        if (! $this->event->isRegistrationOpen()) {
+            if ($this->event->status !== 'published') {
+                abort(403, 'This event is not currently published');
+            }
+            
+            if ($this->event->hasStarted()) {
+                abort(403, 'Registration for this event has closed. The event has already started.');
+            }
         }
 
-        // Check if event has passed
-        // if ($this->event->start_at->isPast()) {
-        //     abort(403, 'Registration for this event has closed');
-        // }
-
         // Check capacity
-        if ($this->event->capacity) {
-            $registrationCount = EventForm::where('event_id', $this->event_id)->count();
-            if ($registrationCount >= $this->event->capacity) {
-                abort(403, 'This event has reached maximum capacity');
-            }
+        if ($this->event->isAtCapacity()) {
+            abort(403, 'This event has reached maximum capacity. No more registrations can be accepted.');
         }
     }
 
@@ -89,8 +93,8 @@ new #[Layout('components.layouts.layout')] class extends Component
                         $fieldRules[] = 'max:500';
                 }
 
-                $rules['formData.' . $field['name']] = implode('|', $fieldRules);
-                $messages['formData.' . $field['name'] . '.required'] = 'The ' . strtolower($field['label']) . ' field is required.';
+                $rules['formData.'.$field['name']] = implode('|', $fieldRules);
+                $messages['formData.'.$field['name'].'.required'] = 'The '.strtolower($field['label']).' field is required.';
             }
         }
 
@@ -113,6 +117,7 @@ new #[Layout('components.layouts.layout')] class extends Component
             $email = $processedData['email'] ?? null;
             $phone = $processedData['phone'] ?? null;
 
+            // Create event form submission
             EventForm::create([
                 'event_id' => $this->event_id,
                 'chapter_id' => $this->event->chapter_id,
@@ -125,19 +130,52 @@ new #[Layout('components.layouts.layout')] class extends Component
                 'status' => 'confirmed',
             ]);
 
+            // If user is authenticated, also create AccountEvent record
+            $user = auth()->user();
+            if ($user && $user->account) {
+                // Check if account is not already registered
+                $existingRegistration = \App\Models\AccountEvent::where('account_id', $user->account->id)
+                    ->where('event_id', $this->event_id)
+                    ->first();
+
+                if (!$existingRegistration) {
+                    \App\Models\AccountEvent::create([
+                        'account_id' => $user->account->id,
+                        'event_id' => $this->event_id,
+                        'registered_at' => now(),
+                        'status' => 'registered',
+                    ]);
+                }
+
+                // Notify event team/organizer
+                $eventTeam = $this->event->eventTeams()->first();
+                if ($eventTeam && $eventTeam->team) {
+                    $teamLead = $eventTeam->team->leader()->with('user')->first();
+                    if ($teamLead && $teamLead->user) {
+                        $teamLead->user->notify(new EventRegistered($this->event, $user));
+                    }
+                }
+            }
+
             session()->flash('success', 'Registration successful! We look forward to seeing you at the event.');
 
             $this->reset(['formData', 'uploadedFiles']);
 
             $this->toast()
-                ->success('Registration Successful!', 'You have been registered for ' . $this->event->title)
+                ->success('Registration Successful!', 'You have been registered for '.$this->event->title)
                 ->send();
 
             return redirect()->route('home');
 
         } catch (\Exception $e) {
+            \Log::error('Event registration failed', [
+                'event_id' => $this->event_id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
             $this->toast()
-                ->error('Registration Failed', 'An error occurred. Please try again.')
+                ->error('Registration Failed', $e->getMessage())
                 ->send();
         }
     }
@@ -247,7 +285,15 @@ new #[Layout('components.layouts.layout')] class extends Component
                             <div class="col-md-6">
                                 <div class="d-flex align-items-center text-muted">
                                     <i class="bi bi-clock event-info-icon"></i>
-                                    <span>{{ $event->start_at->format('g:i A') }}</span>
+                                    <span>
+                                        {{ $event->start_at->format('g:i A') }}
+                                        @if($event->end_at)
+                                            - {{ $event->end_at->format('g:i A') }}
+                                        @endif
+                                        @if($event->timezone)
+                                            <small class="text-muted">({{ $event->timezone }})</small>
+                                        @endif
+                                    </span>
                                 </div>
                             </div>
 
@@ -415,6 +461,14 @@ new #[Layout('components.layouts.layout')] class extends Component
                         </form>
                     </div>
                 </div>
+
+                <!-- Info Box -->
+                @if($event->hasStarted())
+                    <div class="alert alert-success border-0 rounded-3 mt-4">
+                        <i class="bi bi-images me-2"></i>
+                        <strong>Event Underway!</strong> View photos from the event in the gallery once registration is complete.
+                    </div>
+                @endif
 
                 <!-- Back Link -->
                 <div class="text-center mt-4">

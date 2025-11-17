@@ -386,26 +386,48 @@
     const pickupForm = document.getElementById('pickup-request-form');
 
     // Handle form submission
-    pickupForm.addEventListener('submit', (event) => {
-      event.preventDefault(); // Prevent default form submission behavior
+    pickupForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
 
-      // In a real application, you would send this data to a server.
-      // For this example, we'll just log it to the console.
-      console.log('Pickup request submitted:', {
+      const formData = {
         name: pickupForm.name.value,
         phone: pickupForm.phone.value,
-        location: pickupForm['pickup-location'].value,
-      });
+        'pickup-location': pickupForm['pickup-location'].value,
+      };
 
-      // Hide the modal after submission
-      const modalElement = document.getElementById('pickupModal');
-      const modal = bootstrap.Modal.getInstance(modalElement);
-      if (modal) {
-        modal.hide();
+      try {
+        const response = await fetch('/transport/pickup-request', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+          },
+          body: JSON.stringify(formData),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Show success message
+          alert('✓ ' + data.message);
+
+          // Hide the modal
+          const modalElement = document.getElementById('pickupModal');
+          const modal = bootstrap.Modal.getInstance(modalElement);
+          if (modal) {
+            modal.hide();
+          }
+
+          // Reset the form
+          pickupForm.reset();
+        } else {
+          // Show error message
+          alert('Error: ' + (data.message || 'Failed to submit request'));
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
       }
-
-      // Reset the form
-      pickupForm.reset();
     });
   </script>
 </body>

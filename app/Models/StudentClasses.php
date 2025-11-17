@@ -15,6 +15,6 @@ class StudentClasses extends Model
 
     public function academy()
     {
-        return $this->belongsTo(BeliversAcademy::class, 'academy_id');
+        return $this->belongsTo(BelieversAcademy::class, 'academy_id');
     }
 }

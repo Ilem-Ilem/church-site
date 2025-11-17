@@ -1,5 +1,4 @@
 <?php
-//TODO: create the class_table with columns('id', 'name', 'date', 'time', 'description', 'academy_id', 'created_at', 'updated_at', 'study_materials')
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;

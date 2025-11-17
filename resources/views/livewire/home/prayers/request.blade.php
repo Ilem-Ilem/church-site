@@ -1,10 +1,8 @@
 <?php
-/**
-   TODO: notify missions team when prayer request is sent
- */
 use Livewire\Volt\Component;
 use Livewire\Attributes\{Layout, Url};
-use App\Models\{Chapter};
+use App\Models\{Chapter, PrayerRequest, Team};
+use App\Notifications\PrayerRequestSubmitted;
 
 new #[Layout('components.layouts.layout')] class extends Component {
     public ?string $name = null;
@@ -42,12 +40,26 @@ new #[Layout('components.layouts.layout')] class extends Component {
             'selectedChapter' => 'required|exists:chapters,id',
         ]);
 
-        $request = new \App\Models\PrayerRequest();
-        $request->name = $this->name;
-        $request->email = $this->email;
-        $request->request = $this->request;
-        $request->chapter_id = $this->selectedChapter;
-        $request->save();
+        $prayerRequest = new PrayerRequest();
+        $prayerRequest->name = $this->name;
+        $prayerRequest->email = $this->email;
+        $prayerRequest->request = $this->request;
+        $prayerRequest->title = substr($this->request, 0, 50) . '...';
+        $prayerRequest->chapter_id = $this->selectedChapter;
+        $prayerRequest->save();
+
+        // Notify prayer request team
+        $prayerTeam = Team::where('chapter_id', $this->selectedChapter)
+            ->whereHas('prayerRequests')
+            ->first();
+
+        if ($prayerTeam) {
+            $teamMembers = $prayerTeam->users()->get();
+            foreach ($teamMembers as $member) {
+                $member->notify(new PrayerRequestSubmitted($prayerRequest));
+            }
+        }
+
         session()->flash('message', 'Prayer request submitted successfully.');
         $this->reset(['name', 'email', 'request', 'selectedChapter']);
     }

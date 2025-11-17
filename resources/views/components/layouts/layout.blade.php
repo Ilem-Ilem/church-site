@@ -48,14 +48,24 @@
             <!-- Large screen nav links -->
             <div class="collapse navbar-collapse d-none d-md-flex justify-content-end">
                 <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="sermon.html">Message</a></li>
-                    <li class="nav-item"><a class="nav-link" href="about_us.html">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="cell.html">Cell</a></li>
-                    <li class="nav-item"><a class="nav-link" href="event.html">Event</a></li>
-                    <li class="nav-item"><a class="nav-link" href="map.html">Location</a></li>
-                    <li class="nav-item"><a class="nav-link" href="belivers.html">Believers academy</a></li>
-                    <li class="nav-item"><a class="nav-link" href="transport.html">Need a Ride</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('home') }}" wire:navigate>Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('sermons.index') }}" wire:navigate>Message</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('home') }}" wire:navigate>About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('cells.index') }}" wire:navigate>Cell</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('events.index') }}" wire:navigate>Event</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('location.index') }}" wire:navigate>Location</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('believers.academy') }}" wire:navigate>Believers academy</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('transport') }}" wire:navigate>Need a Ride</a></li>
+                    <li class="nav-item">
+                        @auth
+                            <form method="POST" action="{{ route('logout') }}" class="d-inline">
+                                @csrf
+                                <button type="submit" class="nav-link bg-transparent border-0 text-white" style="cursor: pointer;">Logout</button>
+                            </form>
+                        @else
+                            <a class="nav-link" href="{{ route('home.login') }}" wire:navigate>Login</a>
+                        @endauth
+                    </li>
                 </ul>
             </div>
 
@@ -111,11 +121,11 @@
                 <div class="footer-content col-lg-3 col-md-6">
                     <h2>Quick Links</h2>
                     <ul>
-                        <li><a href="index.html">Home</a></li>
-                        <li><a href="messages.html">Messages</a></li>
-                        <li><a href="about.html">About</a></li>
-                        <li><a href="map.html">Location</a></li>
-                        <li><a href="believers_class.html">Believers Class</a></li>
+                        <li><a href="{{ route('home') }}" wire:navigate>Home</a></li>
+                        <li><a href="{{ route('sermons.index') }}" wire:navigate>Messages</a></li>
+                        <li><a href="{{ route('home') }}" wire:navigate>About</a></li>
+                        <li><a href="{{ route('home') }}" wire:navigate>Location</a></li>
+                        <li><a href="{{ route('believers.academy') }}" wire:navigate>Believers Class</a></li>
                     </ul>
                 </div>
 

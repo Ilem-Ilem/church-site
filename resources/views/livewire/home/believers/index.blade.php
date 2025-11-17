@@ -104,28 +104,40 @@ new #[Layout('components.layouts.layout')] class extends Component {
         <div class="offcanvas-body">
             <ul class="navbar-nav">
                 <div class="navcon">
-                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('home') }}" wire:navigate>Home</a></li>
                 </div>
                 <div class="navcon">
-                    <li class="nav-item"><a class="nav-link" href="sermon.html">Message</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('sermons.index') }}" wire:navigate>Message</a></li>
                 </div>
                 <div class="navcon">
-                    <li class="nav-item"><a class="nav-link" href="about_us.html">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('home') }}" wire:navigate>About</a></li>
                 </div>
                 <div class="navcon">
-                    <li class="nav-item"><a class="nav-link" href="cell.html">Cell</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('home') }}" wire:navigate>Cell</a></li>
                 </div>
                 <div class="navcon">
-                    <li class="nav-item"><a class="nav-link" href="event.html">Event</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('events.index') }}" wire:navigate>Event</a></li>
                 </div>
                 <div class="navcon">
-                    <li class="nav-item"><a class="nav-link" href="map.html">Location</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('home') }}" wire:navigate>Location</a></li>
                 </div>
                 <div class="navcon">
-                    <li class="nav-item"><a class="nav-link" href="belivers.html">Believers academy</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('believers.academy') }}" wire:navigate>Believers academy</a></li>
                 </div>
                 <div class="navcon">
-                    <li class="nav-item"><a class="nav-link" href="transport.html">Need a Ride</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('transport') }}" wire:navigate>Need a Ride</a></li>
+                </div>
+                <div class="navcon">
+                    @auth
+                        <li class="nav-item">
+                            <form method="POST" action="{{ route('logout') }}" class="d-inline w-100">
+                                @csrf
+                                <button type="submit" class="nav-link bg-transparent border-0 text-white w-100 text-start" style="cursor: pointer;">Logout</button>
+                            </form>
+                        </li>
+                    @else
+                        <li class="nav-item"><a class="nav-link" href="{{ route('home.login') }}" wire:navigate>Login</a></li>
+                    @endauth
                 </div>
 
             </ul>
@@ -217,7 +229,7 @@ new #[Layout('components.layouts.layout')] class extends Component {
                     to
                     thrive in their walk with God.</p>
                 <p class="link-text mb-0">New classes begin every first Sunday of the month. Click <a
-                        href="{{ route('believer_academy.register') }}"
+                        href="{{ route('believers_academy.register') }}"
                         class="text-decoration-underline text-primary fw-bold" wire:navigate>here</a> to register.</p>
             </div>
         @endif

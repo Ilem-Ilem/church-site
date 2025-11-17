@@ -15,6 +15,16 @@
     }
 @endphp
 
+@role('admin')
+    <flux:navlist.group expandable heading="Transportation"
+        :expanded="request()->routeIs('admin.dashboard.transport.*') ? 'true' : 'false'">
+        <flux:navlist.item :href="route('admin.dashboard.transport.index', request()->query())" wire:navigate
+            :active="request()->routeIs('admin.dashboard.transport.index') ? 'true' : 'false'">
+            All Requests
+        </flux:navlist.item>
+    </flux:navlist.group>
+@endrole
+
 @if ($leadersTeam && in_array($leadersTeam->id, $appointment_teams))
     <flux:navlist.group expandable heading="Appointments"
         :expanded="request()->routeIs('admin.dashboard.appointments.*') ? 'true' : 'false'">
@@ -84,7 +94,7 @@
 @endif
 
 <flux:navlist.group expandable heading="Report"
-    :expanded="request()->routeIs('admin.dashboard.appointments.*') ? 'true' : 'false'">
+    :expanded="request()->routeIs('admin.dashboard.reports.*') ? 'true' : 'false'">
 
     <flux:navlist.item :href="route('admin.dashboard.reports.index', request()->query())" wire:navigate
         :active="request()->routeIs('admin.dashboard.reports.index') ? 'true' : 'false'">
@@ -96,6 +106,19 @@
     </flux:navlist.item>
 
 </flux:navlist.group>
+
+@role('admin')
+<flux:navlist.group expandable heading="Analytics" icon="chart-bar"
+    :expanded="request()->routeIs('admin.dashboard.analytics.*') ? 'true' : 'false'">
+
+    <flux:navlist.item :href="route('admin.dashboard.analytics.index', request()->query())" wire:navigate
+        :active="request()->routeIs('admin.dashboard.analytics.index') ? 'true' : 'false'">
+        Analytics Dashboard
+    </flux:navlist.item>
+
+</flux:navlist.group>
+@endrole
+
 @if (auth()->user()->hasRole('admin') || in_array($leadersTeam->id, $eventTeams))
     <flux:navlist.group expandable :expanded="false" heading="Events">
         <flux:navlist.item :href="route('admin.dashboard.events.index', request()->query())" wire:navigate>

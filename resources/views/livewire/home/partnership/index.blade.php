@@ -303,11 +303,11 @@ new #[Layout('components.layouts.layout')] class extends Component {
                     <div class="footer-content col-lg-3 col-md-6">
                         <h2>Quick Links</h2>
                         <ul>
-                            <li><a href="index.html">Home</a></li>
-                            <li><a href="messages.html">Messages</a></li>
-                            <li><a href="about.html">About</a></li>
-                            <li><a href="map.html">Location</a></li>
-                            <li><a href="believers_class.html">Believers Class</a></li>
+                            <li><a href="{{ route('home') }}" wire:navigate>Home</a></li>
+                            <li><a href="{{ route('sermons.index') }}" wire:navigate>Messages</a></li>
+                            <li><a href="{{ route('home') }}" wire:navigate>About</a></li>
+                            <li><a href="{{ route('home') }}" wire:navigate>Location</a></li>
+                            <li><a href="{{ route('believers.academy') }}" wire:navigate>Believers Class</a></li>
                         </ul>
                     </div>
 

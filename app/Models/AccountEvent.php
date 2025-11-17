@@ -15,6 +15,17 @@ class AccountEvent extends Model
     protected $fillable = [
         'account_id',
         'event_id',
+        'registered_at',
+        'status',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'registered_at' => 'datetime',
     ];
 
     /**
@@ -35,5 +46,15 @@ class AccountEvent extends Model
     public function event(): BelongsTo
     {
         return $this->belongsTo(Events::class);
+    }
+
+    /**
+     * Scope to get registrations that are within registration period
+     */
+    public function scopeCanViewGallery($query)
+    {
+        return $query->whereHas('event', function ($q) {
+            $q->where('start_at', '<=', now());
+        });
     }
 }

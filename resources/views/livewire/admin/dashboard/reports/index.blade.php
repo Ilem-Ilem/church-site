@@ -76,35 +76,71 @@ new #[Layout('components.layouts.admin')] class extends Component {
         $currentLevel = $report->level;
         $allowedNext = $nextLevels[$currentLevel] ?? null;
 
-        // 🚨 Stop invalid or backward changes
+        // 🚨 Validation: Stop invalid or backward changes
         if ($allowedNext !== $level) {
             $this->toast()->error('Not allowed', 'You cannot change report level this way ❌')->send();
             return;
         }
 
-        // ✅ Rules:
-        // - team-lead / lead-assist can only move team -> chapter for their own reports
+        // 🚨 Validation: Check if report has required content
+        if (empty($report->report) && empty($report->report_path)) {
+            $this->toast()->error('Invalid Report', 'Report must have content before escalation ❌')->send();
+            return;
+        }
+
+        // 🚨 Validation: Check if report is too old (> 90 days)
+        if ($report->report_date && $report->report_date->lt(now()->subDays(90))) {
+            $this->toast()->error('Report Too Old', 'Cannot escalate reports older than 90 days ❌')->send();
+            return;
+        }
+
+        // ✅ Permission: team-lead / lead-assist can only move team -> chapter for their own reports
         if (in_array($currentLevel, ['team']) && $level === 'chapter') {
             if (!$user->hasRole('admin') && $report->team_id !== $this->leadersTeam?->id) {
-                $this->toast()->error('Unauthorized', 'You can only push reports from your own team')->send();
+                $this->toast()->error('Unauthorized', 'You can only push reports from your own team ❌')->send();
+                return;
+            }
+
+            // Additional check: Ensure team belongs to user's chapter
+            if ($report->chapter_id !== $user->chapter_id) {
+                $this->toast()->error('Unauthorized', 'Report chapter mismatch ❌')->send();
                 return;
             }
         }
 
-        // - only admin can push chapter -> hq
-        if ($currentLevel === 'chapter' && $level === 'hq' && !$user->hasRole('admin')) {
-            $this->toast()->error('Unauthorized', 'Only admins can escalate to HQ')->send();
-            return;
+        // ✅ Permission: only admin can push chapter -> hq
+        if ($currentLevel === 'chapter' && $level === 'hq') {
+            if (!$user->hasRole('admin')) {
+                $this->toast()->error('Unauthorized', 'Only admins can escalate to HQ ❌')->send();
+                return;
+            }
+
+            // Admin must be from the same chapter
+            if ($report->chapter_id !== $user->chapter_id && !$user->hasRole('super-admin')) {
+                $this->toast()->error('Unauthorized', 'You can only escalate reports from your chapter ❌')->send();
+                return;
+            }
         }
 
-        // Save promotion
+        // 📝 Log the escalation (for audit trail)
+        \Log::info('Report escalated', [
+            'report_id' => $report->id,
+            'from_level' => $currentLevel,
+            'to_level' => $level,
+            'escalated_by' => $user->id,
+            'escalated_by_name' => $user->name,
+            'escalated_at' => now(),
+        ]);
+
+        // Save promotion with timestamp tracking
         $report->level = $level;
         $report->save();
 
+        // Success messages with context
         if ($level === 'chapter') {
-            $this->toast()->success('Done', 'Report sent to Chapter Admin ✅')->send();
+            $this->toast()->success('✅ Report Escalated', "Report sent to Chapter Admin for review")->send();
         } elseif ($level === 'hq') {
-            $this->toast()->success('Done', 'Report escalated to HQ 🚀')->send();
+            $this->toast()->success('🚀 Report Escalated', "Report sent to HQ for final review")->send();
         }
     }
 

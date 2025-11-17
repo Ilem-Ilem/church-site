@@ -18,6 +18,7 @@ class EventForm extends Model
         'email',
         'phone',
         'guests',
+        'form',
         'answers',
         'notes',
         'status',

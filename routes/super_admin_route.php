@@ -5,7 +5,7 @@ use Livewire\Volt\Volt;
 
 Route::middleware(['super-admin'])->group(function () {
     Volt::route('super-admin/dashboard', 'admin.superadmin.dashboard')->name('admin.super-admin.dashboard');
-    Volt::route('super-admin', 'admin.superadmin.dashboard')->name('admin.super-admin.dashboard');
+    Volt::route('super-admin', 'admin.superadmin.dashboard');
     //----------------------------------------------------------------------------------
     //               CONCALVE SECTION
     //----------------------------------------------------------------------------------

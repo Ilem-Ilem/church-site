@@ -54,6 +54,37 @@ Route::prefix('admin/dashboard')
         Volt::route('reports/report-sent-to-hq', 'admin.dashboard.reports.report-sent-to-hq')->name('admin.dashboard.reports.report-sent-to-hq');
 
         // -----------------------------------------------------------------
+        //              ANALYTICS SECTION
+        //-------------------------------------------------------------------
+        Volt::route('analytics', 'admin.dashboard.analytics.index')->name('admin.dashboard.analytics.index');
+
+        // -----------------------------------------------------------------
+        //              SPECIALIZED REPORTS
+        //-------------------------------------------------------------------
+        // Finance Reports
+        Volt::route('finance/reports', 'admin.dashboard.finance.reports.index')->name('admin.dashboard.finance.reports.index');
+        Volt::route('finance/reports/create', 'admin.dashboard.finance.reports.create')->name('admin.dashboard.finance.reports.create');
+        Volt::route('finance/reports/view', 'admin.dashboard.finance.reports.view')->name('admin.dashboard.finance.reports.view');
+
+        // Appointment Reports
+        Volt::route('appointments/reports', 'admin.dashboard.appointments.reports.index')->name('admin.dashboard.appointments.reports.index');
+
+        // Attendance Reports
+        Volt::route('attendance/reports', 'admin.dashboard.attendance.reports.index')->name('admin.dashboard.attendance.reports.index');
+
+        // -----------------------------------------------------------------
+        //              CELL GROUPS
+        //-------------------------------------------------------------------
+        Volt::route('cells', 'admin.dashboard.cells.index')->name('admin.dashboard.cells.index');
+        Volt::route('cells/create', 'admin.dashboard.cells.create')->name('admin.dashboard.cells.create');
+        Volt::route('cells/view', 'admin.dashboard.cells.view')->name('admin.dashboard.cells.view');
+
+        // -----------------------------------------------------------------
+        //              PASSWORD RESET REQUESTS
+        //-------------------------------------------------------------------
+        Volt::route('password-reset-requests', 'admin.dashboard.password-reset.index')->name('admin.dashboard.password-reset.index');
+
+        // -----------------------------------------------------------------
         //              PARTNERSHIP SECTION
         //-------------------------------------------------------------------
         Volt::route('partnerships', 'admin.dashboard.partnership.index')->name('admin.dashboard.partnerships.index');
@@ -73,6 +104,20 @@ Route::prefix('admin/dashboard')
         Volt::route('/events/registrations', 'admin.dashboard.event.registrations')->name('admin.dashboard.event.registrations');
 
 
+        //SERMON ROUTES
+         Volt::route(
+             'sermons',
+             'admin.dashboard.sermons.index'   // <- dot-notation path to the .blade.php
+         )
+             ->name('admin.sermons')
+             ->middleware(['auth', 'admin']);
+
+        // TRANSPORT ROUTES
+        Volt::route('transport', 'admin.dashboard.transport.index')->name('admin.dashboard.transport.index');
+        Volt::route('transport/{id}', 'admin.dashboard.transport.show')->name('admin.dashboard.transport.show');
+        Route::put('transport/{transport}/status', [\App\Http\Controllers\TransportController::class, 'updateStatus'])->name('admin.dashboard.transport.update-status');
+        Route::delete('transport/{transport}', [\App\Http\Controllers\TransportController::class, 'destroy'])->name('admin.dashboard.transport.destroy');
+
 
         // Finance Routes
         Volt::route('finance', 'admin.dashboard.finance.index')->name('admin.dashboard.finance.index');
@@ -81,7 +126,7 @@ Route::prefix('admin/dashboard')
         Volt::route('finance/add-givings-details', 'admin.dashboard.finance.add-givings-details')->name('admin.dashboard.finance.add-givings-details');
 
         // Event Gallery
-        Volt::route('/events/gallery', 'admin.dashboard.event.event-gallery')->name('admin.dashboard.events.gallery');
+        Volt::route('/events/gallery', 'admin.dashboard.event.gallery-management')->name('admin.dashboard.events.gallery');
 
         // Appointments Routes
         Volt::route('appointments', 'admin.dashboard.appointments.index')->name('admin.dashboard.appointments.index');
@@ -118,11 +163,4 @@ Route::prefix('admin/dashboard')
         Volt::route('missions/out-reach-details', 'admin.dashboard.missions.out-reach-details')->name('admin.dashboard.missions.out-reach-details');
         Volt::route('missions/outreach-report', 'admin.dashboard.missions.outreach-report')->name('admin.dashboard.missions.outreach-report');
 
-        //SERMON ROUTES 
-        Volt::route(
-            'sermons',
-            'admin.dashboard.sermons.index'   // <- dot-notation path to the .blade.php
-        )
-            ->name('admin.sermons')
-            ->middleware(['auth', 'admin']);
-    });
+        });

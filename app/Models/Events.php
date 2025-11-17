@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\EventHelper;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Events extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, EventHelper;
 
     protected $table = 'events';
 
@@ -61,5 +62,73 @@ class Events extends Model
 
     public function accounts(){
         return $this->belongsToMany(Accounts::class, 'account_events', 'event_id', 'account_id');
+    }
+
+    public function eventTeams()
+    {
+        return $this->hasMany(EventTeam::class, 'event_id');
+    }
+
+    /**
+     * Check if registration is currently open
+     */
+    public function isRegistrationOpen(): bool
+    {
+        // Must be published
+        if ($this->status !== 'published') {
+            return false;
+        }
+
+        // Must not have started yet
+        if ($this->start_at->isPast()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Check if event has started
+     */
+    public function hasStarted(): bool
+    {
+        return $this->start_at->isPast();
+    }
+
+    /**
+     * Check if event has ended
+     */
+    public function hasEnded(): bool
+    {
+        if (!$this->end_at) {
+            return false;
+        }
+        return $this->end_at->isPast();
+    }
+
+    /**
+     * Get remaining capacity
+     */
+    public function getRemainingCapacity(): ?int
+    {
+        if (!$this->capacity) {
+            return null;
+        }
+
+        $registered = $this->accounts()->count();
+        return max(0, $this->capacity - $registered);
+    }
+
+    /**
+     * Check if event is at capacity
+     */
+    public function isAtCapacity(): bool
+    {
+        if (!$this->capacity) {
+            return false;
+        }
+
+        $registered = $this->accounts()->count();
+        return $registered >= $this->capacity;
     }
 }
