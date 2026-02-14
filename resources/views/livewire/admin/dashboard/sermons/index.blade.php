@@ -7,8 +7,8 @@ use App\Models\Sermons;
 use App\Models\SermonSeries;
 use App\Models\SermonMedia;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\UploadedFile;
 use TallStackUi\Traits\Interactions;
-use App\Jobs\ProcessSermonMedia;
 use Livewire\Attributes\Layout;
 
 new #[Layout('components.layouts.admin')]  class extends Component {
@@ -37,6 +37,8 @@ new #[Layout('components.layouts.admin')]  class extends Component {
     public $activeTab = 'sermons';
     public ?string $search = null;
     public ?int $quantity = 10;
+    public ?string $seriesSearch = null;
+    public ?int $seriesQuantity = 10;
     public array $selected = [];
 
     /**
@@ -54,6 +56,14 @@ new #[Layout('components.layouts.admin')]  class extends Component {
                 ['index' => 'action', 'label' => 'Action']
             ],
             'sermonRows' => $this->sermonRows(),
+            'seriesHeaders' => [
+                ['index' => 'image', 'label' => 'Image'],
+                ['index' => 'title', 'label' => 'Title'],
+                ['index' => 'description', 'label' => 'Description'],
+                ['index' => 'sermons_count', 'label' => 'Sermons'],
+                ['index' => 'action', 'label' => 'Action'],
+            ],
+            'seriesRows' => $this->seriesRows(),
             'series' => SermonSeries::latest()->get(),
         ];
     }
@@ -67,6 +77,18 @@ new #[Layout('components.layouts.admin')]  class extends Component {
             ->when($this->search, fn($q) => $q->where('title', 'like', "%{$this->search}%"))
             ->latest()
             ->paginate($this->quantity)
+            ->withQueryString();
+    }
+
+    public function seriesRows()
+    {
+        return SermonSeries::withCount('sermons')
+            ->when($this->seriesSearch, function ($query) {
+                $query->where('title', 'like', "%{$this->seriesSearch}%")
+                    ->orWhere('description', 'like', "%{$this->seriesSearch}%");
+            })
+            ->latest()
+            ->paginate($this->seriesQuantity)
             ->withQueryString();
     }
 
@@ -89,20 +111,14 @@ new #[Layout('components.layouts.admin')]  class extends Component {
 
     public function saveSermon()
     {
-        // Debug: Check what MIME type the file is reporting
-        if ($this->audioFile) {
-            \Log::info('Audio file MIME type: ' . $this->audioFile->getMimeType());
-            \Log::info('Audio file extension: ' . $this->audioFile->getClientOriginalExtension());
-        }
-
         $this->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'preached_at' => 'required|date',
             'series_id' => 'required|exists:series,id',
             'image' => $this->editMode ? 'nullable|image|max:2048' : 'required|image|max:2048',
-            'audioFile' => 'nullable|file|max:51200',
-            'videoFile' => 'nullable|mimes:mp4,mov,avi|max:512000',
+            'audioFile' => 'nullable|file|mimes:mp3,wav,m4a,aac,ogg,flac|max:512000',
+            'videoFile' => 'nullable|file|mimes:mp4,mov,avi,mkv,webm|max:512000',
         ]);
 
         $imagePath = $this->selectedSermon?->image_path;
@@ -123,17 +139,13 @@ new #[Layout('components.layouts.admin')]  class extends Component {
         ]);
         $sermon->save();
 
-        // Dispatch jobs for media processing
+        // Attach media immediately so playback works even without a queue worker.
         if ($this->audioFile) {
-            $audioPath = $this->audioFile->store('sermons/temp', 'public');
-            ProcessSermonMedia::dispatch($sermon->id, $audioPath, 'audio', $this->audioFile->getClientOriginalName());
-            $this->toast()->info('Audio Queued', 'Audio file is being processed in the background')->send();
+            $this->storeSermonMedia($sermon, $this->audioFile, 'audio');
         }
 
         if ($this->videoFile) {
-            $videoPath = $this->videoFile->store('sermons/temp', 'public');
-            ProcessSermonMedia::dispatch($sermon->id, $videoPath, 'video', $this->videoFile->getClientOriginalName());
-            $this->toast()->info('Video Queued', 'Video file is being processed in the background')->send();
+            $this->storeSermonMedia($sermon, $this->videoFile, 'video');
         }
 
         $this->toast()->success('Done!', $this->editMode ? 'Sermon updated successfully!' : 'Sermon created successfully!')->send();
@@ -243,8 +255,9 @@ new #[Layout('components.layouts.admin')]  class extends Component {
     public function confirmDeleteSeries($id)
     {
         $series = SermonSeries::findOrFail($id);
-        if ($series->image) {
-            Storage::disk('public')->delete($series->image);
+        $imagePath = $series->getAttribute('image');
+        if ($imagePath) {
+            Storage::disk('public')->delete($imagePath);
         }
         $series->delete();
 
@@ -261,6 +274,46 @@ new #[Layout('components.layouts.admin')]  class extends Component {
     private function resetSeriesForm()
     {
         $this->reset(['seriesTitle', 'seriesDescription', 'seriesImage', 'selectedSeries']);
+    }
+
+    public function resolveMediaUrl(?string $path): ?string
+    {
+        if (!$path) {
+            return null;
+        }
+
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return $path;
+        }
+
+        $normalized = '/' . ltrim($path, '/');
+
+        if (str_starts_with($normalized, '/storage/')) {
+            return $normalized;
+        }
+
+        return '/storage/' . ltrim($path, '/');
+    }
+
+    private function storeSermonMedia(Sermons $sermon, UploadedFile $file, string $type): void
+    {
+        $sermon->media()
+            ->where('type', $type)
+            ->get()
+            ->each(function (SermonMedia $media): void {
+                Storage::disk('public')->delete($media->file_path);
+                $media->delete();
+            });
+
+        $path = $file->store("sermons/{$type}", 'public');
+
+        $sermon->media()->create([
+            'file_name' => $file->getClientOriginalName(),
+            'file_path' => $path,
+            'mime_type' => $file->getMimeType() ?: 'application/octet-stream',
+            'file_size' => $file->getSize() ?: 0,
+            'type' => $type,
+        ]);
     }
 };
 ?>
@@ -321,30 +374,30 @@ new #[Layout('components.layouts.admin')]  class extends Component {
                 @if ($image)
                     <img src="{{ $image->temporaryUrl() }}" class="mt-2 h-32 w-32 object-cover rounded">
                 @elseif($editMode && $selectedSermon?->image_path)
-                    <img src="{{ Storage::url($selectedSermon->image_path) }}" class="mt-2 h-32 w-32 object-cover rounded">
+                    <img src="{{ $this->resolveMediaUrl($selectedSermon->image_path) }}" class="mt-2 h-32 w-32 object-cover rounded">
                 @endif
             </div>
 
             <div>
-                <label class="block text-sm font-medium mb-1 dark:text-gray-200">Audio File (Processed in Background)</label>
+                <label class="block text-sm font-medium mb-1 dark:text-gray-200">Audio File</label>
                 <input wire:model="audioFile" type="file" accept="audio/*"
                     class="w-full px-3 py-2 rounded-lg bg-white dark:bg-zinc-900 border dark:border-zinc-700 dark:text-gray-200" />
                 @error('audioFile') <span class="text-xs text-red-400">{{ $message }}</span> @enderror
                 <div wire:loading wire:target="audioFile" class="text-xs text-blue-500 mt-1">
                     Uploading audio file...
                 </div>
-                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Max 50MB (MP3, WAV, M4A) - Uploaded via queue</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Max 500MB (server upload limit may be lower)</p>
             </div>
 
             <div>
-                <label class="block text-sm font-medium mb-1 dark:text-gray-200">Video File (Processed in Background)</label>
+                <label class="block text-sm font-medium mb-1 dark:text-gray-200">Video File</label>
                 <input wire:model="videoFile" type="file" accept="video/*"
                     class="w-full px-3 py-2 rounded-lg bg-white dark:bg-zinc-900 border dark:border-zinc-700 dark:text-gray-200" />
                 @error('videoFile') <span class="text-xs text-red-400">{{ $message }}</span> @enderror
                 <div wire:loading wire:target="videoFile" class="text-xs text-blue-500 mt-1">
                     Uploading video file...
                 </div>
-                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Max 500MB (MP4, MOV, AVI) - Uploaded via queue</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Max 500MB (server upload limit may be lower)</p>
             </div>
 
             @if($editMode && $selectedSermon && $selectedSermon->media->count() > 0)
@@ -402,7 +455,7 @@ new #[Layout('components.layouts.admin')]  class extends Component {
                 @if ($seriesImage)
                     <img src="{{ $seriesImage->temporaryUrl() }}" class="mt-2 h-32 w-32 object-cover rounded">
                 @elseif($editMode && $selectedSeries?->image)
-                    <img src="{{ Storage::url($selectedSeries->image) }}" class="mt-2 h-32 w-32 object-cover rounded">
+                    <img src="{{ $this->resolveMediaUrl($selectedSeries->image) }}" class="mt-2 h-32 w-32 object-cover rounded">
                 @endif
             </div>
 
@@ -457,7 +510,7 @@ new #[Layout('components.layouts.admin')]  class extends Component {
 
                 @interact('column_image_path', $row)
                     @if($row->image_path)
-                        <img src="{{ Storage::url($row->image_path) }}" alt="{{ $row->title }}" class="h-12 w-12 rounded object-cover">
+                        <img src="{{ $this->resolveMediaUrl($row->image_path) }}" alt="{{ $row->title }}" class="h-12 w-12 rounded object-cover">
                     @else
                         <div class="h-12 w-12 rounded bg-gray-200 dark:bg-zinc-700 flex items-center justify-center">
                             <span class="text-xs text-gray-400">No image</span>
@@ -503,42 +556,53 @@ new #[Layout('components.layouts.admin')]  class extends Component {
     <!-- Series Tab -->
     @if($activeTab === 'series')
         <x-card class="relative dark:bg-dark-800">
-            <div class="p-6 border-b border-gray-200 dark:border-zinc-700">
-                <div class="flex justify-end">
-                    <x-button color="green" icon="plus" x-on:click="$wire.call('createSeries').then(() => $modalOpen('series-modal'))">
-                        Add Series
-                    </x-button>
-                </div>
-            </div>
+            <x-table
+                :headers="$seriesHeaders"
+                :rows="$seriesRows"
+                :filter="['quantity' => 'seriesQuantity', 'search' => 'seriesSearch']"
+                :quantity="[5, 10, 15, 25, 50]"
+                paginate
+                persistent>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-                @forelse($series as $item)
-                    <div class="border border-gray-200 dark:border-zinc-700 rounded-lg overflow-hidden hover:shadow-lg transition dark:bg-zinc-800">
-                        @if($item->image)
-                            <img src="{{ Storage::url($item->image) }}" alt="{{ $item->title }}" class="w-full h-48 object-cover">
-                        @else
-                            <div class="w-full h-48 bg-gray-200 dark:bg-zinc-700 flex items-center justify-center">
-                                <span class="text-gray-400 dark:text-gray-500">No image</span>
-                            </div>
-                        @endif
-                        <div class="p-4">
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ $item->title }}</h3>
-                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{{ Str::limit($item->description, 100) }}</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-500 mt-2">{{ $item->sermons->count() }} sermons</p>
-                            <div class="mt-4 flex justify-end space-x-2">
-                                <x-button color="blue" sm x-on:click="$wire.call('editSeries', {{ $item->id }}).then(() => $modalOpen('series-modal'))">
-                                    Edit
-                                </x-button>
-                                <x-button color="red" sm wire:click="deleteSeries({{ $item->id }})">
-                                    Delete
-                                </x-button>
-                            </div>
-                        </div>
+                <x-slot:header>
+                    <div class="mb-4 flex justify-end">
+                        <x-button color="green" icon="plus" x-on:click="$wire.call('createSeries').then(() => $modalOpen('series-modal'))">
+                            Add Series
+                        </x-button>
                     </div>
-                @empty
-                    <div class="col-span-3 text-center text-gray-500 dark:text-gray-400 py-8">No series found</div>
-                @endforelse
-            </div>
+                </x-slot:header>
+
+                @interact('column_image', $row)
+                    @if($row->image)
+                        <img src="{{ $this->resolveMediaUrl($row->image) }}" alt="{{ $row->title }}" class="h-12 w-12 rounded object-cover">
+                    @else
+                        <div class="h-12 w-12 rounded bg-gray-200 dark:bg-zinc-700 flex items-center justify-center">
+                            <span class="text-xs text-gray-400">No image</span>
+                        </div>
+                    @endif
+                @endinteract
+
+                @interact('column_title', $row)
+                    <span class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ $row->title }}</span>
+                @endinteract
+
+                @interact('column_description', $row)
+                    <span class="text-sm text-gray-600 dark:text-gray-400">{{ Str::limit($row->description, 90) }}</span>
+                @endinteract
+
+                @interact('column_sermons_count', $row)
+                    <span class="text-sm text-gray-700 dark:text-gray-300">{{ $row->sermons_count }}</span>
+                @endinteract
+
+                @interact('column_action', $row)
+                    <div class="flex items-center space-x-2">
+                        <x-button.circle color="blue" icon="pencil"
+                            x-on:click="$wire.call('editSeries', {{ $row->id }}).then(() => $modalOpen('series-modal'))" />
+                        <x-button.circle color="red" icon="trash"
+                            wire:click="deleteSeries({{ $row->id }})" />
+                    </div>
+                @endinteract
+            </x-table>
         </x-card>
     @endif
 </div>

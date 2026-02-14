@@ -37,10 +37,21 @@ new #[Layout('components.layouts.auth')] class extends Component {
             ]);
         }
 
+        $user = Auth::user();
+        if (! $user || ! $user->hasRole('super-admin')) {
+            Auth::logout();
+            Session::invalidate();
+            Session::regenerateToken();
+
+            throw ValidationException::withMessages([
+                'email' => 'Only super admins can sign in here.',
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
         Session::regenerate();
 
-        $this->redirectIntended(default: route('home', absolute: false), navigate: true);
+        $this->redirectIntended(default: route('admin.super-admin.dashboard', absolute: false), navigate: true);
     }
 
     /**
@@ -73,55 +84,87 @@ new #[Layout('components.layouts.auth')] class extends Component {
     }
 }; ?>
 
-<div class="flex flex-col gap-6">
-    <x-auth-header :title="__('Log in to your account')" :description="__('Enter your email and password below to log in')" />
-
-    <!-- Session Status -->
-    <x-auth-session-status class="text-center" :status="session('status')" />
-
-    <form method="POST" wire:submit="login" class="flex flex-col gap-6">
-        <!-- Email Address -->
-        <flux:input
-            wire:model="email"
-            :label="__('Email address')"
-            type="email"
-            required
-            autofocus
-            autocomplete="email"
-            placeholder="email@example.com"
-        />
-
-        <!-- Password -->
-        <div class="relative">
-            <flux:input
-                wire:model="password"
-                :label="__('Password')"
-                type="password"
-                required
-                autocomplete="current-password"
-                :placeholder="__('Password')"
-                viewable
-            />
-
-            @if (Route::has('password.request'))
-                <flux:link class="absolute end-0 top-0 text-sm" :href="route('password.request')" wire:navigate>
-                    {{ __('Forgot your password?') }}
-                </flux:link>
-            @endif
+<div class="min-h-screen bg-[#f4f1ea]">
+    <div class="relative overflow-hidden">
+        <div class="absolute inset-0">
+            <div class="absolute -left-40 top-[-10rem] h-[28rem] w-[28rem] rounded-full bg-gradient-to-br from-indigo-200 via-indigo-100 to-transparent opacity-60 blur-3xl"></div>
+            <div class="absolute right-[-12rem] top-[8rem] h-[26rem] w-[26rem] rounded-full bg-gradient-to-tr from-slate-200 via-slate-100 to-transparent opacity-60 blur-3xl"></div>
         </div>
+        <div class="relative mx-auto flex min-h-screen w-full max-w-5xl items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
+            <div class="w-full max-w-2xl rounded-3xl border border-slate-200/70 bg-white/85 p-8 shadow-[0_25px_60px_-35px_rgba(15,23,42,0.55)] backdrop-blur sm:p-10">
+                <div class="mb-8 text-center">
+                    <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-700 shadow-inner">
+                        <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M12 3v18M6 9h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <p class="text-xs uppercase tracking-[0.3em] text-slate-500">Super Admin</p>
+                    <h1 class="mt-2 text-3xl font-semibold text-slate-900">Secure Access Portal</h1>
+                    <p class="mt-2 text-sm text-slate-600">Sign in to manage the entire church system.</p>
+                </div>
 
-        <!-- Remember Me -->
-        <flux:checkbox wire:model="remember" :label="__('Remember me')" />
+                @if (session('status'))
+                    <div class="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                        {{ session('status') }}
+                    </div>
+                @endif
 
-        <div class="flex items-center justify-end">
-            <flux:button variant="primary" type="submit" class="w-full">{{ __('Log in') }}</flux:button>
+                <form method="POST" wire:submit="login" class="space-y-5">
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-slate-700">Email Address</label>
+                        <input
+                            id="email"
+                            type="email"
+                            class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm transition focus:border-slate-400 focus:outline-none focus:ring-4 focus:ring-slate-100 @error('email') border-rose-300 focus:border-rose-400 focus:ring-rose-100 @enderror"
+                            wire:model="email"
+                            required
+                            autofocus
+                            autocomplete="email"
+                            placeholder="admin@example.com"
+                        />
+                        @error('email')
+                            <p class="mt-2 text-xs text-rose-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-slate-700">Password</label>
+                        <input
+                            id="password"
+                            type="password"
+                            class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm transition focus:border-slate-400 focus:outline-none focus:ring-4 focus:ring-slate-100 @error('password') border-rose-300 focus:border-rose-400 focus:ring-rose-100 @enderror"
+                            wire:model="password"
+                            required
+                            autocomplete="current-password"
+                            placeholder="Enter your password"
+                        />
+                        @error('password')
+                            <p class="mt-2 text-xs text-rose-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="flex flex-wrap items-center justify-between gap-4 text-sm text-slate-600">
+                        <label class="flex cursor-pointer items-center gap-2">
+                            <input type="checkbox" class="h-4 w-4 rounded border-slate-300 text-slate-700 focus:ring-slate-200" wire:model="remember" />
+                            <span>Remember me</span>
+                        </label>
+                        @if (Route::has('password.request'))
+                            <a href="{{ route('password.request') }}" class="font-medium text-slate-700 transition hover:text-slate-900" wire:navigate>
+                                Forgot Password?
+                            </a>
+                        @endif
+                    </div>
+
+                    <button type="submit" class="w-full rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-900/20 transition hover:-translate-y-0.5 hover:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-slate-200" wire:loading.attr="disabled">
+                        <span wire:loading.remove.delay>Sign In</span>
+                        <span wire:loading.delay>Signing in...</span>
+                    </button>
+                </form>
+
+                <div class="mt-8 border-t border-slate-200/80 pt-6 text-center text-xs text-slate-500">
+                    Restricted access. Use your super admin credentials.
+                </div>
+            </div>
         </div>
-    </form>
-
-    @if (Route::has('register'))
-        <div class="space-x-1 rtl:space-x-reverse text-center text-sm text-zinc-600 dark:text-zinc-400">
-            <span>{{ __('Don\'t have an account?') }}</span>
-            <flux:link :href="route('register')" wire:navigate>{{ __('Sign up') }}</flux:link>
-        </div>
-    @endif
+    </div>
 </div>

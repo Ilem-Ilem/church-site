@@ -7,7 +7,7 @@ use App\Models\Events;
 use App\Models\Partnership;
 use App\Models\Chapter;
 
-new #[Layout('components.layouts.layout')] class extends Component {
+new #[Layout('components.layouts.tailwind-layout')] class extends Component {
     public $selected_chapter = '';
     public $name;
     public $email;

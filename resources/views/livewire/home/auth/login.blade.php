@@ -10,7 +10,7 @@ use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
-new #[Layout('components.layouts.home-auth')] class extends Component {
+new #[Layout('components.layouts.tailwind-layout')] class extends Component {
 
     public string $email = '';
     public string $password = '';
@@ -100,184 +100,29 @@ new #[Layout('components.layouts.home-auth')] class extends Component {
 };
 ?>
 
-<style>
-    :root {
-        --primary: #357be4;
-        --primary-dark: #294dc0;
-        --danger: #dc3545;
-        --success: #28a745;
-        --gray: #6c757d;
-        --light: #f8f9fa;
-        --dark: #343a40;
-    }
-
-    .auth-wrapper {
-        min-height: 100vh;
-        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 1rem;
-    }
-
-    .auth-container {
-        max-width: 450px;
-        width: 100%;
-    }
-
-    .auth-card {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-        padding: 2.5rem;
-        animation: fadeIn 0.4s ease-out;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    .auth-header {
-        text-align: center;
-        margin-bottom: 1.8rem;
-    }
-
-    .auth-header h1 {
-        font-size: 1.75rem;
-        font-weight: 700;
-        color: #333;
-        margin-bottom: 0.5rem;
-    }
-
-    .auth-header p {
-        font-size: 0.9rem;
-        color: #666;
-    }
-
-    .form-label {
-        font-weight: 500;
-        color: #333;
-        margin-bottom: 0.5rem;
-        font-size: 0.9rem;
-    }
-
-    .form-control {
-        padding: 0.75rem 1rem;
-        font-size: 0.95rem;
-        border-radius: 0.5rem;
-        border: 1px solid #ced4da;
-        transition: all 0.2s;
-    }
-
-    .form-control:focus {
-        border-color: var(--primary);
-        box-shadow: 0 0 0 0.2rem rgba(53, 123, 228, 0.15);
-    }
-
-    .form-control.is-invalid {
-        border-color: var(--danger);
-    }
-
-    .invalid-feedback {
-        font-size: 0.85rem;
-        color: var(--danger);
-        margin-top: 0.25rem;
-    }
-
-    .form-check {
-        margin: 1rem 0;
-    }
-
-    .form-check-input {
-        margin-right: 0.5rem;
-    }
-
-    .form-check-label {
-        font-size: 0.9rem;
-        color: #555;
-        cursor: pointer;
-    }
-
-    .auth-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin: 1.2rem 0;
-        font-size: 0.9rem;
-    }
-
-    .forgot-password {
-        color: var(--primary);
-        text-decoration: none;
-        font-weight: 500;
-    }
-
-    .forgot-password:hover {
-        text-decoration: underline;
-    }
-
-    .btn-login {
-        width: 100%;
-        padding: 0.8rem;
-        background: linear-gradient(to right, var(--primary), var(--primary-dark));
-        color: white;
-        border: none;
-        border-radius: 0.5rem;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
-        position: relative;
-    }
-
-    .btn-login:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(53, 123, 228, 0.3);
-    }
-
-    .btn-login:active {
-        transform: translateY(0);
-    }
-
-    .btn-login:disabled {
-        opacity: 0.7;
-        cursor: not-allowed;
-        transform: none;
-    }
-
-    .alert {
-        border-radius: 0.5rem;
-        font-size: 0.9rem;
-        padding: 0.75rem 1rem;
-        margin-bottom: 1.5rem;
-    }
-
-    @media (max-width: 600px) {
-        .auth-card {
-            padding: 2rem 1.5rem;
-        }
-        .auth-header h1 {
-            font-size: 1.5rem;
-        }
-    }
-</style>
-
-<div class="auth-wrapper">
-    <div class="auth-container">
-        <div class="auth-card">
+<div class="min-h-screen bg-[#f6f1e7]">
+    <div class="relative overflow-hidden">
+        <div class="absolute inset-0">
+            <div class="absolute -left-40 top-[-8rem] h-[26rem] w-[26rem] rounded-full bg-gradient-to-br from-amber-200 via-amber-100 to-transparent opacity-70 blur-3xl"></div>
+            <div class="absolute right-[-10rem] top-[6rem] h-[24rem] w-[24rem] rounded-full bg-gradient-to-tr from-sky-200 via-sky-100 to-transparent opacity-70 blur-3xl"></div>
+        </div>
+        <div class="relative mx-auto flex min-h-screen w-full max-w-6xl items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
+            <div class="w-full max-w-xl rounded-3xl border border-amber-200/60 bg-white/80 p-8 shadow-[0_25px_60px_-35px_rgba(15,23,42,0.45)] backdrop-blur sm:p-10">
+                <div class="mb-8 text-center">
+                    <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-100 text-amber-700 shadow-inner">
+                        <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M12 3v18M6 9h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <p class="text-xs uppercase tracking-[0.3em] text-amber-700">Welcome Back</p>
+                    <h1 class="mt-2 text-3xl font-semibold text-slate-900">Sign in to your church account</h1>
+                    <p class="mt-2 text-sm text-slate-600">Choose your chapter and continue to your dashboard.</p>
+                </div>
 
             <!-- Header -->
-            <div class="auth-header">
-                <h1>Welcome Back</h1>
-                <p>Sign in to your account to continue</p>
-            </div>
-
-            <!-- Session Status -->
             @if (session('status'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <div class="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
                     {{ session('status') }}
-                    <button type="button" class="btn-close btn-close-sm" data-bs-dismiss="alert"></button>
                 </div>
             @endif
 
@@ -286,11 +131,11 @@ new #[Layout('components.layouts.home-auth')] class extends Component {
                 {{-- @csrf --}}
 
                 <!-- Chapter Select -->
-                <div class="mb-3">
-                    <label for="chapter" class="form-label">Select Chapter</label>
+                <div class="mb-5">
+                    <label for="chapter" class="block text-sm font-medium text-slate-700">Select Chapter</label>
                     <select
                         id="chapter"
-                        class="form-control @error('chapter') is-invalid @enderror"
+                        class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm transition focus:border-amber-400 focus:outline-none focus:ring-4 focus:ring-amber-100 @error('chapter') border-rose-300 focus:border-rose-400 focus:ring-rose-100 @enderror"
                         wire:model.live="chapter"
                         required
                         autofocus
@@ -300,62 +145,59 @@ new #[Layout('components.layouts.home-auth')] class extends Component {
                             <option value="{{ $name }}">{{ $name }}</option>
                         @endforeach
                     </select>
-                    {{$chapter}}
                     @error('chapter')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                        <p class="mt-2 text-xs text-rose-600">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <!-- Email -->
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email Address</label>
+                <div class="mb-5">
+                    <label for="email" class="block text-sm font-medium text-slate-700">Email Address</label>
                     <input
                         type="email"
                         id="email"
-                        class="form-control @error('email') is-invalid @enderror"
+                        class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm transition focus:border-amber-400 focus:outline-none focus:ring-4 focus:ring-amber-100 @error('email') border-rose-300 focus:border-rose-400 focus:ring-rose-100 @enderror"
                         wire:model.live="email"
                         placeholder="your.email@example.com"
                         autocomplete="email"
                         required
                     >
                     @error('email')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                        <p class="mt-2 text-xs text-rose-600">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <!-- Password -->
-                <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
+                <div class="mb-5">
+                    <label for="password" class="block text-sm font-medium text-slate-700">Password</label>
                     <input
                         type="password"
                         id="password"
-                        class="form-control @error('password') is-invalid @enderror"
+                        class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm transition focus:border-amber-400 focus:outline-none focus:ring-4 focus:ring-amber-100 @error('password') border-rose-300 focus:border-rose-400 focus:ring-rose-100 @enderror"
                         wire:model.live="password"
                         placeholder="Enter your password"
                         autocomplete="current-password"
                         required
                     >
                     @error('password')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                        <p class="mt-2 text-xs text-rose-600">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <!-- Remember & Forgot -->
-                <div class="auth-footer">
-                    <div class="form-check">
+                <div class="mb-6 flex flex-wrap items-center justify-between gap-4 text-sm text-slate-600">
+                    <label class="flex cursor-pointer items-center gap-2">
                         <input
                             type="checkbox"
-                            class="form-check-input"
+                            class="h-4 w-4 rounded border-slate-300 text-amber-600 focus:ring-amber-200"
                             id="remember"
                             wire:model="remember"
                         >
-                        <label class="form-check-label" for="remember">
-                            Remember me
-                        </label>
-                    </div>
+                        <span>Remember me</span>
+                    </label>
 
                     @if (Route::has('password.request'))
-                        <a href="{{ route('password.request') }}" class="forgot-password" wire:navigate>
+                        <a href="{{ route('password.request') }}" class="font-medium text-amber-700 transition hover:text-amber-800" wire:navigate>
                             Forgot Password?
                         </a>
                     @endif
@@ -364,7 +206,7 @@ new #[Layout('components.layouts.home-auth')] class extends Component {
                 <!-- Submit Button -->
                 <button
                     type="submit"
-                    class="btn-login"
+                    class="group inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-600 via-amber-500 to-orange-500 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-amber-500/30 transition hover:-translate-y-0.5 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-amber-200 disabled:cursor-not-allowed disabled:opacity-70"
                     wire:loading.attr="disabled"
                 >
                     <span wire:loading.remove.delay>Sign In</span>
@@ -372,6 +214,10 @@ new #[Layout('components.layouts.home-auth')] class extends Component {
                 </button>
             </form>
 
+                <div class="mt-8 border-t border-slate-200/80 pt-6 text-center text-xs text-slate-500">
+                    Need help? Contact your chapter admin for access.
+                </div>
+            </div>
         </div>
     </div>
 </div>

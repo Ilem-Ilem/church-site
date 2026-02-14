@@ -29,13 +29,24 @@ new #[Layout('components.layouts.admin')] class extends Component {
             })
             ->first();
 
-        $this->classes = AcademyClases::with('academy')->whereHas('academy', fn($q) => $q->where('academy_id', $this->academy->id))->get()->toArray();
+        if (!$this->academy) {
+            $chapter = Chapter::where('name', e($this->chapter))->first();
+            if ($chapter) {
+                $this->academy = BeliversAcademy::create([
+                    'status' => 'open',
+                    'start_at' => now()->addDays(7),
+                    'chapter_id' => $chapter->id,
+                ]);
+            }
+        }
+
+        $this->classes = $this->academy ? AcademyClases::with('academy')->whereHas('academy', fn($q) => $q->where('academy_id', $this->academy->id))->get()->toArray() : [];
 
         $this->leadersTeam = auth()->user()?->teams?->filter(fn($team) => $team->pivot->role_in_team === 'team-lead');
 
         $chapter = Chapter::where('name', '=', $this->chapter)->first();
         $this->chapterId = $chapter?->id;
-        $this->users = USer::where('chapter_id', $this->chapterId)->get(['id', 'name'])->toArray();
+        $this->users = User::where('chapter_id', $this->chapterId)->get(['id', 'name'])->toArray();
         if (!$this->leadersTeam) {
             abort(403);
         }
@@ -51,7 +62,7 @@ new #[Layout('components.layouts.admin')] class extends Component {
             'classes.*.date' => 'required|date|after_or_equal:today',
             'classes.*.time' => 'required|date_format:H:i',
             // 'classes.*.study_material' => 'nullable|url|max:2048',
-            'classes.*.tutor' => 'nullable|int|max:255',
+            'classes.*.tutor' => 'nullable|int',
         ];
     }
 

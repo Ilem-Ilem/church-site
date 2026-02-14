@@ -2,12 +2,13 @@
 //TODO: work on the spinner on the page
 use Livewire\Volt\Component;
 use Livewire\Attributes\{Layout, Url};
-use App\Models\{BeliversAcademy, Chapter, BelieversAcademyTeams, User, StudentClasses};
+use App\Models\{BeliversAcademy, Chapter, BelieversAcademyTeams, User, StudentClasses, AcademyBatch};
 use App\Events\StudentRegisteredToAcademy;
 use App\Notifications\StudentEnrolledNotification;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
-new #[Layout('components.layouts.layout')] class extends Component {
+new #[Layout('components.layouts.tailwind-layout')] class extends Component {
     public $academy;
     public $academyTeam;
     public $chapters;
@@ -26,6 +27,8 @@ new #[Layout('components.layouts.layout')] class extends Component {
     public $howDidYouKnowAboutUs;
     public $interest;
     public $chapterId;
+    public $availableBatches = [];
+    public $selectedBatch;
     public ?User $user = null;
 
     public function mount()
@@ -80,7 +83,7 @@ new #[Layout('components.layouts.layout')] class extends Component {
         if ($now->lt($startDate)) {
             $this->statusType = 'countdown';
             $this->countdown = $startDate->toDateString();
-            $this->statusMessage = 'Registration will open soon. Starts in ' . $this->countdown;
+            $this->statusMessage = 'Registration will open soon. Starts in '.$this->countdown;
             return;
         }
 
@@ -140,7 +143,7 @@ new #[Layout('components.layouts.layout')] class extends Component {
         } else {
             $user = User::where('email', $this->email)->first();
             if (!$user) {
-                $this->errorMessages[] = 'The provided email was not found. Please <a href=' . route('login') . ' wire:navigate> sign in</a> to continue.';
+                $this->errorMessages[] = 'The provided email was not found. Please <a href="'.route('home.login').'" wire:navigate class="underline">sign in</a> to continue.';
                 return;
             }
         }
@@ -157,16 +160,25 @@ new #[Layout('components.layouts.layout')] class extends Component {
             return;
         }
 
+        // Assign to a batch (first open batch for the academy)
+        $batch = AcademyBatch::where('academy_id', $this->academy->id)->where('status', 'open')->orderBy('start_date')->first();
+
         $studentClass = StudentClasses::create([
             'user_id' => $user->id,
             'class_completed' => json_encode([]),
             'status' => 'started',
             'cert' => null,
-            'interest' => $this->interest,
+            'interest' => $this->interest ?: '',
             'how_did_you_know_about_us' => $this->howDidYouKnowAboutUs,
             'phone' => $this->number,
-            'academy_id'=>$this->academy->id
+            'academy_id' => $this->academy->id,
+            'batch_id' => $batch ? $batch->id : null,
         ]);
+
+        // Log in the user if not already authenticated
+        if (!Auth::check()) {
+            Auth::login($user);
+        }
 
         // Send enrollment confirmation to student
         $user->notify(new StudentEnrolledNotification($this->academy));
@@ -177,181 +189,166 @@ new #[Layout('components.layouts.layout')] class extends Component {
         $this->reset(['name', 'email', 'number', 'howDidYouKnowAboutUs', 'interest', 'selectedChapter', 'statusMessage', 'statusType', 'academy', 'academyTeam']);
         $this->errorMessages = [];
         session()->flash('success', 'Registration successful!');
-        $this->redirect(route('believers_academy.dashboard', request()->query()));
+        $this->redirect(route('home.believers.dashboard', request()->query()));
     }
 };
 ?>
 
-<div>
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-
-        .card-con {
-            /* max-width: 800px; */
-            margin: 100px auto;
-        }
-
-        .section-title {
-            font-size: 23px;
-        }
-
-        .navbar {
-            background: linear-gradient(to right, #357be4, #294dc0) !important;
-            height: 85px;
-        }
-
-        .card {
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .form-holder {
-            margin-top: 8rem;
-            display: flex;
-            justify-content: center;
-            padding: 6px;
-        }
-
-        .alert {
-            padding: 12px;
-            border-radius: 6px;
-            margin-top: 10px;
-            font-weight: bold;
-        }
-
-        .alert-danger {
-            background-color: #f8d7da;
-            color: #842029;
-        }
-
-        .alert-success {
-            background-color: #d1e7dd;
-            color: #0f5132;
-        }
-
-        .alert-warning {
-            background-color: #fff3cd;
-            color: #664d03;
-        }
-    </style>
-    <div class="container mt-4">
-        <div class="form-holder">
-            <div id="registrationModal">
-                <div class="dialog">
-                    <div class="content">
-                        <div class="header">
-                            <h5 class="section-title">Believers Academy Registration</h5>
-                        </div>
-                        @if (!empty($errorMessages) && is_array($errorMessages))
-                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                <h5 class="alert-heading">Please fix the following:</h5>
-                                <ul class="mb-0">
-                                    @foreach ($errorMessages as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                    aria-label="Close"></button>
-                            </div>
-                        @endif
-                        @if ($chapters->isEmpty())
-                            <div>
-                                <p class="text-center text-danger">
-                                    There are no chapters to enroll in the Believers Academy.
-                                </p>
-                            </div>
-                        @else
-                            <div class="body body-scrollable">
-                                <p>Please fill out the form below to register for our upcoming Believers Academy.</p>
-                                <form wire:submit.prevent="register">
-                                    <div class="mb-3">
-                                        <label for="fullName" class="form-label">Full Name</label>
-                                        <input type="text" class="form-control" id="fullName"
-                                            placeholder="Your Full Name" wire:model='name'>
-                                        @error('name')
-                                            <div class="text-danger small mt-1">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="email" class="form-label">Email Address</label>
-                                        <input type="email" class="form-control" id="email"
-                                            placeholder="your.email@example.com" wire:model='email'>
-                                        @error('email')
-                                            <div class="text-danger small mt-1">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="phone" class="form-label">Phone Number</label>
-                                        <input type="tel" class="form-control" id="phone"
-                                            placeholder="+234 801 234 5678" wire:model="number">
-                                        @error('number')
-                                            <div class="text-danger small mt-1">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="chapterSelect" class="form-label">Pick A Chapter</label>
-                                        <select class="form-select" id="chapterSelect"
-                                            wire:model.live='selectedChapter'>
-                                            <option value="">-- Select Chapter --</option>
-                                            @foreach ($chapters as $value)
-                                                <option value="{{ $value->id }}">{{ $value->name }}</option>
-                                            @endforeach
-                                        </select>
-                                        @error('selectedChapter')
-                                            <div class="text-danger small mt-1">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-
-                                    @if ($statusType == 'error' || $statusType == 'countdown')
-                                        <div
-                                            class="alert 
-                                            @if ($statusType === 'error') alert-danger 
-                                            @elseif ($statusType === 'countdown') alert-warning @endif">
-                                            {{ $statusMessage }}
-                                        </div>
-                                    @else
-                                        <div class="mb-3">
-                                            <label for="howHeard" class="form-label">How did you hear about Doxa
-                                                Church?</label>
-                                            <select class="form-select" id="howHeard"
-                                                wire:model='howDidYouKnowAboutUs'>
-                                                <option disabled>Select an option</option>
-                                                <option value="friendsAndFamily">Friend or Family</option>
-                                                <option value="Social_media">Social Media</option>
-                                                <option value="website">Website</option>
-                                                <option value="others">Other</option>
-                                            </select>
-                                            @error('howDidYouKnowAboutUs')
-                                                <div class="text-danger small mt-1">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label for="questions" class="form-label">Any questions or specific areas of
-                                                interest?</label>
-                                            <textarea class="form-control" id="questions" rows="3"
-                                                placeholder="e.g., I'm interested in learning more about prayer." wire:model='interest'></textarea>
-                                            @error('interest')
-                                                <div class="text-danger small mt-1">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    @endif
-
-                                    <button type="submit" class="btn btn-primary mt-3"
-                                        @if ($statusType !== 'success') disabled @endif>
-                                        <span wire:loading.remove>Register</span>
-                                        <span wire:loading wire:target='register'>
-                                            <x-spinner-loader-bootstrap color="white" size="xs" /> Loading
-                                        </span>
-                                    </button>
-                                </form>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-            </div>
+<div class="bg-white pb-12">
+    <section class="border-b border-blue-100 bg-gradient-to-b from-blue-50 to-white">
+        <div class="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8 lg:py-14">
+            <p class="text-xs font-semibold uppercase tracking-[0.3em] text-blue-600">Believers Academy</p>
+            <h1 class="mt-3 text-3xl font-semibold text-slate-900 sm:text-4xl">Register for discipleship classes</h1>
+            <p class="mt-4 max-w-2xl text-sm leading-7 text-slate-600">Choose your chapter, complete your details, and join the next academy cycle.</p>
         </div>
-    </div>
+    </section>
+
+    <section class="mx-auto max-w-4xl px-4 pt-8 sm:px-6 lg:px-8">
+        <div class="rounded-3xl border border-blue-100 bg-white p-6 shadow-sm sm:p-8">
+            @if (!empty($errorMessages) && is_array($errorMessages))
+                <div class="mb-6 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3">
+                    <h4 class="text-sm font-semibold text-rose-800">Please fix the following:</h4>
+                    <ul class="mt-2 list-disc space-y-1 pl-5 text-sm text-rose-700">
+                        @foreach ($errorMessages as $error)
+                            <li>{!! $error !!}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            @if ($chapters->isEmpty())
+                <div class="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-8 text-center">
+                    <p class="text-sm text-rose-700">No chapters are available for Believers Academy registration at this time.</p>
+                </div>
+            @else
+                <form wire:submit.prevent="register" class="space-y-5">
+                    <div class="grid gap-5 sm:grid-cols-2">
+                        <div class="sm:col-span-2">
+                            <label for="chapterSelect" class="block text-sm font-medium text-slate-700">Chapter</label>
+                            <select
+                                id="chapterSelect"
+                                wire:model.live="selectedChapter"
+                                class="mt-2 w-full rounded-2xl border border-blue-100 bg-white px-4 py-3 text-sm text-slate-700 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                            >
+                                <option value="">Select chapter</option>
+                                @foreach ($chapters as $value)
+                                    <option value="{{ $value->id }}">{{ $value->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('selectedChapter')
+                                <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="fullName" class="block text-sm font-medium text-slate-700">Full Name</label>
+                            <input
+                                type="text"
+                                id="fullName"
+                                wire:model="name"
+                                placeholder="Your full name"
+                                class="mt-2 w-full rounded-2xl border border-blue-100 bg-white px-4 py-3 text-sm text-slate-700 placeholder:text-slate-400 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                                @if($user) readonly @endif
+                            >
+                            @error('name')
+                                <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-slate-700">Email Address</label>
+                            <input
+                                type="email"
+                                id="email"
+                                wire:model="email"
+                                placeholder="you@example.com"
+                                class="mt-2 w-full rounded-2xl border border-blue-100 bg-white px-4 py-3 text-sm text-slate-700 placeholder:text-slate-400 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                                @if($user) readonly @endif
+                            >
+                            @error('email')
+                                <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <label for="phone" class="block text-sm font-medium text-slate-700">Phone Number</label>
+                            <input
+                                type="tel"
+                                id="phone"
+                                wire:model="number"
+                                placeholder="+234 801 234 5678"
+                                class="mt-2 w-full rounded-2xl border border-blue-100 bg-white px-4 py-3 text-sm text-slate-700 placeholder:text-slate-400 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                            >
+                            @error('number')
+                                <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    @if ($statusType == 'error')
+                        <div class="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                            {{ $statusMessage }}
+                        </div>
+                    @elseif ($statusType == 'countdown')
+                        <div class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+                            {{ $statusMessage }}
+                        </div>
+                    @elseif ($statusType == 'success')
+                        <div class="rounded-2xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-700">
+                            {{ $statusMessage }}
+                        </div>
+
+                        <div class="grid gap-5 sm:grid-cols-2">
+                            <div>
+                                <label for="howHeard" class="block text-sm font-medium text-slate-700">How did you hear about Doxa Church?</label>
+                                <select
+                                    id="howHeard"
+                                    wire:model="howDidYouKnowAboutUs"
+                                    class="mt-2 w-full rounded-2xl border border-blue-100 bg-white px-4 py-3 text-sm text-slate-700 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                                >
+                                    <option value="">Select an option</option>
+                                    <option value="friendsAndFamily">Friend or Family</option>
+                                    <option value="Social_media">Social Media</option>
+                                    <option value="website">Website</option>
+                                    <option value="others">Other</option>
+                                </select>
+                                @error('howDidYouKnowAboutUs')
+                                    <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="questions" class="block text-sm font-medium text-slate-700">Interests or questions</label>
+                                <textarea
+                                    id="questions"
+                                    rows="4"
+                                    wire:model="interest"
+                                    placeholder="Tell us what you want to learn"
+                                    class="mt-2 w-full rounded-2xl border border-blue-100 bg-white px-4 py-3 text-sm text-slate-700 placeholder:text-slate-400 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                                ></textarea>
+                                @error('interest')
+                                    <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+                    @endif
+
+                    <button
+                        type="submit"
+                        class="inline-flex w-full items-center justify-center rounded-2xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300"
+                        @if ($statusType !== 'success') disabled @endif
+                    >
+                        <span wire:loading.remove wire:target="register">Register for Believers Academy</span>
+                        <span wire:loading wire:target="register" class="flex items-center gap-2">
+                            <svg class="h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                            </svg>
+                            Processing...
+                        </span>
+                    </button>
+                </form>
+            @endif
+        </div>
+    </section>
 </div>

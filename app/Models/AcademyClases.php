@@ -17,4 +17,9 @@ class AcademyClases extends Model
     {
         return $this->belongsTo(User::class, 'tutor');
     }
+
+    public function batches()
+    {
+        return $this->belongsToMany(AcademyBatch::class, 'batch_classes', 'class_id', 'batch_id');
+    }
 }

@@ -1,855 +1,256 @@
 <?php
-//TODO : filter events by filter
-//TODO: add advanced filter by date, location
-use Livewire\Volt\Component;
-use Livewire\Attributes\{Layout, Url};
+
 use App\Models\{Chapter, Events};
-// use
+use Livewire\Attributes\{Layout, Url};
+use Livewire\Volt\Component;
 
-new #[Layout('components.layouts.layout')] class extends Component {
+new #[Layout('components.layouts.tailwind-layout')] class extends Component {
     public $chapters;
-
     public $events;
     public $selectedEvent;
 
-    public $accounts;
     #[Url(keep: true)]
-    public $sc;
+    public $sc = 0;
 
     public function mount()
     {
-        $this->chapters = Chapter::all();
-        $this->events = Events::with('chapter', 'accounts')->get();
+        $this->chapters = Chapter::orderBy('name')->get();
+
+        if (! is_numeric($this->sc)) {
+            $this->sc = 0;
+        }
+
+        $this->loadEvents((int) $this->sc);
+    }
+
+    private function loadEvents(int $chapterId = 0): void
+    {
+        $query = Events::with('chapter', 'accounts')->latest('start_at');
+
+        if ($chapterId !== 0) {
+            $query->where('chapter_id', $chapterId);
+        }
+
+        $this->events = $query->get();
     }
 
     public function filterChapter($id)
     {
-        if ($id != 0) {
-            $this->sc = $id;
-            $this->events = Events::with('chapter')->where('chapter_id', $id)->get();
-        } else {
-            $this->sc = '';
-            $this->events = Events::with('chapter')->get();
-        }
+        $this->sc = (int) $id;
+        $this->loadEvents($this->sc);
     }
 
-    // Called when modal opens
     public function openEventModal($id)
     {
-        $this->selectedEvent = Events::where('id', $id)->firstOrFail();
-        $this->dispatch('show-event-modal');
+        $this->selectedEvent = Events::with('chapter')->findOrFail($id);
     }
 
     public function closeEventModal()
     {
         $this->selectedEvent = null;
-        $this->dispatch('hide-event-modal');
     }
 }; ?>
 
-<div>
-    <style>
-        :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --dark-gradient: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 100%);
-            --glass-bg: rgba(255, 255, 255, 0.1);
-            --glass-border: rgba(255, 255, 255, 0.2);
-            --text-primary: #1a1a1a;
-            --text-secondary: #6b7280;
-            --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.1);
-            --shadow-intense: 0 20px 60px rgba(0, 0, 0, 0.2);
-        }
+<div class="bg-white pb-12">
+    <section class="border-b border-blue-100 bg-gradient-to-b from-blue-50 to-white">
+        <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-16">
+            <div class="max-w-3xl">
+                <p class="text-xs font-semibold uppercase tracking-[0.3em] text-blue-600">Doxa Events</p>
+                <h1 class="mt-3 text-3xl font-semibold text-slate-900 sm:text-4xl">Discover and join upcoming church events.</h1>
+                <p class="mt-4 text-sm leading-7 text-slate-600">Stay connected with services, conferences, and community gatherings across all chapters.</p>
+            </div>
+
+            <div class="mt-8 flex flex-wrap gap-2">
+                <button
+                    type="button"
+                    wire:click="filterChapter(0)"
+                    @class([
+                        'rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] transition',
+                        'bg-blue-600 text-white' => (int) $sc === 0,
+                        'border border-blue-200 text-blue-700 hover:bg-blue-50' => (int) $sc !== 0,
+                    ])
+                >
+                    All Events
+                </button>
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            overflow-x: hidden;
-        }
-
-        /* Animated Background */
-        .animated-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background: linear-gradient(45deg, #667eea, #764ba2, #f093fb, #f5576c);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
-        }
-
-        .animated-bg::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(248, 250, 252, 0.95);
-            backdrop-filter: blur(100px);
-        }
-
-        @keyframes gradientShift {
-            0% {
-                background-position: 0% 50%;
-            }
-
-            50% {
-                background-position: 100% 50%;
-            }
-
-            100% {
-                background-position: 0% 50%;
-            }
-        }
-
-        /* Floating Particles */
-        .particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: rgba(102, 126, 234, 0.6);
-            border-radius: 50%;
-            animation: float 20s infinite linear;
-        }
-
-        .particle:nth-child(2) {
-            left: 20%;
-            animation-delay: -5s;
-        }
-
-        .particle:nth-child(3) {
-            left: 40%;
-            animation-delay: -10s;
-        }
-
-        .particle:nth-child(4) {
-            left: 60%;
-            animation-delay: -15s;
-        }
-
-        .particle:nth-child(5) {
-            left: 80%;
-            animation-delay: -20s;
-        }
-
-        @keyframes float {
-            0% {
-                transform: translateY(100vh) rotate(0deg);
-                opacity: 0;
-            }
-
-            10% {
-                opacity: 1;
-            }
-
-            90% {
-                opacity: 1;
-            }
-
-            100% {
-                transform: translateY(-100vh) rotate(360deg);
-                opacity: 0;
-            }
-        }
-
-        /* Header */
-        .hero-section {
-            position: relative;
-            height: 100vh;
-            min-height: 400px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            overflow: hidden;
-            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)),
-                url('https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&h=600&fit=crop') center/cover;
-            background-attachment: fixed;
-        }
-
-        .hero-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.8), rgba(118, 75, 162, 0.8));
-            mix-blend-mode: overlay;
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 10;
-            max-width: 800px;
-            padding: 0 1rem;
-        }
-
-        .hero-content h1 {
-            font-size: clamp(2.5rem, 6vw, 4rem);
-            font-weight: 800;
-            color: white;
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-            animation: slideInUp 1s ease-out;
-        }
-
-        .hero-content p {
-            font-size: 1.2rem;
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 400;
-            margin-bottom: 2.5rem;
-            animation: slideInUp 1s ease-out 0.2s both;
-        }
-
-        .event-type-selector {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            justify-content: center;
-            animation: slideInUp 1s ease-out 0.4s both;
-        }
-
-        .event-type-btn {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50px;
-            color: white;
-            padding: 0.8rem 1.8rem;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            font-size: 0.95rem;
-        }
-
-        .event-type-btn:hover,
-        .event-type-btn.active {
-            background: rgba(255, 255, 255, 0.25);
-            border-color: rgba(255, 255, 255, 0.6);
-            color: white;
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        }
-
-        .event-type-btn.active {
-            background: var(--primary-gradient);
-            border-color: transparent;
-        }
-
-        @keyframes slideInUp {
-            from {
-                opacity: 0;
-                transform: translateY(50px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes bounce {
-
-            0%,
-            20%,
-            50%,
-            80%,
-            100% {
-                transform: translateX(-50%) translateY(0);
-            }
-
-            40% {
-                transform: translateX(-50%) translateY(-10px);
-            }
-
-            60% {
-                transform: translateX(-50%) translateY(-5px);
-            }
-        }
-
-        /* Filter Section */
-        .filter-section {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 2rem;
-            margin: 2rem auto 4rem;
-            position: relative;
-            z-index: 100;
-            box-shadow: var(--shadow-soft);
-        }
-
-        .filter-section .form-select,
-        .filter-section .form-control {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 12px;
-            padding: 0.8rem 1rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .filter-section .form-select:focus,
-        .filter-section .form-control:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-            background: rgba(255, 255, 255, 1);
-        }
-
-        /* Event Cards */
-        .events-grid {
-            perspective: 1000px;
-        }
-
-        .event-card {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 24px;
-            overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-            box-shadow: var(--shadow-soft);
-            position: relative;
-        }
-
-        .event-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-            transition: left 0.5s;
-        }
-
-        .event-card:hover::before {
-            left: 100%;
-        }
-
-        .event-card:hover {
-            transform: translateY(-20px) rotateX(5deg);
-            box-shadow: var(--shadow-intense);
-            border-color: rgba(102, 126, 234, 0.3);
-        }
-
-        .event-card img {
-            height: 220px;
-            object-fit: cover;
-            transition: transform 0.4s ease;
-        }
-
-        .event-card:hover img {
-            transform: scale(1.1);
-        }
-
-        .event-badge {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: var(--primary-gradient);
-            color: white;
-            padding: 0.4rem 1rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            z-index: 10;
-        }
-
-        .event-meta {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 0.5rem;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        .event-meta::before {
-            content: '';
-            width: 8px;
-            height: 8px;
-            background: #667eea;
-            border-radius: 50%;
-        }
-
-        .btn-modern {
-            background: var(--primary-gradient);
-            border: none;
-            border-radius: 12px;
-            padding: 0.8rem 2rem;
-            font-weight: 600;
-            color: white;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-modern::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .btn-modern:hover::before {
-            left: 100%;
-        }
-
-        .btn-modern:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-        }
-
-        /* CTA Section */
-        .cta-section {
-            background-color: #232d3b;
-            border-radius: 30px;
-            padding: 4rem 2rem;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            margin: 4rem 0;
-        }
-
-        .cta-section::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: conic-gradient(from 0deg, transparent, rgba(102, 126, 234, 0.1), transparent);
-            animation: rotate 10s linear infinite;
-        }
-
-        .cta-section .cta-content {
-            position: relative;
-            z-index: 10;
-        }
-
-        @keyframes rotate {
-            from {
-                transform: rotate(0deg);
-            }
-
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        .cta-section h3 {
-            color: white;
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-        }
-
-        .cta-section p {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 1.1rem;
-            margin-bottom: 2rem;
-        }
-
-        .email-form {
-            max-width: 500px;
-            margin: 0 auto;
-            position: relative;
-        }
-
-        .email-form input {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 50px;
-            padding: 1rem 1.5rem;
-            color: white;
-            width: 100%;
-            padding-right: 140px;
-        }
-
-        .email-form input::placeholder {
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        .email-form .btn-submit {
-            position: absolute;
-            right: 5px;
-            top: 5px;
-            background: var(--secondary-gradient);
-            border: none;
-            border-radius: 50px;
-            padding: 0.8rem 2rem;
-            font-weight: 600;
-            color: white;
-        }
-
-        /* Footer */
-        .modern-footer {
-            background: var(--dark-gradient);
-            color: white;
-            padding: 3rem 0;
-            position: relative;
-        }
-
-        .social-links a {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 50px;
-            height: 50px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            color: white;
-            text-decoration: none;
-            margin: 0 0.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .social-links a:hover {
-            background: var(--primary-gradient);
-            transform: translateY(-5px);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .hero-content h1 {
-                font-size: 2.5rem;
-            }
-
-            .hero-section {
-                height: 100vh;
-            }
-
-            .event-type-selector {
-                gap: 0.5rem;
-            }
-
-            .event-type-btn {
-                padding: 0.6rem 1.2rem;
-                font-size: 0.85rem;
-            }
-
-            .filter-section {
-                padding: 1.5rem;
-                margin: 2rem 1rem 2rem;
-            }
-
-            .event-card:hover {
-                transform: translateY(-10px);
-            }
-
-            .cta-section h3 {
-                font-size: 2rem;
-            }
-        }
-
-        /* Load Animation */
-        .fade-in {
-            opacity: 0;
-            transform: translateY(30px);
-            animation: fadeInUp 0.8s ease forwards;
-        }
-
-        .fade-in:nth-child(1) {
-            animation-delay: 0.1s;
-        }
-
-        .fade-in:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .fade-in:nth-child(3) {
-            animation-delay: 0.3s;
-        }
-
-        .fade-in:nth-child(4) {
-            animation-delay: 0.4s;
-        }
-
-        .fade-in:nth-child(5) {
-            animation-delay: 0.5s;
-        }
-
-        .fade-in:nth-child(6) {
-            animation-delay: 0.6s;
-        }
-
-        @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Event Modal Styles */
-        #eventModal .modal-content {
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(20px);
-        }
-
-        #eventModal .event-meta {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.95rem;
-            font-weight: 500;
-        }
-
-        #eventModal .event-meta i {
-            color: #667eea;
-        }
-
-        #eventModal .modal-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            background-clip: text;
-            -webkit-background-clip: text;
-        }
-
-        #eventModal .btn-modern {
-            background: var(--primary-gradient);
-            border: none;
-            color: white;
-            padding: 0.6rem 1.5rem;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        #eventModal .btn-modern:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-        }
-    </style>
-
-
-    <!-- Animated Background -->
-    <div class="animated-bg"></div>
-
-    <!-- Floating Particles -->
-    <div class="particle" style="left: 10%;"></div>
-    <div class="particle" style="left: 20%;"></div>
-    <div class="particle" style="left: 40%;"></div>
-    <div class="particle" style="left: 60%;"></div>
-    <div class="particle" style="left: 80%;"></div>
-
-    <!-- Hero Section -->
-    <section class="hero-section">
-        <div class="hero-content " style="margin-top:6rem;">
-            <h1>Discover Amazing Events</h1>
-            <p>Find and join the perfect events that match your interests and passions</p>
-            <p wire:loading wire:target="filterChapter">Loading</p>
-            <div class="event-type-selector">
-                <button class="event-type-btn @if ($sc == 0) active @endif" data-type="all"
-                    x-on:click="$wire.call('filterChapter', 0)">All
-                    Events</button>
                 @foreach ($chapters as $chapter)
-                    <button class="event-type-btn  @if ($sc == $chapter->id) active @endif"
-                        x-on:click="$wire.call('filterChapter', {{ $chapter->id }})"
-                        data-type="{{ $chapter->name }}">{{ $chapter->name }}</button>
+                    <button
+                        type="button"
+                        wire:click="filterChapter({{ $chapter->id }})"
+                        @class([
+                            'rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] transition',
+                            'bg-blue-600 text-white' => (int) $sc === (int) $chapter->id,
+                            'border border-blue-200 text-blue-700 hover:bg-blue-50' => (int) $sc !== (int) $chapter->id,
+                        ])
+                    >
+                        {{ $chapter->name }}
+                    </button>
                 @endforeach
             </div>
         </div>
     </section>
 
-    <!-- Filter Section -->
-    <div class="container">
-        <div class="filter-section">
-            <div class="row g-3">
-                <div class="col-md-3 col-6">
-                    <select class="form-select">
-                        <option selected>Event Type</option>
-                        <option>Service</option>
-                        <option>Conference</option>
-                        <option>Outreach</option>
-                        <option>Special Program</option>
-                    </select>
-                </div>
-                <div class="col-md-3 col-6">
-                    <select class="form-select">
-                        <option selected>Date Range</option>
-                        <option>This Week</option>
-                        <option>Next Month</option>
-                        <option>All Upcoming</option>
-                    </select>
-                </div>
-                <div class="col-md-3 col-6">
-                    <input type="text" class="form-control" placeholder="📍 Location">
-                </div>
-                <div class="col-md-3 col-6">
-                    <input type="text" class="form-control" placeholder="🔍 Search events...">
-                </div>
-            </div>
+    <section class="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8">
+        <div class="mb-4 flex flex-col gap-1 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+            <p>{{ $events->count() }} {{ \Illuminate\Support\Str::plural('event', $events->count()) }} found</p>
+            <p wire:loading wire:target="filterChapter" class="text-blue-600">Loading events...</p>
         </div>
-    </div>
 
-    <!-- Events Grid -->
-    <div class="container events-grid mb-5">
-        <div class="row g-4">
-            @foreach ($events as $key => $event)
-                <!-- Event Card 1 -->
-                <div class="col-lg-4 col-md-6">
-                    <div class="card event-card fade-in">
-                        <div class="position-relative">
-                            <img src="{{ asset('storage/' . $event->banner) }}" class="card-img-top"
-                                alt="{{ $event->title }} Image">
-                            <span class="event-badge">{{ $event->chapter->name }}</span>
+        <div class="space-y-3">
+            @forelse ($events as $event)
+                <article class="overflow-hidden rounded-xl border border-blue-100 bg-white shadow-sm transition hover:shadow-md">
+                    <div class="flex items-start">
+                        <div class="relative w-24 flex-none self-start sm:w-28 md:w-40">
+                            @if($event->chapter)
+                                <span class="absolute right-1 top-1 hidden rounded-full bg-blue-600 px-2 py-1 text-[0.55rem] font-semibold uppercase tracking-[0.12em] text-white sm:inline-flex">{{ $event->chapter->name }}</span>
+                            @endif
+
+                        @if($event->banner)
+                                <img src="{{ Storage::url($event->banner) }}" alt="{{ $event->title }}" class="h-24 w-full object-cover sm:h-28 md:h-32">
+                        @else
+                                <div class="flex h-24 w-full items-center justify-center bg-blue-50 sm:h-28 md:h-32">
+                                    <span class="text-[0.6rem] font-semibold uppercase tracking-[0.14em] text-blue-600">Doxa Event</span>
+                                </div>
+                        @endif
                         </div>
-                        <div class="card-body p-4">
-                            <h5 class="card-title fw-bold mb-3">{{ $event->title }}</h5>
-                            <div class="event-meta">
-                                {{ \Carbon\Carbon::parse($event->start_at)->format('M d Y') }} •
-                                {{ \Carbon\Carbon::parse($event->start_at)->format('h:i A') }}
-                                @if($event->end_at)
-                                    - {{ \Carbon\Carbon::parse($event->end_at)->format('h:i A') }}
-                                @endif
-                                @if($event->timezone)
-                                    <small>({{ $event->timezone }})</small>
-                                @endif
-                            </div>
-                            <div class="event-meta">{{ $event->location ?? 'DOXA COSMOS' }}</div>
-                            <p class="card-text mt-3 text-muted">{{ \Str($event->description)->substr(0, 20) }}..</p>
-                            <div class="d-grid gap-2 mt-3">
-                                <button wire:click="openEventModal({{ $event->id }})" class="btn btn-modern">
+
+                        <div class="flex-1 space-y-2.5 p-3 sm:p-4">
+                            <div class="flex flex-wrap items-start justify-between gap-2">
+                                <h2 class="text-base font-semibold text-slate-900 md:text-lg">{{ $event->title }}</h2>
+                                <button
+                                    type="button"
+                                    wire:click="openEventModal({{ $event->id }})"
+                                    class="inline-flex items-center rounded-full bg-blue-600 px-3 py-1.5 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-blue-700"
+                                >
                                     View Details
                                 </button>
+                            </div>
+
+                            <div class="grid gap-1.5 text-xs text-slate-600 sm:grid-cols-2">
+                                <p>
+                                    <span class="font-medium text-slate-800">Date:</span>
+                                    {{ \Carbon\Carbon::parse($event->start_at)->format('M d, Y') }}
+                                </p>
+                                <p>
+                                    <span class="font-medium text-slate-800">Time:</span>
+                                    {{ \Carbon\Carbon::parse($event->start_at)->format('h:i A') }}
+                                    @if($event->end_at)
+                                        - {{ \Carbon\Carbon::parse($event->end_at)->format('h:i A') }}
+                                    @endif
+                                    @if($event->timezone)
+                                        ({{ $event->timezone }})
+                                    @endif
+                                </p>
+                                <p class="sm:col-span-2">
+                                    <span class="font-medium text-slate-800">Location:</span>
+                                    {{ $event->location ?? 'Doxa Cosmos' }}
+                                </p>
+                            </div>
+
+                            <p class="text-xs leading-5 text-slate-600">{{ \Illuminate\Support\Str::limit($event->description, 110) }}</p>
+
+                            <div class="flex flex-wrap gap-1.5">
+                                @if($event->registration_required && $event->form_schema)
+                                    <a
+                                        href="{{ route('events.register', ['event_id' => $event->id]) }}"
+                                        class="inline-flex items-center rounded-full border border-blue-200 px-3 py-1.5 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-blue-700 transition hover:bg-blue-50"
+                                    >
+                                        Register
+                                    </a>
+                                @endif
+
                                 @if($event->hasStarted())
-                                    <a href="{{ route('events.gallery', ['event' => $event->slug ?? $event->id]) }}" class="btn btn-outline-primary" style="border-color: #667eea; color: #667eea;">
-                                        <i class="bi bi-images me-1"></i> View Gallery
+                                    <a
+                                        href="{{ route('events.gallery', ['event' => $event->slug ?? $event->id]) }}"
+                                        class="inline-flex items-center rounded-full border border-blue-200 px-3 py-1.5 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-blue-700 transition hover:bg-blue-50"
+                                    >
+                                        Gallery
                                     </a>
                                 @endif
                             </div>
                         </div>
                     </div>
+                </article>
+            @empty
+                <div class="rounded-2xl border border-dashed border-blue-200 bg-blue-50/40 px-6 py-14 text-center">
+                    <h3 class="text-lg font-semibold text-slate-800">No events available</h3>
+                    <p class="mt-2 text-sm text-slate-500">Try another chapter or check back soon.</p>
                 </div>
-            @endforeach
+            @endforelse
         </div>
 
-        <div class="text-center mt-5">
-            <button class="btn btn-modern btn-lg">Load More Events</button>
-        </div>
-    </div>
-
-    <!-- CTA Section -->
-    <div class="container">
-        <div class="cta-section">
-            <div class="cta-content">
-                <h3>Never Miss an Event</h3>
-                <p>Get personalized event recommendations and early access to exclusive gatherings</p>
-                <form class="email-form">
-                    <input type="email" placeholder="Enter your email address" required>
-                    <button type="submit" class="btn-submit">Subscribe</button>
-                </form>
+        <section class="mt-10 rounded-3xl border border-blue-100 bg-blue-600 px-6 py-9 text-center text-white sm:px-10">
+            <h3 class="text-2xl font-semibold">Never Miss an Event</h3>
+            <p class="mt-2 text-sm text-blue-100">Follow our social pages for event reminders and live updates.</p>
+            <div class="mt-5 flex flex-wrap justify-center gap-3">
+                <a href="https://www.facebook.com/DoxaCommissionGlobal/" target="_blank" rel="noopener noreferrer" class="rounded-full bg-white px-5 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-blue-700 transition hover:bg-blue-50">Facebook</a>
+                <a href="https://x.com" target="_blank" rel="noopener noreferrer" class="rounded-full border border-blue-200 px-5 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-blue-500">X / Twitter</a>
             </div>
-        </div>
-    </div>
-    <!-- Event Details Modal -->
+        </section>
+    </section>
+
     @if($selectedEvent)
-    <div wire:ignore.self class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content rounded-4 shadow-lg border-0">
-                <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title fw-bold text-primary" id="eventModalLabel">Event Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body px-4 py-3">
-                    @if($selectedEvent->banner)
-                        <img src="{{ asset('storage/' . $selectedEvent->banner) }}"
-                             alt="{{ $selectedEvent->title }}"
-                             class="img-fluid rounded-3 mb-4 w-100"
-                             style="max-height: 300px; object-fit: cover;">
-                    @endif
-
-                    <h3 class="fw-bold mb-3">{{ $selectedEvent->title }}</h3>
-
-                    <div class="event-meta mb-2">
-                        <i class="bi bi-calendar-event"></i>
-                        {{ \Carbon\Carbon::parse($selectedEvent->start_at)->format('F d, Y') }}
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4" wire:click="closeEventModal">
+            <article class="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-3xl border border-blue-100 bg-white p-6 shadow-2xl" wire:click.stop>
+                <div class="flex items-start justify-between gap-4">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">Event Details</p>
+                        <h3 class="mt-2 text-2xl font-semibold text-slate-900">{{ $selectedEvent->title }}</h3>
                     </div>
+                    <button
+                        type="button"
+                        wire:click="closeEventModal"
+                        class="rounded-full border border-blue-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 transition hover:text-slate-700"
+                    >
+                        Close
+                    </button>
+                </div>
 
-                    <div class="event-meta mb-2">
-                        <i class="bi bi-clock"></i>
+                @if($selectedEvent->banner)
+                    <img src="{{ Storage::url($selectedEvent->banner) }}" alt="{{ $selectedEvent->title }}" class="mt-5 h-64 w-full rounded-2xl object-cover">
+                @endif
+
+                <div class="mt-6 grid gap-4 text-sm text-slate-600 sm:grid-cols-2">
+                    <p><span class="font-semibold text-slate-800">Date:</span> {{ \Carbon\Carbon::parse($selectedEvent->start_at)->format('F d, Y') }}</p>
+                    <p>
+                        <span class="font-semibold text-slate-800">Time:</span>
                         {{ \Carbon\Carbon::parse($selectedEvent->start_at)->format('h:i A') }}
                         @if($selectedEvent->end_at)
                             - {{ \Carbon\Carbon::parse($selectedEvent->end_at)->format('h:i A') }}
                         @endif
                         @if($selectedEvent->timezone)
-                            <small class="text-muted">({{ $selectedEvent->timezone }})</small>
+                            ({{ $selectedEvent->timezone }})
                         @endif
-                    </div>
-
-                    <div class="event-meta mb-2">
-                        <i class="bi bi-geo-alt"></i>
-                        {{ $selectedEvent->location ?? 'DOXA COSMOS' }}
-                    </div>
-
-                    <div class="event-meta mb-3">
-                        <i class="bi bi-building"></i>
-                        {{ $selectedEvent->chapter->name }}
-                    </div>
-
+                    </p>
+                    <p><span class="font-semibold text-slate-800">Location:</span> {{ $selectedEvent->location ?? 'Doxa Cosmos' }}</p>
+                    <p><span class="font-semibold text-slate-800">Chapter:</span> {{ $selectedEvent->chapter->name ?? 'N/A' }}</p>
                     @if($selectedEvent->is_online)
-                        <div class="alert alert-info mb-3">
-                            <i class="bi bi-camera-video"></i> This is an online event
-                        </div>
+                        <p class="sm:col-span-2"><span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">Online Event</span></p>
                     @endif
-
-                    <div class="mb-4">
-                        <h6 class="fw-bold mb-2">Description</h6>
-                        <p class="text-muted">{{ $selectedEvent->description }}</p>
-                    </div>
-
                     @if($selectedEvent->capacity)
-                        <div class="mb-3">
-                            <h6 class="fw-bold mb-2">Capacity</h6>
-                            <p class="text-muted">Maximum {{ $selectedEvent->capacity }} attendees</p>
-                        </div>
+                        <p class="sm:col-span-2"><span class="font-semibold text-slate-800">Capacity:</span> {{ $selectedEvent->capacity }} attendees</p>
                     @endif
                 </div>
-                <div class="modal-footer border-0 pt-0">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    @if($selectedEvent->form_schema && $selectedEvent->registration_required)
-                        <a href="{{ route('events.register', ['event_id' => $selectedEvent->id]) }}"
-                           class="btn btn-modern">
+
+                <div class="mt-5">
+                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">Description</p>
+                    <p class="mt-2 text-sm leading-7 text-slate-600">{{ $selectedEvent->description }}</p>
+                </div>
+
+                <div class="mt-6 flex flex-wrap gap-2">
+                    @if($selectedEvent->registration_required && $selectedEvent->form_schema)
+                        <a href="{{ route('events.register', ['event_id' => $selectedEvent->id]) }}" class="inline-flex items-center rounded-full bg-blue-600 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-blue-700">
                             Register Now
                         </a>
                     @endif
+
+                    @if($selectedEvent->hasStarted())
+                        <a href="{{ route('events.gallery', ['event' => $selectedEvent->slug ?? $selectedEvent->id]) }}" class="inline-flex items-center rounded-full border border-blue-200 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-blue-700 transition hover:bg-blue-50">
+                            View Gallery
+                        </a>
+                    @endif
                 </div>
-            </div>
+            </article>
         </div>
-    </div>
     @endif
-    <script>
-        document.addEventListener('livewire:init', () => {
-            Livewire.on('show-event-modal', () => {
-                const modal = new bootstrap.Modal(document.getElementById('eventModal'));
-                modal.show();
-            });
-
-            Livewire.on('hide-event-modal', () => {
-                const modalEl = document.getElementById('eventModal');
-                const modal = bootstrap.Modal.getInstance(modalEl);
-                if (modal) modal.hide();
-            });
-        });
-    </script>
-
 </div>

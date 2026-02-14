@@ -11,10 +11,11 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Livewire\Volt\Component;
 use Livewire\WithPagination;
+use Livewire\WithFileUploads;
 use TallStackUi\Traits\Interactions;
 
 new #[Layout('components.layouts.admin')] class extends Component {
-    use Interactions, WithPagination;
+    use Interactions, WithPagination, WithFileUploads;
 
     public ?int $quantity = 10;
     public ?string $search = null;
@@ -25,6 +26,7 @@ new #[Layout('components.layouts.admin')] class extends Component {
     public $classesNotDone;
     public ?array $studentProgress = [];
     public $student;
+    public $templateFile;
     // public ?int $selectedUser;
 
     #[Url(keep: true)]
@@ -33,19 +35,33 @@ new #[Layout('components.layouts.admin')] class extends Component {
     public function mount()
     {
         $this->academy = BeliversAcademy::where('chapter_id', Chapter::where('name', e($this->chapter))->first()->id)->first();
-        $this->allClasses = AcademyClases::where('academy_id', $this->academy->id)->get();
+        if (!$this->academy) {
+            $chapter = Chapter::where('name', e($this->chapter))->first();
+            if ($chapter) {
+                $this->academy = BeliversAcademy::create([
+                    'status' => 'open',
+                    'start_at' => now()->addDays(7),
+                    'chapter_id' => $chapter->id,
+                ]);
+            }
+        }
+        $this->allClasses = $this->academy ? AcademyClases::where('academy_id', $this->academy->id)->get() : collect();
     }
 
     public function selectedUser($id)
     {
-        $student = StudentClasses::where('user_id', $id)->where('academy_id', $this->academy->id)->first();
+        $student = StudentClasses::with('batch')->where('user_id', $id)->where('academy_id', $this->academy->id)->first();
         $this->student = $student;
         $this->studentProgress = json_decode($student->class_completed ?? '[]', true) ?? [];
     }
 
     public function loadClasses()
     {
-        $this->allClasses = AcademyClases::where('academy_id', $this->academy->id)->get();
+        if ($this->student && $this->student->batch) {
+            $this->allClasses = $this->student->batch->classes;
+        } else {
+            $this->allClasses = AcademyClases::where('academy_id', $this->academy->id)->get();
+        }
     }
 
     public function loadStudentProgress()
@@ -71,8 +87,8 @@ new #[Layout('components.layouts.admin')] class extends Component {
     public function rows()
     {
         return StudentClasses::with('user')
-            ->where('academy_id', $this->academy->id) // Count members
-            ->when($this->search, fn($q) => $q->where('name', 'like', "%{$this->search}%"))
+            ->where('academy_id', $this->academy->id)
+            ->when($this->search, fn($q) => $q->whereHas('user', fn($userQ) => $userQ->where('name', 'like', "%{$this->search}%")))
             ->paginate($this->quantity);
     }
 
@@ -110,6 +126,23 @@ new #[Layout('components.layouts.admin')] class extends Component {
         $this->loadClasses();
         $this->loadStudentProgress();
     }
+
+    public function uploadTemplate()
+    {
+        $this->validate([
+            'templateFile' => 'required|file|mimes:pdf|max:2048',
+        ]);
+
+        if ($this->academy) {
+            $path = $this->templateFile->store('certificate_templates', 'public');
+            $this->academy->certificate_template = $path;
+            $this->academy->save();
+            $this->toast()->success('Template uploaded successfully');
+            $this->templateFile = null;
+        }
+    }
+
+
 };
 ?>
 
@@ -117,15 +150,27 @@ new #[Layout('components.layouts.admin')] class extends Component {
 
 
     <x-card class="relative dark:bg-dark-800">
+        <div class="mb-4">
+            <h3 class="text-lg font-semibold mb-2">Certificate Template</h3>
+            <form wire:submit.prevent="uploadTemplate" class="flex items-center space-x-4">
+                <input type="file" wire:model="templateFile" accept=".pdf" class="border rounded p-2">
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Upload Template</button>
+            </form>
+            @if($academy && $academy->certificate_template)
+                <p class="mt-2 text-green-600">Template uploaded: {{ $academy->certificate_template }}</p>
+            @else
+                <p class="mt-2 text-red-600">No template uploaded</p>
+            @endif
+        </div>
+    </x-card>
+
+    <x-card class="relative dark:bg-dark-800">
         <x-table :$headers :$rows :filter="['quantity' => 'quantity', 'search' => 'search']" :quantity="[5, 15, 50, 100, 250]" paginate persistent selectable
             wire:model.live="selected">
 
             @interact('column_action', $row)
-                {{-- Delete Team --}}
-                <x-button.circle color="red" icon="trash" wire:click="deleteTeam('{{ $row->id }}')" />
-
-                {{-- Edit Team --}}
-                <button class="px-3 rounded py-1 bg-blue-800"
+                {{-- Check Progress --}}
+                <button class="px-3 rounded py-1 bg-blue-800 text-white"
                     x-on:click="$wire.call('selectedUser', {{ $row->user_id }}).then(() => $modalOpen('modal-id'))">
                     Check Progress
                 </button>

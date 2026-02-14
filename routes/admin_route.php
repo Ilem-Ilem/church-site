@@ -14,6 +14,11 @@ Route::prefix('admin/dashboard')
         Volt::route('believers-academy', 'admin.dashboard.settings.believersclass')->name('admin.settings.believersclass');
         // Settings - Event Teams
         Volt::route('/settings/event-teams', 'admin.dashboard.settings.event-teams')->name('admin.dashboard.settings.event-teams');
+        
+        // Settings - Landing and Global
+        Volt::route('/settings', 'admin.dashboard.settings.index')->name('admin.dashboard.settings.index');
+        Volt::route('/settings/landing', 'admin.dashboard.settings.landing')->name('admin.dashboard.settings.landing');
+        Volt::route('/settings/global', 'admin.dashboard.settings.global')->name('admin.dashboard.settings.global');
         // -----------------------------------------------------------------
         //              MEMBERS SECTION
         //-------------------------------------------------------------------
@@ -104,13 +109,11 @@ Route::prefix('admin/dashboard')
         Volt::route('/events/registrations', 'admin.dashboard.event.registrations')->name('admin.dashboard.event.registrations');
 
 
-        //SERMON ROUTES
-         Volt::route(
-             'sermons',
-             'admin.dashboard.sermons.index'   // <- dot-notation path to the .blade.php
-         )
-             ->name('admin.sermons')
-             ->middleware(['auth', 'admin']);
+        // -----------------------------------------------------------------
+        //              SERMON SECTION
+        //-------------------------------------------------------------------
+        Volt::route('sermons', 'admin.dashboard.sermons.index')
+            ->name('admin.dashboard.sermons.index');
 
         // TRANSPORT ROUTES
         Volt::route('transport', 'admin.dashboard.transport.index')->name('admin.dashboard.transport.index');

@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Doxa Commission Global</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1e3a8a',
+                        'primary-light': '#3b82f6',
+                        'primary-dark': '#1e40af',
+                        accent: '#f59e0b',
+                        'accent-light': '#fbbf24',
+                        text: '#1f2937',
+                        'text-light': '#6b7280',
+                    },
+                    fontFamily: {
+                        'poppins': ['Poppins', 'sans-serif'],
+                    },
+                    backdropBlur: {
+                        'glass': '25px',
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.8s ease-in-out',
+                        'slide-up': 'slideUp 0.6s ease-out',
+                        'scale-in': 'scaleIn 0.5s ease-out',
+                    },
+                    boxShadow: {
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
+                        'soft': '0 4px 20px rgba(0, 0, 0, 0.08)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            @keyframes slideUp {
+                from { 
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to { 
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            @keyframes scaleIn {
+                from { 
+                    opacity: 0;
+                    transform: scale(0.9);
+                }
+                to { 
+                    opacity: 1;
+                    transform: scale(1);
+                }
+            }
+            .animation-delay-200 {
+                animation-delay: 0.2s;
+            }
+            .animation-delay-400 {
+                animation-delay: 0.4s;
+            }
+            .animation-delay-600 {
+                animation-delay: 0.6s;
+            }
+        }
+        
+        /* Timeline Styles */
+        .timeline-item {
+            position: relative;
+        }
+        .timeline-item:not(:last-child):after {
+            content: '';
+            position: absolute;
+            left: 1.5rem;
+            top: 4rem;
+            bottom: -2rem;
+            width: 2px;
+            background: #e5e7eb;
+        }
+        @media (min-width: 768px) {
+            .timeline-item:not(:last-child):after {
+                left: 50%;
+                transform: translateX(-50%);
+                top: 5rem;
+                bottom: -2rem;
+            }
+        }
+        
+        /* Glassmorphism effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+        /* Social media hover effects */
+        .social-facebook:hover {
+            background-color: white !important;
+        }
+
+        .social-facebook:hover i {
+            color: #3b5998 !important;
+        }
+
+        .social-instagram:hover {
+            background-color: white !important;
+        }
+
+        .social-instagram:hover i {
+            color: #E1306C !important;
+        }
+
+        .social-youtube:hover {
+            background-color: white !important;
+        }
+
+        .social-youtube:hover i {
+            color: #FF0000 !important;
+        }
+
+        .social-tiktok:hover {
+            background-color: white !important;
+        }
+
+        .social-tiktok:hover i {
+            color: #000000 !important;
+        }
+
+        .social-spotify:hover {
+            background-color: white !important;
+        }
+
+        .social-spotify:hover i {
+            color: #1DB954 !important;
+        }
+    </style>
+</head>
+
+<body class="font-poppins bg-gray-50 text-gray-800">
+    <!-- Top Navigation (Desktop) -->
+    <nav class="hidden lg:flex items-center justify-between px-8 py-5 bg-white shadow-md sticky top-0 z-50">
+        <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center">
+                <img src="img/doxa.PNG" alt="logo">
+            </div>
+            <span class="text-xl font-bold text-primary">Doxa Commission Global</span>
+        </div>
+
+        <div class="flex space-x-10">
+            <a href="index.html"
+                class="font-medium text-gray-600 hover:text-primary transition-colors duration-300">Home</a>
+            <a href="message.html"
+                class="font-medium text-gray-600 hover:text-primary transition-colors duration-300">Message</a>
+            <a href="about.html" class="font-medium text-primary border-b-2 border-primary pb-1">About</a>
+            <a href="cell.html"
+                class="font-medium text-gray-600 hover:text-primary transition-colors duration-300">Cell</a>
+            <a href="event.html"
+                class="font-medium text-gray-600 hover:text-primary transition-colors duration-300">Event</a>
+            <a href="location.html"
+                class="font-medium text-gray-600 hover:text-primary transition-colors duration-300">Location</a>
+            <a href="belivers-academy.html"
+                class="font-medium text-gray-600 hover:text-primary transition-colors duration-300">Believers
+                Academy</a>
+            <a href="transportaion.html"
+                class="font-medium text-gray-600 hover:text-primary transition-colors duration-300">Need a Ride</a>
+        </div>
+
+        <button
+            class="bg-primary text-white px-7 py-3 rounded-full font-medium hover:bg-primary-dark transition-colors duration-300 shadow-md">
+            Connect With Us
+        </button>
+    </nav>
+
+    <!-- Hero Section (Glassmorphic) -->
+    <section
+        class="relative min-h-[70vh] flex items-center justify-center px-4 py-16 bg-gradient-to-br from-blue-900 to-indigo-900 overflow-hidden">
+        <!-- Background Image with Overlay -->
+        <div
+            class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1516501312919-d0cb4b4ca389?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')] bg-cover bg-center">
+        </div>
+        <div class="absolute inset-0 bg-black/40"></div>
+
+        <!-- Glassmorphic Container -->
+        <div
+            class="relative z-10 w-full max-w-4xl glass rounded-2xl shadow-glass p-8 md:p-12 text-center animate-fade-in">
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 animate-slide-up">
+                About Us
+            </h1>
+            <p class="text-xl md:text-2xl text-white/90 mb-8 animate-slide-up animation-delay-200 max-w-3xl mx-auto">
+                "We are a community of believers committed to making disciples of Jesus Christ who love God passionately
+                and serve others selflessly."
+            </p>
+            <p class="text-lg text-white/80 italic animate-slide-up animation-delay-400">
+                "For we are God's handiwork, created in Christ Jesus to do good works, which God prepared in advance for
+                us to do." - Ephesians 2:10
+            </p>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <a href="#vision" class="text-white/80 hover:text-white transition-colors">
+                <i class="fas fa-chevron-down text-2xl"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- Vision & Mission Section -->
+    <section id="vision" class="py-16 px-4 bg-white">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 text-gray-800">Our Vision & Mission</h2>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Vision -->
+                <div
+                    class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-8 border border-blue-100 animate-scale-in">
+                    <div class="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center mb-6">
+                        <i class="fas fa-eye text-blue-500 text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Our Vision</h3>
+                    <p class="text-gray-600 mb-6">
+                        To see transformed lives impacting our community and beyond through the power of the Gospel,
+                        creating a thriving, multi-generational church that reflects God's kingdom on earth.
+                    </p>
+                    <div class="bg-white/80 rounded-xl p-4 border border-blue-200">
+                        <p class="text-blue-700 italic">
+                            "Where there is no vision, the people perish." - Proverbs 29:18
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Mission -->
+                <div
+                    class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-8 border border-amber-100 animate-scale-in animation-delay-200">
+                    <div class="w-16 h-16 bg-amber-100 rounded-xl flex items-center justify-center mb-6">
+                        <i class="fas fa-bullseye text-amber-500 text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Our Mission</h3>
+                    <p class="text-gray-600 mb-6">
+                        To make disciples of Jesus Christ through worship, teaching, fellowship, and service, equipping
+                        believers to live out their faith in every area of life.
+                    </p>
+                    <div class="bg-white/80 rounded-xl p-4 border border-amber-200">
+                        <p class="text-amber-700 italic">
+                            "Therefore go and make disciples of all nations, baptizing them in the name of the Father
+                            and of the Son and of the Holy Spirit." - Matthew 28:19
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Core Values Section -->
+    <section class="py-16 px-4 bg-gradient-to-br from-gray-50 to-blue-50">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-4 text-gray-800">Our Core Values</h2>
+            <p class="text-xl text-center text-gray-600 mb-12 max-w-2xl mx-auto">The principles that guide everything we
+                do as a church community</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Value 1 -->
+                <div
+                    class="bg-white rounded-2xl p-6 shadow-soft border border-gray-100 transition-all hover:shadow-lg hover:-translate-y-1">
+                    <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
+                        <i class="fas fa-bible text-blue-500 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">Biblical Authority</h3>
+                    <p class="text-gray-600">We submit to the Bible as God's inspired Word and our final authority in
+                        all matters of faith and practice.</p>
+                </div>
+
+                <!-- Value 2 -->
+                <div
+                    class="bg-white rounded-2xl p-6 shadow-soft border border-gray-100 transition-all hover:shadow-lg hover:-translate-y-1">
+                    <div class="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center mb-4">
+                        <i class="fas fa-hands-praying text-green-500 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">Authentic Worship</h3>
+                    <p class="text-gray-600">We express our love for God through heartfelt worship that honors Him and
+                        engages every believer.</p>
+                </div>
+
+                <!-- Value 3 -->
+                <div
+                    class="bg-white rounded-2xl p-6 shadow-soft border border-gray-100 transition-all hover:shadow-lg hover:-translate-y-1">
+                    <div class="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center mb-4">
+                        <i class="fas fa-people-group text-purple-500 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">Intentional Community</h3>
+                    <p class="text-gray-600">We pursue genuine relationships that foster spiritual growth,
+                        accountability, and mutual care.</p>
+                </div>
+
+                <!-- Value 4 -->
+                <div
+                    class="bg-white rounded-2xl p-6 shadow-soft border border-gray-100 transition-all hover:shadow-lg hover:-translate-y-1">
+                    <div class="w-14 h-14 bg-amber-100 rounded-xl flex items-center justify-center mb-4">
+                        <i class="fas fa-hands-holding-circle text-amber-500 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">Generous Service</h3>
+                    <p class="text-gray-600">We use our God-given gifts and resources to serve others inside and outside
+                        the church.</p>
+                </div>
+
+                <!-- Value 5 -->
+                <div
+                    class="bg-white rounded-2xl p-6 shadow-soft border border-gray-100 transition-all hover:shadow-lg hover:-translate-y-1">
+                    <div class="w-14 h-14 bg-red-100 rounded-xl flex items-center justify-center mb-4">
+                        <i class="fas fa-heart-circle-check text-red-500 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">Compassionate Outreach</h3>
+                    <p class="text-gray-600">We actively share the love of Christ through both word and deed in our
+                        local community and beyond.</p>
+                </div>
+
+                <!-- Value 6 -->
+                <div
+                    class="bg-white rounded-2xl p-6 shadow-soft border border-gray-100 transition-all hover:shadow-lg hover:-translate-y-1">
+                    <div class="w-14 h-14 bg-indigo-100 rounded-xl flex items-center justify-center mb-4">
+                        <i class="fas fa-user-plus text-indigo-500 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">Spiritual Growth</h3>
+                    <p class="text-gray-600">We are committed to helping every believer mature in their faith and
+                        discover their God-given purpose.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Leadership Section -->
+    <section class="py-16 px-4 bg-white">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-4 text-gray-800">Our Leadership</h2>
+            <p class="text-xl text-center text-gray-600 mb-12 max-w-2xl mx-auto">Meet the team guiding our church
+                community</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Leader 1 -->
+                <div
+                    class="bg-white rounded-2xl shadow-soft overflow-hidden border border-gray-100 transition-all hover:shadow-lg">
+                    <div class="h-48 bg-gradient-to-r from-blue-400 to-purple-500 relative"></div>
+                    <div class="p-6 text-center">
+                        <div
+                            class="w-24 h-24 bg-white rounded-full border-4 border-white -mt-16 mx-auto shadow-lg overflow-hidden">
+                            <div class="w-full h-full bg-blue-200 flex items-center justify-center">
+                                <i class="fas fa-user text-blue-500 text-3xl"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mt-4">Pastor Michael Johnson</h3>
+                        <p class="text-primary font-medium mb-4">Senior Pastor</p>
+                        <p class="text-gray-600 text-sm">With over 20 years of ministry experience, Pastor Michael leads
+                            with vision and compassion, dedicated to building a church that transforms lives.</p>
+                    </div>
+                </div>
+
+                <!-- Leader 2 -->
+                <div
+                    class="bg-white rounded-2xl shadow-soft overflow-hidden border border-gray-100 transition-all hover:shadow-lg">
+                    <div class="h-48 bg-gradient-to-r from-green-400 to-blue-500 relative"></div>
+                    <div class="p-6 text-center">
+                        <div
+                            class="w-24 h-24 bg-white rounded-full border-4 border-white -mt-16 mx-auto shadow-lg overflow-hidden">
+                            <div class="w-full h-full bg-green-200 flex items-center justify-center">
+                                <i class="fas fa-user text-green-500 text-3xl"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mt-4">Sarah Williams</h3>
+                        <p class="text-primary font-medium mb-4">Associate Pastor</p>
+                        <p class="text-gray-600 text-sm">Sarah oversees our community outreach and discipleship
+                            programs, passionate about helping people discover their purpose in Christ.</p>
+                    </div>
+                </div>
+
+                <!-- Leader 3 -->
+                <div
+                    class="bg-white rounded-2xl shadow-soft overflow-hidden border border-gray-100 transition-all hover:shadow-lg">
+                    <div class="h-48 bg-gradient-to-r from-purple-400 to-pink-500 relative"></div>
+                    <div class="p-6 text-center">
+                        <div
+                            class="w-24 h-24 bg-white rounded-full border-4 border-white -mt-16 mx-auto shadow-lg overflow-hidden">
+                            <div class="w-full h-full bg-purple-200 flex items-center justify-center">
+                                <i class="fas fa-user text-purple-500 text-3xl"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mt-4">David Chen</h3>
+                        <p class="text-primary font-medium mb-4">Worship & Creative Director</p>
+                        <p class="text-gray-600 text-sm">David leads our worship ministry with excellence and
+                            authenticity, creating spaces where people can encounter God's presence.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-12">
+                <button
+                    class="bg-white text-primary border border-primary px-8 py-3 rounded-full font-medium hover:bg-blue-50 transition-colors">
+                    Meet Our Full Team
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ministry Story / Timeline Section -->
+    <section class="py-16 px-4 bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-4 text-gray-800">Our Journey</h2>
+            <p class="text-xl text-center text-gray-600 mb-12 max-w-2xl mx-auto">How God has been faithful through the
+                years</p>
+
+            <div class="relative">
+                <!-- Vertical Timeline for Mobile, Horizontal for Desktop -->
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
+                    <!-- Timeline Item 1 -->
+                    <div class="timeline-item md:col-span-1 flex md:block">
+                        <div
+                            class="flex-shrink-0 w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white font-bold z-10">
+                            2005
+                        </div>
+                        <div class="ml-4 md:ml-0 md:mt-4">
+                            <h3 class="text-lg font-bold text-gray-800">Church Founding</h3>
+                            <p class="text-gray-600 text-sm mt-2">Started with 12 people meeting in a living room with a
+                                vision to reach the community.</p>
+                        </div>
+                    </div>
+
+                    <!-- Timeline Item 2 -->
+                    <div class="timeline-item md:col-span-1 flex md:block">
+                        <div
+                            class="flex-shrink-0 w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white font-bold z-10">
+                            2008
+                        </div>
+                        <div class="ml-4 md:ml-0 md:mt-4">
+                            <h3 class="text-lg font-bold text-gray-800">First Building</h3>
+                            <p class="text-gray-600 text-sm mt-2">Purchased our first facility, accommodating our
+                                growing congregation of 150 people.</p>
+                        </div>
+                    </div>
+
+                    <!-- Timeline Item 3 -->
+                    <div class="timeline-item md:col-span-1 flex md:block">
+                        <div
+                            class="flex-shrink-0 w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white font-bold z-10">
+                            2012
+                        </div>
+                        <div class="ml-4 md:ml-0 md:mt-4">
+                            <h3 class="text-lg font-bold text-gray-800">Community Outreach</h3>
+                            <p class="text-gray-600 text-sm mt-2">Launched our first major community service program,
+                                feeding 500 families monthly.</p>
+                        </div>
+                    </div>
+
+                    <!-- Timeline Item 4 -->
+                    <div class="timeline-item md:col-span-1 flex md:block">
+                        <div
+                            class="flex-shrink-0 w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white font-bold z-10">
+                            2016
+                        </div>
+                        <div class="ml-4 md:ml-0 md:mt-4">
+                            <h3 class="text-lg font-bold text-gray-800">Expansion</h3>
+                            <p class="text-gray-600 text-sm mt-2">Moved to our current location with capacity for 800
+                                worshippers across two services.</p>
+                        </div>
+                    </div>
+
+                    <!-- Timeline Item 5 -->
+                    <div class="timeline-item md:col-span-1 flex md:block">
+                        <div
+                            class="flex-shrink-0 w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white font-bold z-10">
+                            2023
+                        </div>
+                        <div class="ml-4 md:ml-0 md:mt-4">
+                            <h3 class="text-lg font-bold text-gray-800">Believers Academy</h3>
+                            <p class="text-gray-600 text-sm mt-2">Launched our discipleship training program to equip
+                                believers for ministry.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Believers Academy Section -->
+    <section class="py-16 px-4 bg-white">
+        <div class="max-w-4xl mx-auto text-center">
+            <div
+                class="w-20 h-20 bg-gradient-to-r from-primary to-primary-light rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                <i class="fas fa-graduation-cap text-white text-2xl"></i>
+            </div>
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 text-gray-800">Grow in Your Faith</h2>
+            <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+                Our Believers Academy is designed to help you build a strong foundation in your Christian walk through
+                systematic teaching, mentorship, and practical application.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                <div class="bg-blue-50 rounded-xl p-6 border border-blue-200">
+                    <i class="fas fa-book-bible text-primary text-2xl mb-4"></i>
+                    <h3 class="font-bold text-gray-800 mb-2">Biblical Foundation</h3>
+                    <p class="text-gray-600 text-sm">Learn core doctrines and how to study the Bible effectively.</p>
+                </div>
+                <div class="bg-green-50 rounded-xl p-6 border border-green-200">
+                    <i class="fas fa-pray text-primary text-2xl mb-4"></i>
+                    <h3 class="font-bold text-gray-800 mb-2">Spiritual Disciplines</h3>
+                    <p class="text-gray-600 text-sm">Develop habits of prayer, worship, and spiritual growth.</p>
+                </div>
+                <div class="bg-amber-50 rounded-xl p-6 border border-amber-200">
+                    <i class="fas fa-hands-holding text-primary text-2xl mb-4"></i>
+                    <h3 class="font-bold text-gray-800 mb-2">Practical Ministry</h3>
+                    <p class="text-gray-600 text-sm">Discover your gifts and learn to serve effectively.</p>
+                </div>
+            </div>
+            <button
+                class="bg-gradient-to-r from-primary to-primary-light text-white px-8 py-4 rounded-full font-bold hover:shadow-lg transition-all transform hover:-translate-y-1">
+                Join Believers Academy
+            </button>
+        </div>
+    </section>
+
+    <!-- Bottom Navigation (Mobile Only) -->
+    <nav
+        class="fixed bottom-0 left-0 right-0 bg-white shadow-2xl rounded-t-3xl p-4 flex justify-between items-center lg:hidden z-50">
+        <a href="index.html" class="flex flex-col items-center text-gray-500 py-2">
+            <i class="fas fa-home text-xl mb-1"></i>
+            <span class="text-xs">Home</span>
+        </a>
+        <a href="message.html" class="flex flex-col items-center text-gray-500 py-2">
+            <i class="fas fa-play-circle text-xl mb-1"></i>
+            <span class="text-xs">Message</span>
+        </a>
+        <a href="about.html" class="flex flex-col items-center text-primary py-2">
+            <i class="fas fa-info-circle text-xl mb-1"></i>
+            <span class="text-xs">About</span>
+        </a>
+        <a href="cell.html" class="flex flex-col items-center text-gray-500 py-2">
+            <i class="fas fa-users text-xl mb-1"></i>
+            <span class="text-xs">Cell</span>
+        </a>
+        <a href="event.html" class="flex flex-col items-center text-gray-500 py-2">
+            <i class="fas fa-calendar-alt text-xl mb-1"></i>
+            <span class="text-xs">Event</span>
+        </a>
+        <a href="location.html" class="flex flex-col items-center text-gray-500 py-2">
+            <i class="fas fa-map-marker-alt text-xl mb-1"></i>
+            <span class="text-xs">Location</span>
+        </a>
+        <a href="belivers-academy.html" class="flex flex-col items-center text-gray-500 py-2">
+            <i class="fas fa-graduation-cap text-xl mb-1"></i>
+            <span class="text-xs">Academy</span>
+        </a>
+        <a href="transportaion.html" class="flex flex-col items-center text-gray-500 py-2">
+            <i class="fas fa-car text-xl mb-1"></i>
+            <span class="text-xs">Ride</span>
+        </a>
+    </nav>
+
+    <!-- Footer -->
+    <footer class="bg-blue-900 text-white py-12 px-4">
+        <div class="container mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Column 1 -->
+                <div>
+                    <h2 class="text-xl font-bold mb-4">Doxa Commission Global</h2>
+                    <h4 class="text-gray-300 mb-4">Bringing nations into God's glory worldwide</h4>
+                    <div class="space-y-3">
+                        <p class="flex items-start">
+                            <i class="fas fa-location-dot mt-1 mr-2 text-blue-400"></i>
+                            <a href="https://maps.app.goo.gl/4ZqPqRu1CMYQnppW7"
+                                class="hover:text-blue-300 transition">129 Goldie, Adjacent Amika Utuk,
+                                Calabar, Cross River State, Nigeria.</a>
+                        </p>
+                        <p class="flex items-center cursor-pointer" id="call-us">
+                            <i class="fas fa-phone mr-2 text-blue-400"></i>
+                            <a href="" class="hover:text-blue-300 transition">+234 1234567890</a>
+                        </p>
+                        <p class="flex items-center">
+                            <i class="far fa-envelope mr-2 text-blue-400"></i>
+                            <a href="mailto:info@doxachurch.org"
+                                class="hover:text-blue-300 transition">info@doxachurch.org</a>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Column 2 -->
+                <div>
+                    <h2 class="text-xl font-bold mb-4">Service Times</h2>
+                    <p class="mb-4">Sunday Glory Life Service:<br>7am, 8:30am, 10am and 4pm</p>
+                    <h4 class="font-bold mb-2">Thursday Glory Experience</h4>
+                    <p>5:30pm</p>
+                </div>
+
+                <!-- Column 3 -->
+                <div>
+                    <h2 class="text-xl font-bold mb-4">Quick Links</h2>
+                    <ul class="space-y-2">
+                        <li><a href="index.html" class="hover:text-blue-300 transition">Home</a></li>
+                        <li><a href="message.html" class="hover:text-blue-300 transition">Messages</a></li>
+                        <li><a href="about.html" class="hover:text-blue-300 transition">About</a></li>
+                        <li><a href="cell.html" class="hover:text-blue-300 transition">Cell</a></li>
+                        <li><a href="location.html" class="hover:text-blue-300 transition">Location</a></li>
+                        <li><a href="belivers-academy.html" class="hover:text-blue-300 transition">Believers Academy</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Column 4 -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Stay Connected</h3>
+                    <p class="mb-4">Subscribe to our newsletter for updates and spiritual insights.</p>
+                    <form class="mb-6">
+                        <div class="flex">
+                            <input type="email" placeholder="Your email address"
+                                class="flex-grow px-4 py-2 rounded-l-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <button type="submit"
+                                class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-r-lg transition">
+                                Subscribe
+                            </button>
+                        </div>
+                    </form>
+                    <div class="flex space-x-4 mb-2">
+                        <a href="https://www.facebook.com/DoxaCommissionGlobal/" aria-label="Facebook"
+                            class="social-facebook bg-blue-800 w-10 h-10 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-facebook-f text-white"></i>
+                        </a>
+                        <a href="https://www.instagram.com/doxa_commission/?hl=en" aria-label="Instagram"
+                            class="social-instagram bg-blue-800 w-10 h-10 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-instagram text-white"></i>
+                        </a>
+                        <a href="https://www.youtube.com/channel/UCZtReUAxK3S6qBKnV5G6PTw" aria-label="YouTube"
+                            class="social-youtube bg-blue-800 w-10 h-10 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-youtube text-white"></i>
+                        </a>
+                        <a href="https://www.tiktok.com/discover/doxa-commission-global" aria-label="TikTok"
+                            class="social-tiktok bg-blue-800 w-10 h-10 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-tiktok"></i>
+                        </a>
+                        <a href="https://open.spotify.com/show/05Jdb4jyuqHoUdQ89VLvnF?si=1310344dc60e4d01"
+                            aria-label="Spotify"
+                            class="social-spotify bg-blue-800 w-10 h-10 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-spotify text-white"></i>
+                        </a>
+                    </div>
+                    <p class="text-blue-300 text-sm">Follow us for updates and inspiration!</p>
+                </div>
+            </div>
+
+            <div class="border-t border-blue-700 mt-8 pt-6 text-center">
+                <p>&copy; Copyright Doxa Commission Global <span id="current-year"></span> All Rights Reserved. Designed
+                    and Developed by Doxa Database</p>
+            </div>
+        </div>
+    </footer>
+
+
+    <script>
+        // Simple scroll animation trigger
+        document.addEventListener('DOMContentLoaded', function () {
+            // Add animation delays to elements for staggered effect
+            const animatedElements = document.querySelectorAll('.animate-slide-up, .animate-scale-in');
+            animatedElements.forEach((el, index) => {
+                el.style.animationDelay = `${index * 0.2}s`;
+            });
+
+            // Add intersection observer for scroll animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver(function (entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animationPlayState = 'running';
+                    }
+                });
+            }, observerOptions);
+
+            // Observe elements that should animate on scroll
+            document.querySelectorAll('.animate-scale-in').forEach(el => {
+                observer.observe(el);
+            });
+        });
+
+        // Phone call functionality for "Call Us" button
+        document.getElementById('call-us').addEventListener('click', function (e) {
+            e.preventDefault();
+            // Initiate a phone call
+            window.open('tel:+2341234567890');
+        });
+
+        // Set current year in footer
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
+</body>
+
+</html>

@@ -24,11 +24,12 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
     public array $chapters = [];
 
-    public $chapter_id;
+    #[Validate('required|exists:chapters,id')]
+    public ?int $chapter_id = null;
 
     public function mount()
     {
-        $this->chapters = Chapter::all()->toArray();
+        $this->chapters = Chapter::orderBy('name')->get(['id', 'name'])->toArray();
     }
 
     /**
@@ -50,32 +51,39 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
         $user = User::where('email', $this->email)->first();
         $chapter = Chapter::find($this->chapter_id);
-        if (!$this->chapter_id) {
-            // No chapter selected
-            if (!$user->hasRole('super-admin')) {
-                Auth::logout();
-                abort(403, 'Pick a Chapter to Continue');
-            }
 
-            RateLimiter::clear($this->throttleKey());
-            session()->regenerate();
+        if (! $user || ! $chapter) {
+            RateLimiter::hit($this->throttleKey());
 
-            return redirect()->intended(route('admin.super-admin.dashboard'));
-        } else {
-            // Chapter is selected
-            if (!$user->hasRole(['admin', 'team-lead', 'lead_assist']) || $user->chapter_id != $this->chapter_id || !$chapter) {
-                RateLimiter::hit($this->throttleKey());
-
-                throw ValidationException::withMessages([
-                    'email' => __('auth.failed'),
-                ]);
-            }
-
-            RateLimiter::clear($this->throttleKey());
-            session()->regenerate();
-
-            return redirect()->intended(url('/admin/dashboard?chapter='.$chapter->name));
+            throw ValidationException::withMessages([
+                'email' => __('auth.failed'),
+            ]);
         }
+
+        if (! $user->hasRole(['admin', 'team-lead', 'lead_assist'])) {
+            Auth::logout();
+            Session::invalidate();
+            Session::regenerateToken();
+
+            throw ValidationException::withMessages([
+                'email' => 'Admin access is required for this login.',
+            ]);
+        }
+
+        if ((int) $user->chapter_id !== (int) $this->chapter_id) {
+            Auth::logout();
+            Session::invalidate();
+            Session::regenerateToken();
+
+            throw ValidationException::withMessages([
+                'chapter_id' => 'You do not have access to this chapter.',
+            ]);
+        }
+
+        RateLimiter::clear($this->throttleKey());
+        session()->regenerate();
+
+        return redirect()->intended(url('/admin/dashboard?chapter=' . $chapter->name));
     }
 
 
@@ -110,42 +118,106 @@ new #[Layout('components.layouts.auth')] class extends Component {
     }
 }; ?>
 
-<div>
-
-    <!-- Session Status -->
-    <x-auth-session-status class="text-center" :status="session('status')" />
-
-    <form method="POST" wire:submit="login" class="flex flex-col gap-6">
-        <!-- Email Address -->
-        <flux:input wire:model="email" :label="__('Email address')" type="email" required autofocus autocomplete="email"
-            placeholder="email@example.com" />
-
-        <!-- Password -->
-        <div class="relative">
-            <flux:input wire:model="password" :label="__('Password')" type="password" required
-                autocomplete="current-password" :placeholder="__('Password')" viewable />
-
-            @if (Route::has('password.request'))
-                <flux:link class="absolute end-0 top-0 text-sm" :href="route('password.request')" wire:navigate>
-                    {{ __('Forgot your password?') }}
-                </flux:link>
-            @endif
+<div class="min-h-screen bg-[#f5f2ec]">
+    <div class="relative overflow-hidden">
+        <div class="absolute inset-0">
+            <div class="absolute -left-40 top-[-9rem] h-[26rem] w-[26rem] rounded-full bg-gradient-to-br from-emerald-200 via-emerald-100 to-transparent opacity-60 blur-3xl"></div>
+            <div class="absolute right-[-11rem] top-[7rem] h-[24rem] w-[24rem] rounded-full bg-gradient-to-tr from-amber-200 via-amber-100 to-transparent opacity-60 blur-3xl"></div>
         </div>
+        <div class="relative mx-auto flex min-h-screen w-full max-w-6xl items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
+            <div class="w-full max-w-xl rounded-3xl border border-emerald-200/60 bg-white/85 p-8 shadow-[0_25px_60px_-35px_rgba(15,23,42,0.45)] backdrop-blur sm:p-10">
+                <div class="mb-8 text-center">
+                    <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700 shadow-inner">
+                        <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M12 3v18M6 9h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <p class="text-xs uppercase tracking-[0.3em] text-emerald-700">Admin Access</p>
+                    <h1 class="mt-2 text-3xl font-semibold text-slate-900">Chapter Admin Sign In</h1>
+                    <p class="mt-2 text-sm text-slate-600">Select your chapter and continue to the admin dashboard.</p>
+                </div>
 
-        <div class="relative">
-            <flux:select wire:model='chapter_id' label='Chapter'>
-                <flux:select.option value="">Select A Chapter Leave Blank For Super Admin</flux:select.option>
-                @foreach ($chapters as $chapter)
+                @if (session('status'))
+                    <div class="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                        {{ session('status') }}
+                    </div>
+                @endif
 
-                    <flux:select.option value="{{ $chapter['id'] }}">{{ $chapter['name'] }}</flux:select.option>
-                @endforeach
-            </flux:select>
+                <form method="POST" wire:submit="login" class="space-y-5">
+                    @csrf
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-slate-700">Email Address</label>
+                        <input
+                            id="email"
+                            type="email"
+                            class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm transition focus:border-emerald-400 focus:outline-none focus:ring-4 focus:ring-emerald-100 @error('email') border-rose-300 focus:border-rose-400 focus:ring-rose-100 @enderror"
+                            wire:model="email"
+                            required
+                            autofocus
+                            autocomplete="email"
+                            placeholder="admin@example.com"
+                        />
+                        @error('email')
+                            <p class="mt-2 text-xs text-rose-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-slate-700">Password</label>
+                        <input
+                            id="password"
+                            type="password"
+                            class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm transition focus:border-emerald-400 focus:outline-none focus:ring-4 focus:ring-emerald-100 @error('password') border-rose-300 focus:border-rose-400 focus:ring-rose-100 @enderror"
+                            wire:model="password"
+                            required
+                            autocomplete="current-password"
+                            placeholder="Enter your password"
+                        />
+                        @error('password')
+                            <p class="mt-2 text-xs text-rose-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="chapter_id" class="block text-sm font-medium text-slate-700">Chapter</label>
+                        <select
+                            id="chapter_id"
+                            class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm transition focus:border-emerald-400 focus:outline-none focus:ring-4 focus:ring-emerald-100 @error('chapter_id') border-rose-300 focus:border-rose-400 focus:ring-rose-100 @enderror"
+                            wire:model="chapter_id"
+                            required
+                        >
+                            <option value="">Select a chapter</option>
+                            @foreach ($chapters as $chapter)
+                                <option value="{{ $chapter['id'] }}">{{ $chapter['name'] }}</option>
+                            @endforeach
+                        </select>
+                        @error('chapter_id')
+                            <p class="mt-2 text-xs text-rose-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="flex flex-wrap items-center justify-between gap-4 text-sm text-slate-600">
+                        <label class="flex cursor-pointer items-center gap-2">
+                            <input type="checkbox" class="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-200" wire:model="remember" />
+                            <span>Remember me</span>
+                        </label>
+                        @if (Route::has('password.request'))
+                            <a href="{{ route('password.request') }}" class="font-medium text-emerald-700 transition hover:text-emerald-800" wire:navigate>
+                                Forgot Password?
+                            </a>
+                        @endif
+                    </div>
+
+                    <button type="submit" class="w-full rounded-2xl bg-gradient-to-r from-emerald-600 via-emerald-500 to-lime-500 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-500/30 transition hover:-translate-y-0.5 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-emerald-200" wire:loading.attr="disabled">
+                        <span wire:loading.remove.delay>Sign In</span>
+                        <span wire:loading.delay>Signing in...</span>
+                    </button>
+                </form>
+
+                <div class="mt-8 border-t border-slate-200/80 pt-6 text-center text-xs text-slate-500">
+                    Super admin accounts should sign in at the main portal.
+                </div>
+            </div>
         </div>
-        <!-- Remember Me -->
-        <flux:checkbox wire:model="remember" :label="__('Remember me')" />
-
-        <div class="flex items-center justify-end">
-            <flux:button variant="primary" type="submit" class="w-full">{{ __('Log in') }}</flux:button>
-        </div>
-    </form>
+    </div>
 </div>

@@ -4,7 +4,7 @@ use Livewire\Attributes\{Layout, Url};
 use App\Models\{Chapter, PrayerRequest, Team};
 use App\Notifications\PrayerRequestSubmitted;
 
-new #[Layout('components.layouts.layout')] class extends Component {
+new #[Layout('components.layouts.tailwind-layout')] class extends Component {
     public ?string $name = null;
     public ?string $email = null;
 
@@ -48,7 +48,6 @@ new #[Layout('components.layouts.layout')] class extends Component {
         $prayerRequest->chapter_id = $this->selectedChapter;
         $prayerRequest->save();
 
-        // Notify prayer request team
         $prayerTeam = Team::where('chapter_id', $this->selectedChapter)
             ->whereHas('prayerRequests')
             ->first();
@@ -65,89 +64,61 @@ new #[Layout('components.layouts.layout')] class extends Component {
     }
 }; ?>
 
-<div>
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
+<div class="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
+    <section class="rounded-3xl border border-blue-100 bg-white p-6 shadow-[0_24px_60px_-40px_rgba(37,99,235,0.5)] sm:p-8">
+        <header class="mb-8 text-center">
+            <p class="text-xs font-semibold uppercase tracking-[0.3em] text-blue-600">Prayer Support</p>
+            <h1 class="mt-3 text-3xl font-bold text-slate-900">Submit a Prayer Request</h1>
+            <p class="mt-2 text-sm text-slate-600">Share your prayer needs and our team will stand with you.</p>
+        </header>
 
-        .card-con {
-            max-width: 800px;
-            margin: 100px auto;
-        }
+        @if (session('message'))
+            <div class="mb-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+                {{ session('message') }}
+            </div>
+        @endif
 
-        .section-title {
-            font-size: 23px;
-        }
-
-        .navbar {
-            background: linear-gradient(to right, #357be4, #294dc0) !important;
-            height: 85px;
-        }
-
-        .card {
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-    </style>
-
-    <div class="container card-con">
-        <div class="container container-bg shadow-lg rounded-4 p-4 p-sm-5 mb-5 page-content">
-            <header class="text-center mb-4">
-                <h1 class="fs-2 fw-bold text-dark mb-2">Book An Appointment</h1>
-                <p class="text-secondary">Schedule your time with the church staff.</p>
-            </header>
-
-            <!-- Prayer Request Form -->
-            <form class="row g-3" wire:submit.prevent="save">
-                <div class="col-12">
-                    <label for="name" class="form-label text-dark">Your Name</label>
-                    <input type="text" id="name" class="form-control rounded-3" wire:model.live='name'
-                        placeholder="Name">
-                    @error('name')
-                        <span class="text-danger">{{ $message }}</span>
-                    @enderror
-                    {{-- <small class="text-muted">Leave Blank to stay anonymous</small> --}}
+        <form class="space-y-5" wire:submit.prevent="save">
+            <div class="grid gap-5 md:grid-cols-2">
+                <div>
+                    <label for="name" class="mb-2 block text-sm font-medium text-slate-700">Your Name (Optional)</label>
+                    <input type="text" id="name" wire:model.live="name" placeholder="Name" class="w-full rounded-xl border border-blue-100 px-4 py-3 text-sm text-slate-900">
+                    @error('name') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
 
-                <div class="col-12">
-                    <label for="email" class="form-label text-dark">Email Address</label>
-                    <input type="email" id="email" class="form-control rounded-3" wire:model='email'
-                        placeholder="Email">
-                    @error('email')
-                        <span class="text-danger">{{ $message }}</span>
-                    @enderror
+                <div>
+                    <label for="email" class="mb-2 block text-sm font-medium text-slate-700">Email (Optional)</label>
+                    <input type="email" id="email" wire:model="email" placeholder="Email" class="w-full rounded-xl border border-blue-100 px-4 py-3 text-sm text-slate-900">
+                    @error('email') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
+            </div>
 
-                <div class="form-group mt-4">
-                    <label for="chapter" class="form-label text-dark">Pick A Chapter</label>
-                    @if ($currentChapter != null)
-                        <select class="form-control" wire:model.live="selectedChapter" disabled>
-                            <option value="{{ $currentChapter->id }}" selected>{{ $currentChapter->name }}</option>
-                        </select>
-                    @else
-                        <select class="form-control" wire:model.live="selectedChapter">
-                            <option value="">Select A Chapter</option>
-                            @foreach ($chapters as $chapter)
-                                <option value="{{ $chapter['id'] }}">{{ $chapter['name'] }}</option>
-                            @endforeach
-                        </select>
-                    @endif
-                    @error('selectedChapter')
-                        <span class="text-danger">{{ $message }}</span>
-                    @enderror
-                </div>
-                <div class="form-group">
-                    <label for="request" class="form-label text-dark mt-4">Your Request</label>
-                    <textarea id="request" class="form-control rounded-3" rows="5" wire:model.live='request'></textarea>
-                    @error('request')
-                        <span class="text-danger">{{ $message }}</span>
-                    @enderror
-                </div>
+            <div>
+                <label for="chapter" class="mb-2 block text-sm font-medium text-slate-700">Pick a Chapter</label>
+                @if ($currentChapter != null)
+                    <select id="chapter" class="w-full rounded-xl border border-blue-100 px-4 py-3 text-sm text-slate-700" wire:model.live="selectedChapter" disabled>
+                        <option value="{{ $currentChapter->id }}" selected>{{ $currentChapter->name }}</option>
+                    </select>
+                @else
+                    <select id="chapter" class="w-full rounded-xl border border-blue-100 px-4 py-3 text-sm text-slate-700" wire:model.live="selectedChapter">
+                        <option value="">Select a chapter</option>
+                        @foreach ($chapters as $chapter)
+                            <option value="{{ $chapter['id'] }}">{{ $chapter['name'] }}</option>
+                        @endforeach
+                    </select>
+                @endif
+                @error('selectedChapter') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+            </div>
 
-                <button class="btn btn-sm btn-primary">Send Request</button>
-            </form>
-        </div>
-    </div>
+            <div>
+                <label for="request" class="mb-2 block text-sm font-medium text-slate-700">Your Request</label>
+                <textarea id="request" rows="6" wire:model.live="request" class="w-full rounded-xl border border-blue-100 px-4 py-3 text-sm text-slate-900"></textarea>
+                @error('request') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+            </div>
 
+            <button type="submit" class="inline-flex w-full items-center justify-center rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700">
+                Send Request
+            </button>
+        </form>
+    </section>
 </div>

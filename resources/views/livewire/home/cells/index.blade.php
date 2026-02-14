@@ -6,7 +6,7 @@ use Livewire\Volt\Component;
 use TallStackUi\Traits\Interactions;
 use Illuminate\Support\Facades\Auth;
 
-new #[Layout('components.layouts.home')] class extends Component {
+new #[Layout('components.layouts.tailwind-layout')] class extends Component {
     use Interactions;
 
     public $selectedCell = null;

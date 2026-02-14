@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Church Services</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4a6cf7',
+                        'primary-light': '#6a8aff',
+                        'primary-dark': '#3a56d4',
+                        secondary: '#8b5cf6',
+                        accent: '#06b6d4',
+                    },
+                    fontFamily: {
+                        'poppins': ['Poppins', 'sans-serif'],
+                    },
+                    animation: {
+                        'pulse-soft': 'pulseSoft 2s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        pulseSoft: {
+                            '0%, 100%': { opacity: 1 },
+                            '50%': { opacity: 0.8 },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        .service-card {
+            transition: all 0.3s ease;
+        }
+        .service-card:hover {
+            transform: translateY(-5px);
+        }
+        .countdown-digit {
+            background: linear-gradient(135deg, #4a6cf7 0%, #8b5cf6 100%);
+        }
+    </style>
+</head>
+<body class="font-poppins bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen py-8">
+    <div class="max-w-6xl mx-auto px-4">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">Weekly Services</h1>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">Join us for worship, teaching, and fellowship throughout the week</p>
+        </div>
+
+        <!-- Service Countdown Timer -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 mb-8 border border-blue-100">
+            <div class="flex flex-col md:flex-row items-center justify-between">
+                <div class="mb-4 md:mb-0">
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Next Service Starts In:</h3>
+                    <p class="text-gray-600">Sunday Celebration Service - 9:00 AM</p>
+                </div>
+                <div id="countdown" class="flex gap-4">
+                    <div class="text-center">
+                        <div class="countdown-digit w-16 h-16 rounded-xl flex items-center justify-center text-white text-2xl font-bold shadow-lg">02</div>
+                        <span class="text-sm text-gray-600 mt-1 block">Days</span>
+                    </div>
+                    <div class="text-center">
+                        <div class="countdown-digit w-16 h-16 rounded-xl flex items-center justify-center text-white text-2xl font-bold shadow-lg">08</div>
+                        <span class="text-sm text-gray-600 mt-1 block">Hours</span>
+                    </div>
+                    <div class="text-center">
+                        <div class="countdown-digit w-16 h-16 rounded-xl flex items-center justify-center text-white text-2xl font-bold shadow-lg">45</div>
+                        <span class="text-sm text-gray-600 mt-1 block">Minutes</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Services Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-12">
+            <!-- Sunday Celebration Service -->
+            <div class="service-card bg-white rounded-2xl shadow-lg p-6 border border-blue-100 hover:shadow-xl">
+                <div class="flex items-start mb-4">
+                    <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mr-4">
+                        <i class="fas fa-church text-blue-500 text-2xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-800">Sunday Celebration Service</h3>
+                        <div class="flex items-center mt-2">
+                            <span class="bg-blue-100 text-blue-600 text-sm font-medium px-3 py-1 rounded-full">Main Sanctuary</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-gray-600 mb-6">Join our vibrant worship service with inspiring messages, contemporary music, and community fellowship. Perfect for families and individuals seeking spiritual growth.</p>
+                
+                <div class="space-y-3 mb-6">
+                    <div class="flex items-center text-gray-700">
+                        <i class="far fa-clock text-blue-500 mr-3 w-5"></i>
+                        <span class="font-medium">9:00 AM & 11:00 AM</span>
+                    </div>
+                    <div class="flex items-center text-gray-700">
+                        <i class="fas fa-users text-blue-500 mr-3 w-5"></i>
+                        <span>All ages welcome • Children's ministry available</span>
+                    </div>
+                    <div class="flex items-center text-gray-700">
+                        <i class="fas fa-microphone text-blue-500 mr-3 w-5"></i>
+                        <span>Live worship band • Communion first Sunday</span>
+                    </div>
+                </div>
+                
+                <div class="flex space-x-3">
+                    <button class="flex-1 bg-primary text-white py-3 rounded-xl font-medium hover:bg-primary-dark transition-colors flex items-center justify-center">
+                        <i class="far fa-calendar-plus mr-2"></i> Add to Calendar
+                    </button>
+                    <button class="flex-1 bg-white text-primary border border-primary py-3 rounded-xl font-medium hover:bg-blue-50 transition-colors">
+                        Get Directions
+                    </button>
+                </div>
+            </div>
+
+            <!-- Midweek Teaching Service -->
+            <div class="service-card bg-white rounded-2xl shadow-lg p-6 border border-blue-100 hover:shadow-xl">
+                <div class="flex items-start mb-4">
+                    <div class="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center mr-4">
+                        <i class="fas fa-book-open text-green-500 text-2xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-800">Midweek Teaching Service</h3>
+                        <div class="flex items-center mt-2">
+                            <span class="bg-green-100 text-green-600 text-sm font-medium px-3 py-1 rounded-full">Chapel</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-gray-600 mb-6">Dive deeper into God's Word with our midweek Bible study. Interactive teaching, Q&A sessions, and small group discussions for spiritual enrichment.</p>
+                
+                <div class="space-y-3 mb-6">
+                    <div class="flex items-center text-gray-700">
+                        <i class="far fa-clock text-green-500 mr-3 w-5"></i>
+                        <span class="font-medium">Wednesdays at 7:00 PM</span>
+                    </div>
+                    <div class="flex items-center text-gray-700">
+                        <i class="fas fa-user-friends text-green-500 mr-3 w-5"></i>
+                        <span>Adults & Youth • Breakout sessions available</span>
+                    </div>
+                    <div class="flex items-center text-gray-700">
+                        <i class="fas fa-coffee text-green-500 mr-3 w-5"></i>
+                        <span>Refreshments provided • Prayer ministry</span>
+                    </div>
+                </div>
+                
+                <div class="flex space-x-3">
+                    <button class="flex-1 bg-green-500 text-white py-3 rounded-xl font-medium hover:bg-green-600 transition-colors flex items-center justify-center">
+                        <i class="far fa-calendar-plus mr-2"></i> Add to Calendar
+                    </button>
+                    <button class="flex-1 bg-white text-green-600 border border-green-500 py-3 rounded-xl font-medium hover:bg-green-50 transition-colors">
+                        Study Materials
+                    </button>
+                </div>
+            </div>
+
+            <!-- Believers Academy -->
+            <div class="service-card bg-white rounded-2xl shadow-lg p-6 border border-blue-100 hover:shadow-xl">
+                <div class="flex items-start mb-4">
+                    <div class="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center mr-4">
+                        <i class="fas fa-graduation-cap text-purple-500 text-2xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-800">Believers Academy</h3>
+                        <div class="flex items-center mt-2">
+                            <span class="bg-purple-100 text-purple-600 text-sm font-medium px-3 py-1 rounded-full">Room 204</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-gray-600 mb-6">Foundational courses for new believers and those wanting to deepen their faith. Systematic teaching on Christian doctrines, spiritual disciplines, and practical living.</p>
+                
+                <div class="space-y-3 mb-6">
+                    <div class="flex items-center text-gray-700">
+                        <i class="far fa-clock text-purple-500 mr-3 w-5"></i>
+                        <span class="font-medium">Saturdays at 10:00 AM</span>
+                    </div>
+                    <div class="flex items-center text-gray-700">
+                        <i class="fas fa-layer-group text-purple-500 mr-3 w-5"></i>
+                        <span>12-week program • Certificate upon completion</span>
+                    </div>
+                    <div class="flex items-center text-gray-700">
+                        <i class="fas fa-book text-purple-500 mr-3 w-5"></i>
+                        <span>Curriculum provided • Mentorship available</span>
+                    </div>
+                </div>
+                
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4">
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-circle text-amber-500 mr-3"></i>
+                        <p class="text-amber-700 font-medium">New session starting June 15th - Register now!</p>
+                    </div>
+                </div>
+                
+                <div class="flex space-x-3">
+                    <button class="flex-1 bg-purple-500 text-white py-3 rounded-xl font-medium hover:bg-purple-600 transition-colors flex items-center justify-center">
+                        <i class="fas fa-user-plus mr-2"></i> Register Now
+                    </button>
+                    <button class="flex-1 bg-white text-purple-600 border border-purple-500 py-3 rounded-xl font-medium hover:bg-purple-50 transition-colors">
+                        View Curriculum
+                    </button>
+                </div>
+            </div>
+
+            <!-- Special Programs -->
+            <div class="service-card bg-white rounded-2xl shadow-lg p-6 border border-blue-100 hover:shadow-xl">
+                <div class="flex items-start mb-4">
+                    <div class="w-14 h-14 bg-cyan-100 rounded-xl flex items-center justify-center mr-4">
+                        <i class="fas fa-star text-cyan-500 text-2xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-800">Special Programs</h3>
+                        <div class="flex items-center mt-2">
+                            <span class="bg-cyan-100 text-cyan-600 text-sm font-medium px-3 py-1 rounded-full">Various Locations</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-gray-600 mb-6">Monthly special events including guest speakers, worship nights, community outreach, and seasonal celebrations. Check our calendar for upcoming programs.</p>
+                
+                <div class="space-y-4 mb-6">
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center mr-3 mt-1">
+                            <i class="fas fa-heart text-pink-500"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-800">Marriage Enrichment</h4>
+                            <p class="text-gray-600 text-sm">First Friday of each month • 6:30 PM</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center mr-3 mt-1">
+                            <i class="fas fa-praying-hands text-orange-500"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-800">Prayer & Worship Night</h4>
+                            <p class="text-gray-600 text-sm">Last Friday of each month • 7:00 PM</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center mr-3 mt-1">
+                            <i class="fas fa-hands-helping text-teal-500"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-800">Community Outreach</h4>
+                            <p class="text-gray-600 text-sm">Monthly service projects • Various times</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="w-full bg-cyan-500 text-white py-3 rounded-xl font-medium hover:bg-cyan-600 transition-colors flex items-center justify-center">
+                    <i class="far fa-calendar-alt mr-2"></i> View Events Calendar
+                </button>
+            </div>
+        </div>
+
+        <!-- View All Services Button -->
+        <div class="text-center">
+            <button class="bg-gradient-to-r from-primary to-secondary text-white px-8 py-4 rounded-xl font-bold hover:shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center mx-auto">
+                <i class="fas fa-list mr-3"></i> View All Services & Programs
+            </button>
+        </div>
+
+        <!-- Additional Info -->
+        <div class="mt-12 bg-white rounded-2xl shadow-lg p-6 border border-blue-100">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                <div class="p-4">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-child text-blue-500 text-2xl"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-800 mb-2">Children's Ministry</h3>
+                    <p class="text-gray-600 text-sm">Age-appropriate programs available during all Sunday services</p>
+                </div>
+                <div class="p-4">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-wheelchair text-green-500 text-2xl"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-800 mb-2">Accessibility</h3>
+                    <p class="text-gray-600 text-sm">Full accessibility including wheelchair access and hearing assistance</p>
+                </div>
+                <div class="p-4">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-language text-purple-500 text-2xl"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-800 mb-2">Translation</h3>
+                    <p class="text-gray-600 text-sm">Spanish translation available for Sunday 11:00 AM service</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple countdown timer simulation
+        function updateCountdown() {
+            // In a real implementation, this would calculate actual time until next service
+            const countdownElement = document.getElementById('countdown');
+            // This is just a visual simulation - real implementation would use actual dates
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCountdown();
+            
+            // Add hover effects to service cards
+            const serviceCards = document.querySelectorAll('.service-card');
+            serviceCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.boxShadow = '0 20px 40px rgba(0,0,0,0.1)';
+                });
+                card.addEventListener('mouseleave', function() {
+                    this.style.boxShadow = '';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

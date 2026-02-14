@@ -25,12 +25,20 @@ class AdminChapters
 
             $chapter = $request->query->get('chapter');
             if (!$chapter) {
-                abort(404, 'PAGE REQUESTED NOT FOUND');
-
-            }
-            $chapter = Chapter::where('name', '=', e($chapter))->first();
-            if (!$user->hasAnyRole('admin', 'team-lead', 'lead_assist', 'unit_head') && !$chapter && $user->chapter_id != $chapter?->id) {
-                abort(404, 'PAGE REQUESTED NOT FOUND');
+                if (!$user->hasRole('super-admin')) {
+                    abort(404, 'PAGE REQUESTED NOT FOUND');
+                } else {
+                    // For super-admin, redirect to first chapter
+                    $firstChapter = Chapter::first();
+                    if ($firstChapter) {
+                        return redirect($request->fullUrlWithQuery(['chapter' => $firstChapter->name]));
+                    }
+                }
+            } else {
+                $chapter = Chapter::where('name', '=', e($chapter))->first();
+                if (!$user->hasRole('super-admin') && !$user->hasAnyRole('admin', 'team-lead', 'lead_assist', 'unit_head') && (!$chapter || $user->chapter_id != $chapter->id)) {
+                    abort(404, 'PAGE REQUESTED NOT FOUND');
+                }
             }
 
         }

@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class BelieversAcademy extends Model
 {
-    protected $table = 'belivers_academies';
+    protected $table = 'believers_academies';
 
     public $fillable = [
-        'status', 'chapter_id', 'start_at'
+        'status', 'chapter_id', 'start_at', 'certificate_template'
     ];
 
     public function classes()
@@ -25,5 +25,10 @@ class BelieversAcademy extends Model
     public function students()
     {
         return $this->hasMany(StudentClasses::class, 'academy_id');
+    }
+
+    public function batches()
+    {
+        return $this->hasMany(AcademyBatch::class, 'academy_id');
     }
 }

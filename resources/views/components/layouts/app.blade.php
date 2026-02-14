@@ -38,17 +38,6 @@
                 Admins</flux:navlist.item>
                 <flux:navlist.group icon="cog" title="Site Settings">
 
-                <flux:navlist.item icon="cog"
-                    href="{{ route('super-admin.settings') }}" 
-                    wire:navigate>
-                    Global Settings
-                </flux:navlist.item>
-            
-                <flux:navlist.item icon="user-plus"
-                    href="{{ route('super-admin.settings.landing') }}" 
-                    wire:navigate>
-                    Landing Page
-                </flux:navlist.item>
             
             </flux:navlist.group>
         </flux:navlist>

@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Believers Academy - Doxa Commission Global</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1e3a8a',
+                        'primary-light': '#3b82f6',
+                        'primary-dark': '#1e40af',
+                        accent: '#f59e0b',
+                        'accent-light': '#fbbf24',
+                        text: '#1f2937',
+                        'text-light': '#6b7280',
+                    },
+                    fontFamily: {
+                        'poppins': ['Poppins', 'sans-serif'],
+                    },
+                    spacing: {
+                        '18': '4.5rem',
+                        '88': '22rem',
+                        '128': '32rem',
+                    },
+                    backdropBlur: {
+                        'glass': '25px',
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.8s ease-in-out',
+                        'slide-up': 'slideUp 0.6s ease-out',
+                        'scale-in': 'scaleIn 0.5s ease-out',
+                    },
+                    boxShadow: {
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
+                        'soft': '0 4px 20px rgba(0, 0, 0, 0.08)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            @keyframes slideUp {
+                from { 
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to { 
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            @keyframes scaleIn {
+                from { 
+                    opacity: 0;
+                    transform: scale(0.9);
+                }
+                to { 
+                    opacity: 1;
+                    transform: scale(1);
+                }
+            }
+            .animation-delay-200 {
+                animation-delay: 0.2s;
+            }
+            .animation-delay-400 {
+                animation-delay: 0.4s;
+            }
+            .animation-delay-600 {
+                animation-delay: 0.6s;
+            }
+        }
+        
+        /* Glassmorphism effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Improved mobile spacing */
+        @media (max-width: 768px) {
+            .mobile-section {
+                padding-top: 2.5rem;
+                padding-bottom: 2.5rem;
+            }
+            .mobile-card {
+                margin-bottom: 1.5rem;
+                padding: 1.5rem;
+            }
+            .mobile-heading {
+                margin-bottom: 2rem;
+            }
+            .mobile-grid-gap {
+                gap: 1.5rem;
+            }
+        }
+        
+        /* Carousel styles */
+        .carousel {
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+        }
+        .carousel-item {
+            scroll-snap-align: start;
+            flex-shrink: 0;
+        }
+        
+        /* Form styling */
+        .form-input {
+            @apply w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300;
+        }
+        /* Social media hover effects */
+        .social-facebook:hover {
+            background-color: white !important;
+        }
+
+        .social-facebook:hover i {
+            color: #3b5998 !important;
+        }
+
+        .social-instagram:hover {
+            background-color: white !important;
+        }
+
+        .social-instagram:hover i {
+            color: #E1306C !important;
+        }
+
+        .social-youtube:hover {
+            background-color: white !important;
+        }
+
+        .social-youtube:hover i {
+            color: #FF0000 !important;
+        }
+
+        .social-tiktok:hover {
+            background-color: white !important;
+        }
+
+        .social-tiktok:hover i {
+            color: #000000 !important;
+        }
+
+        .social-spotify:hover {
+            background-color: white !important;
+        }
+
+        .social-spotify:hover i {
+            color: #1DB954 !important;
+        }
+    </style>
+</head>
+
+<body class="font-poppins bg-gray-50 text-gray-800">
+    <!-- Top Navigation (Desktop) -->
+    <nav class="hidden lg:flex items-center justify-between px-8 py-5 bg-white shadow-md sticky top-0 z-50">
+        <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center">
+                <img src="img/doxa.PNG" alt="logo">
+            </div>
+            <span class="text-xl font-bold text-primary">Doxa Commission Global</span>
+        </div>
+
+        <div class="flex space-x-10">
+            <a href="index.html"
+                class="font-medium text-gray-600 hover:text-primary transition-colors duration-300">Home</a>
+            <a href="message.html"
+                class="font-medium text-gray-600 hover:text-primary transition-colors duration-300">Message</a>
+            <a href="about.html"
+                class="font-medium text-gray-600 hover:text-primary transition-colors duration-300">About</a>
+            <a href="cell.html"
+                class="font-medium text-gray-600 hover:text-primary transition-colors duration-300">Cell</a>
+            <a href="event.html"
+                class="font-medium text-gray-600 hover:text-primary transition-colors duration-300">Event</a>
+            <a href="location.html"
+                class="font-medium text-gray-600 hover:text-primary transition-colors duration-300">Location</a>
+            <a href="belivers-academy.html" class="font-medium text-primary border-b-2 border-primary pb-1">Believers
+                Academy</a>
+            <a href="transportaion.html"
+                class="font-medium text-gray-600 hover:text-primary transition-colors duration-300">Need a Ride</a>
+        </div>
+
+        <button
+            class="bg-primary text-white px-7 py-3 rounded-full font-medium hover:bg-primary-dark transition-colors duration-300 shadow-md">
+            Connect With Us
+        </button>
+    </nav>
+
+    <!-- Hero Section (Glassmorphic) -->
+    <section
+        class="relative min-h-[70vh] flex items-center justify-center px-5 py-20 bg-gradient-to-br from-blue-900 to-indigo-900 overflow-hidden mobile-section">
+        <!-- Background Image with Overlay -->
+        <div
+            class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1534337621606-e3df5ee0e97f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')] bg-cover bg-center">
+        </div>
+        <div class="absolute inset-0 bg-black/40"></div>
+
+        <!-- Glassmorphic Container -->
+        <div
+            class="relative z-10 w-full max-w-4xl glass rounded-2xl shadow-glass p-10 md:p-12 text-center animate-fade-in mx-4">
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 animate-slide-up">
+                Believers Academy
+            </h1>
+            <p class="text-xl md:text-2xl text-white/90 mb-8 animate-slide-up animation-delay-200 max-w-3xl mx-auto">
+                Grow in the Word. Build foundations. Become established.
+            </p>
+            <p class="text-lg text-white/80 italic animate-slide-up animation-delay-400">
+                "But grow in the grace and knowledge of our Lord and Savior Jesus Christ." - 2 Peter 3:18
+            </p>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <a href="#overview" class="text-white/80 hover:text-white transition-colors">
+                <i class="fas fa-chevron-down text-2xl"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- Academy Overview Section -->
+    <section id="overview" class="py-20 px-5 bg-white mobile-section">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="animate-scale-in">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-6 text-gray-800">Deepen Your Faith Journey</h2>
+                    <p class="text-gray-600 mb-6 text-lg leading-relaxed">
+                        Believers Academy is our comprehensive discipleship program designed to help you build a strong
+                        biblical foundation, understand core Christian doctrines, and develop a vibrant, growing
+                        relationship with Jesus Christ.
+                    </p>
+                    <p class="text-gray-600 mb-8 text-lg leading-relaxed">
+                        Through systematic teaching, practical application, and community support, you'll gain the
+                        knowledge and tools needed to live out your faith confidently and impact your world for Christ.
+                    </p>
+                    <div class="bg-blue-50 rounded-xl p-5 border border-blue-200 mb-8">
+                        <p class="text-blue-700 italic text-lg">
+                            "Then you will know the truth, and the truth will set you free." - John 8:32
+                        </p>
+                    </div>
+                    <button
+                        class="bg-primary text-white px-10 py-4 rounded-full font-bold hover:bg-primary-dark transition-colors duration-300 shadow-md text-lg">
+                        Register Now
+                    </button>
+                </div>
+                <div class="animate-scale-in animation-delay-200">
+                    <div
+                        class="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-8 border border-blue-100 h-full">
+                        <div class="grid grid-cols-2 gap-6">
+                            <div class="text-center">
+                                <div
+                                    class="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-book-bible text-blue-500 text-2xl"></i>
+                                </div>
+                                <h3 class="font-bold text-gray-800 mb-2">Biblical Foundation</h3>
+                                <p class="text-gray-600 text-sm">Understand Scripture and core doctrines</p>
+                            </div>
+                            <div class="text-center">
+                                <div
+                                    class="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-pray text-green-500 text-2xl"></i>
+                                </div>
+                                <h3 class="font-bold text-gray-800 mb-2">Spiritual Growth</h3>
+                                <p class="text-gray-600 text-sm">Develop prayer life and spiritual disciplines</p>
+                            </div>
+                            <div class="text-center">
+                                <div
+                                    class="w-16 h-16 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-people-group text-purple-500 text-2xl"></i>
+                                </div>
+                                <h3 class="font-bold text-gray-800 mb-2">Community</h3>
+                                <p class="text-gray-600 text-sm">Learn and grow with fellow believers</p>
+                            </div>
+                            <div class="text-center">
+                                <div
+                                    class="w-16 h-16 bg-amber-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-hands-holding text-amber-500 text-2xl"></i>
+                                </div>
+                                <h3 class="font-bold text-gray-800 mb-2">Practical Ministry</h3>
+                                <p class="text-gray-600 text-sm">Apply your faith in everyday life</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Levels / Courses Section -->
+    <section class="py-20 px-5 bg-gradient-to-br from-gray-50 to-blue-50 mobile-section">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-6 text-gray-800 mobile-heading">Learning Path</h2>
+            <p class="text-xl text-center text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed">Structured courses
+                designed for spiritual growth at every stage</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mobile-grid-gap">
+                <!-- Level 1 -->
+                <div
+                    class="bg-white rounded-2xl shadow-soft p-8 border border-gray-100 transition-all duration-300 hover:shadow-lg hover:-translate-y-2 mobile-card">
+                    <div class="flex items-center mb-6">
+                        <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mr-4">
+                            <i class="fas fa-seedling text-blue-500 text-2xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-800">Foundation School</h3>
+                            <span class="text-blue-600 font-medium">Level 1 • 6 weeks</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        Build your spiritual foundation with essential Christian doctrines, salvation assurance, and
+                        basic Bible study methods. Perfect for new believers or those wanting to strengthen their core
+                        understanding.
+                    </p>
+                    <div class="space-y-3 mb-6">
+                        <div class="flex items-center text-gray-700">
+                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                            <span>Understanding Salvation</span>
+                        </div>
+                        <div class="flex items-center text-gray-700">
+                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                            <span>Basic Bible Study Methods</span>
+                        </div>
+                        <div class="flex items-center text-gray-700">
+                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                            <span>Prayer & Spiritual Disciplines</span>
+                        </div>
+                    </div>
+                    <button
+                        class="w-full bg-blue-500 text-white py-3 rounded-xl font-medium hover:bg-blue-600 transition-colors">
+                        Enroll Now
+                    </button>
+                </div>
+
+                <!-- Level 2 -->
+                <div
+                    class="bg-white rounded-2xl shadow-soft p-8 border border-gray-100 transition-all duration-300 hover:shadow-lg hover:-translate-y-2 mobile-card">
+                    <div class="flex items-center mb-6">
+                        <div class="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center mr-4">
+                            <i class="fas fa-book-open text-green-500 text-2xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-800">Membership Class</h3>
+                            <span class="text-green-600 font-medium">Level 2 • 4 weeks</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        Discover your place in the body of Christ. Learn about church membership, spiritual gifts, and
+                        how to get connected and serve in our church community.
+                    </p>
+                    <div class="space-y-3 mb-6">
+                        <div class="flex items-center text-gray-700">
+                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                            <span>Church History & Governance</span>
+                        </div>
+                        <div class="flex items-center text-gray-700">
+                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                            <span>Discovering Spiritual Gifts</span>
+                        </div>
+                        <div class="flex items-center text-gray-700">
+                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                            <span>Church Membership Commitment</span>
+                        </div>
+                    </div>
+                    <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4">
+                        <p class="text-amber-700 text-sm">Prerequisite: Foundation School or equivalent</p>
+                    </div>
+                    <button
+                        class="w-full bg-green-500 text-white py-3 rounded-xl font-medium hover:bg-green-600 transition-colors">
+                        Enroll Now
+                    </button>
+                </div>
+
+                <!-- Level 3 -->
+                <div
+                    class="bg-white rounded-2xl shadow-soft p-8 border border-gray-100 transition-all duration-300 hover:shadow-lg hover:-translate-y-2 mobile-card">
+                    <div class="flex items-center mb-6">
+                        <div class="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center mr-4">
+                            <i class="fas fa-user-shield text-purple-500 text-2xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-800">Discipleship Level</h3>
+                            <span class="text-purple-600 font-medium">Level 3 • 8 weeks</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        Deepen your walk with Christ through advanced biblical teaching, spiritual warfare
+                        understanding, and leadership development for effective Christian living.
+                    </p>
+                    <div class="space-y-3 mb-6">
+                        <div class="flex items-center text-gray-700">
+                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                            <span>Advanced Bible Study Methods</span>
+                        </div>
+                        <div class="flex items-center text-gray-700">
+                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                            <span>Spiritual Warfare & Authority</span>
+                        </div>
+                        <div class="flex items-center text-gray-700">
+                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                            <span>Developing a Leadership Mindset</span>
+                        </div>
+                    </div>
+                    <button
+                        class="w-full bg-purple-500 text-white py-3 rounded-xl font-medium hover:bg-purple-600 transition-colors">
+                        Enroll Now
+                    </button>
+                </div>
+
+                <!-- Level 4 -->
+                <div
+                    class="bg-white rounded-2xl shadow-soft p-8 border border-gray-100 transition-all duration-300 hover:shadow-lg hover:-translate-y-2 mobile-card">
+                    <div class="flex items-center mb-6">
+                        <div class="w-14 h-14 bg-amber-100 rounded-xl flex items-center justify-center mr-4">
+                            <i class="fas fa-hands-helping text-amber-500 text-2xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-800">Service Training</h3>
+                            <span class="text-amber-600 font-medium">Level 4 • 12 weeks</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        Equip yourself for ministry service. Receive specialized training in areas like teaching,
+                        counseling, worship, outreach, and other ministry areas based on your gifts and calling.
+                    </p>
+                    <div class="space-y-3 mb-6">
+                        <div class="flex items-center text-gray-700">
+                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                            <span>Ministry Specialization</span>
+                        </div>
+                        <div class="flex items-center text-gray-700">
+                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                            <span>Practical Ministry Skills</span>
+                        </div>
+                        <div class="flex items-center text-gray-700">
+                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                            <span>Mentorship & Practical Application</span>
+                        </div>
+                    </div>
+                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4">
+                        <p class="text-blue-700 text-sm">Available after completing Discipleship Level</p>
+                    </div>
+                    <button
+                        class="w-full bg-amber-500 text-white py-3 rounded-xl font-medium hover:bg-amber-600 transition-colors">
+                        Enroll Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Registration Section -->
+    <section class="py-20 px-5 bg-white mobile-section">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-6 text-gray-800 mobile-heading">Register for
+                Classes</h2>
+            <p class="text-xl text-center text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed">Begin your discipleship
+                journey today</p>
+
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-8 border border-blue-100">
+                <form class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Full Name</label>
+                            <input type="text" class="form-input" placeholder="Enter your full name">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Phone Number</label>
+                            <input type="tel" class="form-input" placeholder="Enter your phone number">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Email Address</label>
+                        <input type="email" class="form-input" placeholder="Enter your email address">
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Service Unit Interest</label>
+                        <select class="form-input">
+                            <option value="">Select an area of interest</option>
+                            <option value="worship">Worship Ministry</option>
+                            <option value="children">Children's Ministry</option>
+                            <option value="youth">Youth Ministry</option>
+                            <option value="outreach">Outreach Ministry</option>
+                            <option value="hospitality">Hospitality Ministry</option>
+                            <option value="media">Media Ministry</option>
+                            <option value="prayer">Prayer Ministry</option>
+                            <option value="not-sure">Not sure yet</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Preferred Class Schedule</label>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <label class="flex items-center">
+                                <input type="radio" name="schedule" class="mr-3 text-primary focus:ring-primary">
+                                <span>Sunday Afternoon (2:00 PM)</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="schedule" class="mr-3 text-primary focus:ring-primary">
+                                <span>Wednesday Evening (7:00 PM)</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="schedule" class="mr-3 text-primary focus:ring-primary">
+                                <span>Saturday Morning (10:00 AM)</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="schedule" class="mr-3 text-primary focus:ring-primary">
+                                <span>Online Only (Flexible)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-3 rounded text-primary focus:ring-primary">
+                            <span class="text-gray-700">I agree to the terms and commitment required for this
+                                discipleship program</span>
+                        </label>
+                    </div>
+
+                    <button type="submit"
+                        class="w-full bg-primary text-white py-4 rounded-xl font-bold hover:bg-primary-dark transition-colors duration-300 shadow-md text-lg">
+                        Submit Registration
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Downloadable Resources Section -->
+    <section class="py-20 px-5 bg-gradient-to-br from-gray-50 to-blue-50 mobile-section">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-6 text-gray-800 mobile-heading">Study Resources
+            </h2>
+            <p class="text-xl text-center text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed">Supplement your
+                learning with these materials</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mobile-grid-gap">
+                <!-- Resource 1 -->
+                <div
+                    class="bg-white rounded-2xl shadow-soft p-6 border border-gray-100 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 mobile-card">
+                    <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
+                        <i class="fas fa-file-pdf text-blue-500 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">Foundation Course Outline</h3>
+                    <p class="text-gray-600 mb-4 leading-relaxed">Detailed syllabus for the 6-week Foundation School
+                        with weekly topics and reading assignments.</p>
+                    <button
+                        class="w-full bg-blue-500 text-white py-2 rounded-xl font-medium hover:bg-blue-600 transition-colors flex items-center justify-center">
+                        <i class="fas fa-download mr-2"></i> Download PDF
+                    </button>
+                </div>
+
+                <!-- Resource 2 -->
+                <div
+                    class="bg-white rounded-2xl shadow-soft p-6 border border-gray-100 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 mobile-card">
+                    <div class="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center mb-4">
+                        <i class="fas fa-file-pdf text-green-500 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">Spiritual Gifts Assessment</h3>
+                    <p class="text-gray-600 mb-4 leading-relaxed">Questionnaire to help identify your spiritual gifts
+                        and how to use them in ministry.</p>
+                    <button
+                        class="w-full bg-green-500 text-white py-2 rounded-xl font-medium hover:bg-green-600 transition-colors flex items-center justify-center">
+                        <i class="fas fa-download mr-2"></i> Download PDF
+                    </button>
+                </div>
+
+                <!-- Resource 3 -->
+                <div
+                    class="bg-white rounded-2xl shadow-soft p-6 border border-gray-100 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 mobile-card">
+                    <div class="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center mb-4">
+                        <i class="fas fa-file-pdf text-purple-500 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">Bible Reading Plan</h3>
+                    <p class="text-gray-600 mb-4 leading-relaxed">One-year chronological reading plan to help you
+                        systematically read through the entire Bible.</p>
+                    <button
+                        class="w-full bg-purple-500 text-white py-2 rounded-xl font-medium hover:bg-purple-600 transition-colors flex items-center justify-center">
+                        <i class="fas fa-download mr-2"></i> Download PDF
+                    </button>
+                </div>
+            </div>
+
+            <div class="text-center mt-12">
+                <div class="bg-blue-50 rounded-xl p-6 border border-blue-200 max-w-2xl mx-auto">
+                    <p class="text-blue-700 font-medium">Additional resources available after enrollment</p>
+                    <p class="text-blue-600 text-sm mt-2">Registered students gain access to video lessons, discussion
+                        forums, and exclusive study materials</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimony Section -->
+    <section class="py-20 px-5 bg-white mobile-section">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-6 text-gray-800 mobile-heading">Student Testimonies
+            </h2>
+            <p class="text-xl text-center text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed">Hear from those who
+                have completed the program</p>
+
+            <!-- Mobile Carousel -->
+            <div class="lg:hidden carousel flex overflow-x-auto pb-6 space-x-6">
+                <!-- Testimony 1 -->
+                <div class="carousel-item w-80 flex-shrink-0">
+                    <div class="bg-white rounded-2xl shadow-soft p-6 border border-gray-100 h-full">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-user text-blue-500"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-800">Michael T.</h4>
+                                <p class="text-gray-500 text-sm">Completed Foundation School</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 italic leading-relaxed">
+                            "The Foundation School gave me confidence in my faith. I finally understand what I believe
+                            and why I believe it. The teachers were patient and knowledgeable."
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Testimony 2 -->
+                <div class="carousel-item w-80 flex-shrink-0">
+                    <div class="bg-white rounded-2xl shadow-soft p-6 border border-gray-100 h-full">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-user text-green-500"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-800">Sarah J.</h4>
+                                <p class="text-gray-500 text-sm">Completed All Levels</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 italic leading-relaxed">
+                            "Going through all four levels transformed my spiritual life. I went from being a casual
+                            church attendee to actively serving in children's ministry with confidence."
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Testimony 3 -->
+                <div class="carousel-item w-80 flex-shrink-0">
+                    <div class="bg-white rounded-2xl shadow-soft p-6 border border-gray-100 h-full">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-user text-purple-500"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-800">David L.</h4>
+                                <p class="text-gray-500 text-sm">Service Training Graduate</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 italic leading-relaxed">
+                            "The Service Training equipped me with practical skills I use every day in outreach
+                            ministry. The mentorship component was invaluable for my growth."
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Desktop Grid -->
+            <div class="hidden lg:grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Testimony 1 -->
+                <div
+                    class="bg-white rounded-2xl shadow-soft p-6 border border-gray-100 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-user text-blue-500"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-800">Michael T.</h4>
+                            <p class="text-gray-500 text-sm">Completed Foundation School</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 italic leading-relaxed">
+                        "The Foundation School gave me confidence in my faith. I finally understand what I believe and
+                        why I believe it. The teachers were patient and knowledgeable, creating a safe space for all my
+                        questions."
+                    </p>
+                </div>
+
+                <!-- Testimony 2 -->
+                <div
+                    class="bg-white rounded-2xl shadow-soft p-6 border border-gray-100 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-user text-green-500"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-800">Sarah J.</h4>
+                            <p class="text-gray-500 text-sm">Completed All Levels</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 italic leading-relaxed">
+                        "Going through all four levels transformed my spiritual life. I went from being a casual church
+                        attendee to actively serving in children's ministry with confidence. The community I built here
+                        is priceless."
+                    </p>
+                </div>
+
+                <!-- Testimony 3 -->
+                <div
+                    class="bg-white rounded-2xl shadow-soft p-6 border border-gray-100 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-user text-purple-500"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-800">David L.</h4>
+                            <p class="text-gray-500 text-sm">Service Training Graduate</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 italic leading-relaxed">
+                        "The Service Training equipped me with practical skills I use every day in outreach ministry.
+                        The mentorship component was invaluable for my growth. I'm now leading a small group with
+                        confidence."
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call-to-Action Section -->
+    <section class="py-20 px-5 bg-gradient-to-br from-blue-900 to-indigo-900 text-white mobile-section">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-6">Begin Your Discipleship Journey</h2>
+            <p class="text-xl mb-8 max-w-2xl mx-auto leading-relaxed">
+                Take the next step in your spiritual growth and become established in God's Word through our
+                comprehensive discipleship program.
+            </p>
+            <button
+                class="bg-accent text-white px-12 py-5 rounded-full font-bold hover:bg-accent-light transition-all duration-300 transform hover:-translate-y-1 text-lg shadow-lg">
+                Join the Next Class
+            </button>
+            <p class="text-white/70 mt-6">Next session begins June 15th • Limited spots available</p>
+        </div>
+    </section>
+
+    <!-- Bottom Navigation (Mobile Only) -->
+    <nav
+        class="fixed bottom-0 left-0 right-0 bg-white shadow-2xl rounded-t-3xl p-4 flex justify-between items-center lg:hidden z-50">
+        <a href="index.html" class="flex flex-col items-center text-gray-500 py-2">
+            <i class="fas fa-home text-xl mb-1"></i>
+            <span class="text-xs">Home</span>
+        </a>
+        <a href="message.html" class="flex flex-col items-center text-gray-500 py-2">
+            <i class="fas fa-play-circle text-xl mb-1"></i>
+            <span class="text-xs">Message</span>
+        </a>
+        <a href="about.html" class="flex flex-col items-center text-gray-500 py-2">
+            <i class="fas fa-info-circle text-xl mb-1"></i>
+            <span class="text-xs">About</span>
+        </a>
+        <a href="cell.html" class="flex flex-col items-center text-gray-500 py-2">
+            <i class="fas fa-users text-xl mb-1"></i>
+            <span class="text-xs">Cell</span>
+        </a>
+        <a href="event.html" class="flex flex-col items-center text-gray-500 py-2">
+            <i class="fas fa-calendar-alt text-xl mb-1"></i>
+            <span class="text-xs">Event</span>
+        </a>
+        <a href="location.html" class="flex flex-col items-center text-gray-500 py-2">
+            <i class="fas fa-map-marker-alt text-xl mb-1"></i>
+            <span class="text-xs">Location</span>
+        </a>
+        <a href="belivers-academy.html" class="flex flex-col items-center text-primary py-2">
+            <i class="fas fa-graduation-cap text-xl mb-1"></i>
+            <span class="text-xs">Academy</span>
+        </a>
+        <a href="transportaion.html" class="flex flex-col items-center text-gray-500 py-2">
+            <i class="fas fa-car text-xl mb-1"></i>
+            <span class="text-xs">Ride</span>
+        </a>
+    </nav>
+
+    <!-- Footer -->
+    <footer class="bg-blue-900 text-white py-12 px-4">
+        <div class="container mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Column 1 -->
+                <div>
+                    <h2 class="text-xl font-bold mb-4">Doxa Commission Global</h2>
+                    <h4 class="text-gray-300 mb-4">Bringing nations into God's glory worldwide</h4>
+                    <div class="space-y-3">
+                        <p class="flex items-start">
+                            <i class="fas fa-location-dot mt-1 mr-2 text-blue-400"></i>
+                            <a href="https://maps.app.goo.gl/4ZqPqRu1CMYQnppW7"
+                                class="hover:text-blue-300 transition">129 Goldie, Adjacent Amika Utuk,
+                                Calabar, Cross River State, Nigeria.</a>
+                        </p>
+                        <p class="flex items-center cursor-pointer" id="call-us">
+                            <i class="fas fa-phone mr-2 text-blue-400"></i>
+                            <a href="" class="hover:text-blue-300 transition">+234 1234567890</a>
+                        </p>
+                        <p class="flex items-center">
+                            <i class="far fa-envelope mr-2 text-blue-400"></i>
+                            <a href="mailto:info@doxachurch.org"
+                                class="hover:text-blue-300 transition">info@doxachurch.org</a>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Column 2 -->
+                <div>
+                    <h2 class="text-xl font-bold mb-4">Service Times</h2>
+                    <p class="mb-4">Sunday Glory Life Service:<br>7am, 8:30am, 10am and 4pm</p>
+                    <h4 class="font-bold mb-2">Thursday Glory Experience</h4>
+                    <p>5:30pm</p>
+                </div>
+
+                <!-- Column 3 -->
+                <div>
+                    <h2 class="text-xl font-bold mb-4">Quick Links</h2>
+                    <ul class="space-y-2">
+                        <li><a href="index.html" class="hover:text-blue-300 transition">Home</a></li>
+                        <li><a href="message.html" class="hover:text-blue-300 transition">Messages</a></li>
+                        <li><a href="about.html" class="hover:text-blue-300 transition">About</a></li>
+                        <li><a href="cell.html" class="hover:text-blue-300 transition">Cell</a></li>
+                        <li><a href="location.html" class="hover:text-blue-300 transition">Location</a></li>
+                        <li><a href="belivers-academy.html" class="hover:text-blue-300 transition">Believers Academy</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Column 4 -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Stay Connected</h3>
+                    <p class="mb-4">Subscribe to our newsletter for updates and spiritual insights.</p>
+                    <form class="mb-6">
+                        <div class="flex">
+                            <input type="email" placeholder="Your email address"
+                                class="flex-grow px-4 py-2 rounded-l-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <button type="submit"
+                                class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-r-lg transition">
+                                Subscribe
+                            </button>
+                        </div>
+                    </form>
+                    <div class="flex space-x-4 mb-2">
+                        <a href="https://www.facebook.com/DoxaCommissionGlobal/" aria-label="Facebook"
+                            class="social-facebook bg-blue-800 w-10 h-10 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-facebook-f text-white"></i>
+                        </a>
+                        <a href="https://www.instagram.com/doxa_commission/?hl=en" aria-label="Instagram"
+                            class="social-instagram bg-blue-800 w-10 h-10 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-instagram text-white"></i>
+                        </a>
+                        <a href="https://www.youtube.com/channel/UCZtReUAxK3S6qBKnV5G6PTw" aria-label="YouTube"
+                            class="social-youtube bg-blue-800 w-10 h-10 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-youtube text-white"></i>
+                        </a>
+                        <a href="https://www.tiktok.com/discover/doxa-commission-global" aria-label="TikTok"
+                            class="social-tiktok bg-blue-800 w-10 h-10 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-tiktok"></i>
+                        </a>
+                        <a href="https://open.spotify.com/show/05Jdb4jyuqHoUdQ89VLvnF?si=1310344dc60e4d01"
+                            aria-label="Spotify"
+                            class="social-spotify bg-blue-800 w-10 h-10 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-spotify text-white"></i>
+                        </a>
+                    </div>
+                    <p class="text-blue-300 text-sm">Follow us for updates and inspiration!</p>
+                </div>
+            </div>
+
+            <div class="border-t border-blue-700 mt-8 pt-6 text-center">
+                <p>&copy; Copyright Doxa Commission Global <span id="current-year"></span> All Rights Reserved. Designed
+                    and Developed by Doxa Database</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Simple scroll animation trigger
+        document.addEventListener('DOMContentLoaded', function () {
+            // Add animation delays to elements for staggered effect
+            const animatedElements = document.querySelectorAll('.animate-slide-up, .animate-scale-in');
+            animatedElements.forEach((el, index) => {
+                el.style.animationDelay = `${index * 0.2}s`;
+            });
+
+            // Add intersection observer for scroll animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver(function (entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animationPlayState = 'running';
+                    }
+                });
+            }, observerOptions);
+
+            // Observe elements that should animate on scroll
+            document.querySelectorAll('.animate-scale-in').forEach(el => {
+                observer.observe(el);
+            });
+        });
+
+        // Phone call functionality for "Call Us" button
+        document.getElementById('call-us').addEventListener('click', function (e) {
+            e.preventDefault();
+            // Initiate a phone call
+            window.open('tel:+2341234567890');
+        });
+
+        // Set current year in footer
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
+</body>
+
+</html>

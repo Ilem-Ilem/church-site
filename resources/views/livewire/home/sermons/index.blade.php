@@ -5,9 +5,10 @@ use Livewire\WithPagination;
 use App\Models\Sermons;
 use App\Models\SermonSeries;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
 
-new #[Layout('components.layouts.layout')] class extends Component {
+new #[Layout('components.layouts.tailwind-layout')] class extends Component {
     use WithPagination;
 
     public $search = '';
@@ -23,11 +24,13 @@ new #[Layout('components.layouts.layout')] class extends Component {
 
         $series = SermonSeries::withCount('sermons')->latest()->take(6)->get();
         $latestSermon = Sermons::with(['series', 'media'])->latest('preached_at')->first();
+        $selectedSeriesModel = $this->selectedSeries ? SermonSeries::find($this->selectedSeries) : null;
 
         return [
             'sermons' => $sermons,
             'series' => $series,
             'latestSermon' => $latestSermon,
+            'selectedSeriesModel' => $selectedSeriesModel,
         ];
     }
 
@@ -47,404 +50,407 @@ new #[Layout('components.layouts.layout')] class extends Component {
         $this->selectedSeries = null;
         $this->resetPage();
     }
+
+    public function resolveMediaUrl(?string $path): ?string
+    {
+        if (!$path) {
+            return null;
+        }
+
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return $path;
+        }
+
+        $normalized = '/' . ltrim($path, '/');
+
+        if (str_starts_with($normalized, '/storage/')) {
+            return $normalized;
+        }
+
+        return '/storage/' . ltrim($path, '/');
+    }
 };
 ?>
 
 <style>
-    /* Custom styling for the volume slider track and thumb */
-    input[type="range"]::-webkit-slider-runnable-track {
-        background: #4b5563;
-        border-radius: 9999px;
-        height: 4px;
-    }
+input[type="range"]::-webkit-slider-runnable-track {
+    background: #bfdbfe;
+    border-radius: 9999px;
+    height: 4px;
+}
 
-    input[type="range"]::-moz-range-track {
-        background: #4b5563;
-        border-radius: 9999px;
-        height: 4px;
-    }
+input[type="range"]::-moz-range-track {
+    background: #bfdbfe;
+    border-radius: 9999px;
+    height: 4px;
+}
 
-    input[type="range"]::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        appearance: none;
-        height: 14px;
-        width: 14px;
-        background-color: #dc3545;
-        border-radius: 50%;
-        margin-top: -5px;
-        box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
-    }
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 14px;
+    width: 14px;
+    background-color: #2563eb;
+    border-radius: 50%;
+    margin-top: -5px;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+}
 
-    input[type="range"]::-moz-range-thumb {
-        height: 14px;
-        width: 14px;
-        background-color: #dc3545;
-        border-radius: 50%;
-        border: none;
-    }
+input[type="range"]::-moz-range-thumb {
+    height: 14px;
+    width: 14px;
+    background-color: #2563eb;
+    border-radius: 50%;
+    border: none;
+}
 
-    /* Custom styles for the seek bar track and thumb */
-    #seek-bar {
-        -webkit-appearance: none;
-        appearance: none;
-        background: transparent;
-        cursor: pointer;
-        width: 100%;
-    }
+#seek-bar,
+#seek-bar-mobile {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+    width: 100%;
+}
 
-    #seek-bar::-webkit-slider-runnable-track {
-        background: #e5e7eb;
-        border-radius: 9999px;
-        height: 6px;
-    }
+#seek-bar::-webkit-slider-runnable-track,
+#seek-bar-mobile::-webkit-slider-runnable-track {
+    background: #dbeafe;
+    border-radius: 9999px;
+    height: 6px;
+}
 
-    #seek-bar::-moz-range-track {
-        background: #e5e7eb;
-        border-radius: 9999px;
-        height: 6px;
-    }
+#seek-bar::-moz-range-track,
+#seek-bar-mobile::-moz-range-track {
+    background: #dbeafe;
+    border-radius: 9999px;
+    height: 6px;
+}
 
-    #seek-bar::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        appearance: none;
-        height: 14px;
-        width: 14px;
-        background-color: #dc3545;
-        border-radius: 50%;
-        margin-top: -4px;
-        box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
-    }
+#seek-bar::-webkit-slider-thumb,
+#seek-bar-mobile::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 14px;
+    width: 14px;
+    background-color: #2563eb;
+    border-radius: 50%;
+    margin-top: -4px;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+}
 
-    #seek-bar::-moz-range-thumb {
-        height: 14px;
-        width: 14px;
-        background-color: #dc3545;
-        border-radius: 50%;
-        border: none;
-    }
+#seek-bar::-moz-range-thumb,
+#seek-bar-mobile::-moz-range-thumb {
+    height: 14px;
+    width: 14px;
+    background-color: #2563eb;
+    border-radius: 50%;
+    border: none;
+}
 
-    /* PIP Player Styles */
+.audio-player-bar {
+    position: fixed;
+    bottom: calc(var(--mobile-nav-height, 5.25rem) + env(safe-area-inset-bottom, 0px) + 1rem);
+    left: 1.5rem;
+    right: 1.5rem;
+    max-width: 960px;
+    margin: 0 auto;
+    border-radius: 26px;
+    border: 1px solid rgba(37, 99, 235, 0.25);
+    background: rgba(255, 255, 255, 0.97);
+    backdrop-filter: blur(24px);
+    transition: transform 0.35s ease, opacity 0.35s ease;
+    opacity: 0;
+    transform: translateY(60px);
+    z-index: 1050;
+    pointer-events: none;
+}
+
+.audio-player-bar.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.audio-player-bar.pip-mode {
+    left: auto;
+    width: 360px;
+    right: 1.5rem;
+}
+
+@media (max-width: 768px) {
     .audio-player-bar {
-        transition: transform 0.3s ease-out, opacity 0.3s ease-out;
-        z-index: 1050;
-        max-width: 100%;
-    }
-
-    .audio-player-bar.hidden {
-        transform: translateY(100%);
-        opacity: 0;
-        pointer-events: none;
-    }
-
-    .audio-player-bar.visible {
-        transform: translateY(0);
-        opacity: 1;
+        left: 0.75rem;
+        right: 0.75rem;
     }
 
     .audio-player-bar.pip-mode {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        width: 350px;
-        max-width: calc(100% - 40px);
-        border-radius: 15px !important;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        width: calc(100% - 1.5rem);
+        right: 0.75rem;
     }
+}
 
-    @media (max-width: 576px) {
-        .audio-player-bar.pip-mode {
-            width: calc(100% - 40px);
-            right: 20px;
-        }
+@media (min-width: 1024px) {
+    .audio-player-bar {
+        bottom: 1.25rem;
     }
+}
 
-    /* Style for the overlay play button */
-    .play-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.4);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        opacity: 0;
-        transition: opacity 0.2s ease-in-out;
-    }
+.play-overlay {
+    align-items: center;
+    background: rgba(10, 10, 10, 0.4);
+    border-radius: 9999px;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    width: 100%;
+}
 
-    .sermon-card:hover .play-overlay {
-        opacity: 1;
-    }
+.sermon-card:hover .play-overlay {
+    opacity: 1;
+}
 
-    .btn-hover-white:hover {
-        color: #fff !important;
-    }
+.sermon-card {
+    position: relative;
+}
 
-    .cursor-pointer {
-        cursor: pointer;
-    }
+.image-wrapper img {
+    transition: transform 0.5s ease;
+}
 
-    .sermon-card {
-        position: relative;
-    }
-
-    .sermon-card * {
-        pointer-events: none;
-    }
-
-    .sermon-card {
-        pointer-events: auto;
-    }
-
-    .image-wrapper {
-        position: relative;
-        overflow: hidden;
-    }
-
-    .image-wrapper img {
-        transition: transform 0.3s ease;
-    }
-
-    .sermon-card:hover .image-wrapper img {
-        transform: scale(1.05);
-    }
+.sermon-card:hover .image-wrapper img {
+    transform: scale(1.06);
+}
 </style>
 
-<div>
-    <!-- Header -->
-    <header class="bg-dark py-5">
-        <div class="container px-5">
-            <div class="row gx-5 align-items-center">
-                <!-- Text Section -->
-                <div class="col-lg-6 col-xl-7 col-xxl-6 order-xl-first order-first">
-                    <div class="my-5 text-center text-xl-start">
-                        <h1 class="display-5 fw-bolder text-white mb-2">Doxa Messages</h1>
-                        <p class="lead fw-normal text-white-50 mb-4">Experience life-transforming messages that
-                            bring hope, healing, and breakthrough</p>
-                        <div class="d-grid gap-3 d-sm-flex justify-content-sm-center justify-content-xl-start">
-                            <div class="input-group">
-                                <span class="input-group-text bg-light border-0">
-                                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 256 256">
-                                        <path
-                                            d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z">
-                                        </path>
-                                    </svg>
-                                </span>
-                                <input type="text" wire:model.live.debounce.300ms="search" placeholder="Search message, series or speaker"
-                                    class="form-control bg-light border-0 p-3">
-                            </div>
+<div class="min-h-screen bg-white text-slate-900">
+    <section class="relative overflow-hidden border-b border-blue-100">
+        <div class="pointer-events-none absolute inset-0">
+            <div class="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-blue-100/90 via-white to-white opacity-90"></div>
+            <div class="pointer-events-none absolute -left-40 top-16 h-72 w-[110%] -z-10 rounded-full bg-blue-200/50 blur-3xl opacity-60"></div>
+        </div>
+        <div class="relative mx-auto max-w-6xl px-6 py-20">
+            <div class="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
+                <div class="space-y-6">
+                    <p class="text-xs uppercase tracking-[0.5em] text-blue-600">Doxa Messages</p>
+                    <h1 class="text-4xl font-semibold leading-tight text-slate-900 md:text-5xl">Life-transforming sermons, anywhere you go.</h1>
+                    <p class="text-lg text-slate-600">Explore curated series, search by speaker or theme, and keep every message on hand with the built-in player.</p>
+                    <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+                        <label class="sr-only" for="sermon-search">Search sermons</label>
+                        <div class="relative flex-1">
+                            <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="16.65" y1="16.65" x2="21" y2="21"/></svg>
+                            </span>
+                            <input wire:model.live.debounce.300ms="search" id="sermon-search" type="text" placeholder="Search message, series, or speaker" class="w-full rounded-2xl border border-blue-100 bg-white px-12 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
                         </div>
+                        <a href="#sermons" class="inline-flex items-center justify-center rounded-2xl bg-blue-600 px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-blue-700">Browse Sermons</a>
+                    </div>
+                    <div class="flex flex-wrap gap-6 text-xs uppercase tracking-[0.3em] text-slate-400">
+                        <span class="flex items-center gap-2 text-blue-600"><span class="h-1.5 w-1.5 rounded-full bg-blue-600"></span>{{ $sermons->total() }} sermons</span>
+                        <span class="flex items-center gap-2">{{ $series->count() }} curated series</span>
+                        @if($selectedSeriesModel)
+                            <span class="flex items-center gap-2 text-blue-700">Showing: {{ $selectedSeriesModel->title }}</span>
+                        @endif
                     </div>
                 </div>
-                <!-- Featured Card Stack -->
-                <div class="col-lg-6 col-xxl-6 d-flex justify-content-center order-xl-last order-last">
+                <div class="space-y-6 text-sm text-slate-600">
                     @if($latestSermon)
-                    <div class="card bg-dark text-white border-0 shadow-lg" style="max-width: 400px;">
-                        <img src="{{ $latestSermon->image_path ? Storage::url($latestSermon->image_path) : 'https://via.placeholder.com/400x300' }}"
-                             class="card-img" alt="{{ $latestSermon->title }}" style="height: 250px; object-fit: cover;">
-                        <div class="card-img-overlay d-flex flex-column justify-content-end" style="background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);">
-                            <span class="badge bg-primary mb-2" style="width: fit-content;">Latest Release</span>
-                            <h3 class="h4 mb-2">{{ $latestSermon->title }}</h3>
-                            <p class="small mb-2">{{ $latestSermon->series->title ?? 'No Series' }}</p>
+                        <div class="relative overflow-hidden rounded-3xl border border-blue-100 bg-white shadow-[0_20px_60px_-30px_rgba(37,99,235,0.35)]">
+                            <div class="relative overflow-hidden rounded-[22px]">
+                                <img src="{{ $latestSermon->image_path ? $this->resolveMediaUrl($latestSermon->image_path) : 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80' }}" alt="{{ $latestSermon->title }}" class="h-64 w-full object-cover transition duration-500 group-hover:scale-105" />
+                                <div class="absolute inset-0 bg-gradient-to-t from-slate-900/70 via-transparent to-transparent"></div>
+                                <div class="absolute inset-x-5 bottom-5">
+                                    <p class="text-[0.6rem] uppercase tracking-[0.4em] text-blue-100">Latest release</p>
+                                    <h3 class="text-2xl font-semibold text-white">{{ $latestSermon->title }}</h3>
+                                    <p class="text-sm text-blue-100">{{ $latestSermon->series->title ?? 'Standalone message' }}</p>
+                                </div>
+                            </div>
+                            <span class="absolute top-4 right-4 rounded-full border border-blue-100/80 bg-blue-600 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.4em] text-white">Must Listen</span>
                         </div>
-                    </div>
                     @endif
                 </div>
             </div>
         </div>
-    </header>
+    </section>
 
-    <!-- Series Section -->
-    <div class="py-5" style="width: 90%; max-width: 1400px; margin: 0 auto;">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="fw-bold">Series</h2>
-        </div>
-
-        <div class="row align-items-stretch">
-            @forelse($series as $item)
-            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
-                <div class="card card-container h-100" wire:click="$set('selectedSeries', {{ $item->id }})" style="cursor: pointer;">
-                    <div class="image-wrapper">
-                        <img src="{{ $item->image ? Storage::url($item->image) : 'https://via.placeholder.com/400x300' }}"
-                             class="card-img-top" alt="{{ $item->title }}" style="height: 200px; object-fit: cover;">
-                        <div class="play-button-overlay">
-                            <i class="fas fa-folder fa-3x text-white"></i>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">{{ $item->title }}</h5>
-                        <p class="card-text">{{ Str::limit($item->description, 100) }}</p>
-                        <div class="text-muted small">
-                            <i class="fas fa-list"></i> {{ $item->sermons_count }} sermon(s)
-                        </div>
-                    </div>
+    <section id="series" class="border-b border-blue-100 py-16">
+        <div class="mx-auto max-w-6xl px-6 space-y-8">
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <p class="text-xs uppercase tracking-[0.4em] text-blue-600">Series</p>
+                    <h2 class="text-3xl font-semibold text-slate-900">Curated Collections</h2>
+                </div>
+                <div class="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.3em] text-slate-400">
+                    <span class="text-xs text-slate-500">Open a series to view all messages</span>
                 </div>
             </div>
-            @empty
-            <div class="col-12">
-                <p class="text-center text-muted">No series available</p>
-            </div>
-            @endforelse
-        </div>
-
-        @if($selectedSeries)
-        <div class="mt-3">
-            <button wire:click="clearFilters" class="btn btn-sm btn-outline-secondary">
-                <i class="fas fa-times"></i> Clear Series Filter
-            </button>
-        </div>
-        @endif
-    </div>
-
-    <!-- Sermons Section -->
-    <div class="py-5" style="width: 90%; max-width: 1400px; margin: 0 auto;">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="fw-bold">{{ $selectedSeries ? 'Filtered Sermons' : 'Latest Sermons' }}</h2>
-        </div>
-
-        <div class="row align-items-stretch">
-            @forelse($sermons as $sermon)
-            <div class="sermon-card col-lg-4 col-md-6 col-sm-12 mb-4 cursor-pointer"
-                data-id="{{ $sermon->id }}"
-                data-title="{{ $sermon->title }}"
-                data-artist="{{ $sermon->series->title ?? 'Unknown' }}"
-                data-audio-src="{{ $sermon->media->where('type', 'audio')->first() ? Storage::url($sermon->media->where('type', 'audio')->first()->file_path) : '' }}"
-                data-image-src="{{ $sermon->image_path ? Storage::url($sermon->image_path) : 'https://via.placeholder.com/400x300' }}">
-                <div class="card card-container h-100">
-                    <div class="image-wrapper">
-                        <img src="{{ $sermon->image_path ? Storage::url($sermon->image_path) : 'https://via.placeholder.com/400x300' }}"
-                             class="card-img-top" alt="{{ $sermon->title }}" style="height: 200px; object-fit: cover;">
-                        <div class="play-overlay">
-                            @if($sermon->media->where('type', 'audio')->first())
-                            <i class="fas fa-play-circle fa-4x text-white"></i>
-                            @else
-                            <span class="badge bg-warning">No Audio</span>
-                            @endif
+            <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                @forelse($series as $item)
+                    <a href="{{ route('sermons.series-detail', array_merge(['id' => $item->id], request()->query())) }}" wire:navigate class="group flex h-full flex-col overflow-hidden rounded-3xl border border-blue-100 bg-white px-4 py-5 text-left transition hover:border-blue-300 hover:shadow-[0_12px_34px_-18px_rgba(37,99,235,0.45)]">
+                        <div class="mb-4 h-44 w-full overflow-hidden rounded-2xl bg-blue-50">
+                            <img src="{{ $item->image ? $this->resolveMediaUrl($item->image) : 'https://images.unsplash.com/photo-1497215842964-222b430dc094?auto=format&fit=crop&w=900&q=80' }}" alt="{{ $item->title }}" class="h-full w-full object-cover transition duration-500 group-hover:scale-110" />
                         </div>
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">{{ $sermon->title }}</h5>
-                        <p class="card-text flex-grow-1">{{ Str::limit($sermon->description, 100) }}</p>
-                        <div class="card-details mt-auto">
-                            <div class="detail-item small text-muted mb-1">
-                                <i class="fas fa-folder"></i> <span>{{ $sermon->series->title ?? 'No Series' }}</span>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-semibold text-slate-900">{{ $item->title }}</h3>
+                                <span class="text-xs font-semibold uppercase tracking-[0.4em] text-blue-600">{{ $item->sermons_count }}x</span>
                             </div>
-                            <div class="detail-item small text-muted">
-                                <i class="fas fa-calendar-alt"></i> <span>{{ $sermon->preached_at->format('M d, Y') }}</span>
+                            <p class="text-sm text-slate-600">{{ Str::limit($item->description, 120) }}</p>
+                            <p class="text-xs uppercase tracking-[0.4em] text-blue-600">Open series</p>
+                        </div>
+                    </a>
+                @empty
+                    <div class="rounded-3xl border border-dashed border-blue-200 p-10 text-center text-slate-500">No series yet</div>
+                @endforelse
+            </div>
+        </div>
+    </section>
+
+    <section id="sermons" class="py-16">
+        <div class="mx-auto max-w-6xl px-6 space-y-8">
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                    <p class="text-xs uppercase tracking-[0.4em] text-blue-600">Messages</p>
+                    <h2 class="text-3xl font-semibold text-slate-900">{{ $selectedSeriesModel ? 'Filtered Sermons' : 'Latest Sermons' }}</h2>
+                    @if($selectedSeriesModel)
+                        <p class="text-sm text-slate-400">Series: {{ $selectedSeriesModel->title }}</p>
+                    @endif
+                </div>
+                <div class="flex items-center gap-4 text-xs uppercase tracking-[0.3em] text-slate-400">
+                    <span>{{ $sermons->total() }} sermons</span>
+                    @if($selectedSeries)
+                        <button wire:click="clearFilters" class="rounded-full border border-blue-200 px-4 py-2 text-xs tracking-[0.3em] text-blue-700 transition hover:border-blue-300">Clear filter</button>
+                    @endif
+                </div>
+            </div>
+            <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                @forelse($sermons as $sermon)
+                    @php
+                        $audioMedia = $sermon->media->where('type', 'audio')->last();
+                    @endphp
+                    <article class="sermon-card group relative flex flex-col overflow-hidden rounded-3xl border border-blue-100 bg-white shadow-[0_25px_60px_-30px_rgba(37,99,235,0.25)] transition hover:border-blue-300 hover:shadow-[0_30px_60px_-20px_rgba(37,99,235,0.35)] cursor-pointer"
+                        data-id="{{ $sermon->id }}"
+                        data-title="{{ $sermon->title }}"
+                        data-artist="{{ $sermon->series->title ?? 'Unknown' }}"
+                        data-audio-src="{{ $audioMedia ? $this->resolveMediaUrl($audioMedia->file_path) : '' }}"
+                        data-image-src="{{ $sermon->image_path ? $this->resolveMediaUrl($sermon->image_path) : 'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=900&q=80' }}">
+                        <div class="relative h-56 w-full overflow-hidden">
+                            <img src="{{ $sermon->image_path ? $this->resolveMediaUrl($sermon->image_path) : 'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=900&q=80' }}"
+                                 alt="{{ $sermon->title }}"
+                                 class="h-full w-full object-cover transition duration-500 group-hover:scale-110" />
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="play-overlay">
+                                    @if($audioMedia)
+                                        <i class="fas fa-play-circle fa-4x text-white"></i>
+                                    @else
+                                        <span class="rounded-full bg-amber-500/90 px-3 py-1 text-[0.6rem] font-semibold uppercase tracking-[0.3em] text-slate-900">No audio</span>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="absolute top-4 left-4 rounded-full border border-blue-100/70 bg-blue-50/90 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-blue-700">{{ $sermon->series->title ?? 'Standalone' }}</div>
+                        </div>
+                        <div class="flex flex-1 flex-col gap-3 px-5 py-6">
+                            <h3 class="text-xl font-semibold text-slate-900">{{ $sermon->title }}</h3>
+                            <p class="text-sm text-slate-600">{{ Str::limit($sermon->description, 140) }}</p>
+                            <div class="mt-auto flex items-center justify-between text-xs uppercase tracking-[0.3em] text-slate-400">
+                                <span>{{ $sermon->preached_at->format('M d, Y') }}</span>
+                                <span>{{ $audioMedia ? 'Play now' : 'Awaiting audio' }}</span>
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </article>
+                @empty
+                    <div class="rounded-3xl border border-dashed border-blue-200 p-10 text-center text-slate-500">No sermons matched your search.</div>
+                @endforelse
             </div>
-            @empty
-            <div class="col-12">
-                <p class="text-center text-muted">No sermons found</p>
+            <div class="mt-10 flex justify-center">
+                {{ $sermons->links() }}
             </div>
-            @endforelse
         </div>
+    </section>
 
-        <!-- Pagination -->
-        <div class="mt-4">
-            {{ $sermons->links() }}
-        </div>
-    </div>
-
-    <!-- PIP Audio Player -->
-    <div id="audio-player-bar"
-        class="audio-player-bar fixed-bottom hidden bg-dark text-white py-3 px-4 shadow-lg">
-
-        <!-- Desktop View -->
-        <div class="d-none d-md-flex align-items-center justify-content-between">
-            <!-- Album Art & Info -->
-            <div class="d-flex align-items-center" style="min-width: 250px;">
-                <div id="player-album-art" class="bg-secondary rounded me-3"
-                    style="width: 3.5rem; height: 3.5rem; flex-shrink: 0;">
-                    <img src="" class="w-100 h-100 object-fit-cover rounded" alt="Album Art">
+    <div id="audio-player-bar" class="audio-player-bar hidden">
+        <div class="hidden items-center gap-6 px-6 py-4 md:flex">
+            <div class="flex items-center gap-4 min-w-[260px]">
+                <div id="player-album-art" class="h-20 w-20 overflow-hidden rounded-[18px] bg-blue-50">
+                    <img src="" class="h-full w-full object-cover" alt="Album art" />
                 </div>
-                <div class="d-flex flex-column text-truncate">
-                    <span id="player-title" class="fw-bold text-truncate">Select a Sermon</span>
-                    <span id="player-artist" class="text-secondary small mt-1 text-truncate">--</span>
+                <div>
+                    <p id="player-title" class="text-sm font-semibold text-slate-900">Select a Sermon</p>
+                    <p id="player-artist" class="text-xs text-slate-500">--</p>
                 </div>
             </div>
-
-            <!-- Controls -->
-            <div class="d-flex flex-column align-items-center flex-grow-1 mx-4">
-                <div class="d-flex justify-content-center align-items-center mb-2">
-                    <button id="prev-btn" class="btn btn-link text-secondary btn-hover-white p-2">
+            <div class="flex flex-1 flex-col items-center gap-3">
+                <div class="flex items-center gap-3">
+                    <button id="prev-btn" class="rounded-full border border-blue-100 bg-blue-50 px-3 py-2 text-blue-700 transition hover:border-blue-300">
                         <i class="fas fa-step-backward"></i>
                     </button>
-                    <button id="play-pause-btn" class="btn btn-link text-white btn-hover-white p-2 mx-3">
-                        <i id="play-icon" class="fas fa-play-circle fa-2x"></i>
-                        <i id="pause-icon" class="fas fa-pause-circle fa-2x d-none"></i>
+                    <button id="play-pause-btn" class="rounded-full bg-blue-600 px-4 py-2 text-2xl text-white transition hover:bg-blue-700">
+                        <i id="play-icon" class="fas fa-play fa-2x"></i>
+                        <i id="pause-icon" class="fas fa-pause fa-2x hidden"></i>
                     </button>
-                    <button id="next-btn" class="btn btn-link text-secondary btn-hover-white p-2">
+                    <button id="next-btn" class="rounded-full border border-blue-100 bg-blue-50 px-3 py-2 text-blue-700 transition hover:border-blue-300">
                         <i class="fas fa-step-forward"></i>
                     </button>
                 </div>
-                <div class="d-flex align-items-center w-100">
-                    <span id="current-time" class="small text-secondary me-2" style="min-width: 45px;">0:00</span>
-                    <input id="seek-bar" type="range" min="0" max="100" value="0" step="0.1" class="form-range flex-grow-1">
-                    <span id="duration" class="small text-secondary ms-2" style="min-width: 45px;">0:00</span>
+                <div class="flex w-full items-center gap-3 text-xs text-slate-400">
+                    <span id="current-time" class="w-12 text-left">0:00</span>
+                    <input id="seek-bar" type="range" min="0" max="100" value="0" step="0.1" class="h-1 flex-1 accent-blue-600" />
+                    <span id="duration" class="w-12 text-right">0:00</span>
                 </div>
             </div>
-
-            <!-- Volume & Actions -->
-            <div class="d-flex align-items-center" style="min-width: 200px; justify-content: flex-end;">
-                <div class="d-flex align-items-center me-3">
-                    <i class="fas fa-volume-up text-secondary me-2"></i>
-                    <input id="volume-slider" type="range" min="0" max="1" step="0.01" value="1" class="form-range" style="width: 100px;">
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-volume-up text-blue-700"></i>
+                    <input id="volume-slider" type="range" min="0" max="1" step="0.01" value="1" class="h-1 w-28 accent-blue-600" />
                 </div>
-                <button id="pip-toggle-btn" class="btn btn-link text-secondary btn-hover-white p-2" title="Picture-in-Picture">
+                <button id="pip-toggle-btn" class="rounded-full border border-blue-100 bg-blue-50 px-3 py-2 text-blue-700 transition hover:border-blue-300">
                     <i class="fas fa-compress-alt"></i>
                 </button>
-                <button id="close-player-btn" class="btn btn-link text-secondary btn-hover-white p-2">
+                <button id="close-player-btn" class="rounded-full border border-blue-100 bg-blue-50 px-3 py-2 text-blue-700 transition hover:border-red-400 hover:text-red-600">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
         </div>
-
-        <!-- Mobile View -->
-        <div class="d-md-none">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-                <div class="d-flex align-items-center flex-grow-1 me-2">
-                    <div id="player-album-art-mobile" class="bg-secondary rounded me-2"
-                        style="width: 2.5rem; height: 2.5rem; flex-shrink: 0;">
-                        <img src="" class="w-100 h-100 object-fit-cover rounded" alt="Album Art">
-                    </div>
-                    <div class="d-flex flex-column text-truncate">
-                        <span id="player-title-mobile" class="fw-bold small text-truncate">Select a Sermon</span>
-                        <span id="player-artist-mobile" class="text-secondary" style="font-size: 0.75rem;">--</span>
-                    </div>
+        <div class="space-y-3 px-5 py-4 md:hidden">
+            <div class="flex items-center gap-3">
+                <div id="player-album-art-mobile" class="h-12 w-12 overflow-hidden rounded-2xl bg-blue-50">
+                    <img src="" class="h-full w-full object-cover" alt="Album art" />
                 </div>
-                <button id="close-player-btn-mobile" class="btn btn-link text-secondary btn-hover-white p-1">
+                <div class="flex-1">
+                    <p id="player-title-mobile" class="text-sm font-semibold text-slate-900">Select a Sermon</p>
+                    <p id="player-artist-mobile" class="text-xs text-slate-500">--</p>
+                </div>
+                <button id="close-player-btn-mobile" class="rounded-full border border-blue-100 bg-blue-50 p-2 text-blue-700 transition hover:border-red-400 hover:text-red-600">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-
-            <div class="d-flex justify-content-center align-items-center mb-2">
-                <button id="prev-btn-mobile" class="btn btn-link text-secondary btn-hover-white p-2">
+            <div class="flex items-center justify-center gap-6">
+                <button id="prev-btn-mobile" class="rounded-full border border-blue-100 bg-blue-50 px-3 py-2 text-blue-700 transition hover:border-blue-300">
                     <i class="fas fa-step-backward"></i>
                 </button>
-                <button id="play-pause-btn-mobile" class="btn btn-link text-white btn-hover-white p-2 mx-4">
-                    <i id="play-icon-mobile" class="fas fa-play-circle fa-3x"></i>
-                    <i id="pause-icon-mobile" class="fas fa-pause-circle fa-3x d-none"></i>
+                <button id="play-pause-btn-mobile" class="rounded-full bg-blue-600 px-4 py-2 text-2xl text-white transition hover:bg-blue-700">
+                    <i id="play-icon-mobile" class="fas fa-play fa-2x"></i>
+                    <i id="pause-icon-mobile" class="fas fa-pause fa-2x hidden"></i>
                 </button>
-                <button id="next-btn-mobile" class="btn btn-link text-secondary btn-hover-white p-2">
+                <button id="next-btn-mobile" class="rounded-full border border-blue-100 bg-blue-50 px-3 py-2 text-blue-700 transition hover:border-blue-300">
                     <i class="fas fa-step-forward"></i>
                 </button>
             </div>
-
-            <div class="d-flex align-items-center mb-2">
-                <span id="current-time-mobile" class="small text-secondary me-2" style="min-width: 40px; font-size: 0.75rem;">0:00</span>
-                <input id="seek-bar-mobile" type="range" min="0" max="100" value="0" step="0.1" class="form-range flex-grow-1">
-                <span id="duration-mobile" class="small text-secondary ms-2" style="min-width: 40px; font-size: 0.75rem;">0:00</span>
+            <div class="flex items-center gap-3">
+                <span id="current-time-mobile" class="w-12 text-left text-xs text-slate-400">0:00</span>
+                <input id="seek-bar-mobile" type="range" min="0" max="100" value="0" step="0.1" class="h-1 flex-1 accent-blue-600" />
+                <span id="duration-mobile" class="w-12 text-right text-xs text-slate-400">0:00</span>
             </div>
-
-            <div class="d-flex align-items-center justify-content-center">
-                <i class="fas fa-volume-up text-secondary me-2 small"></i>
-                <input id="volume-slider-mobile" type="range" min="0" max="1" step="0.01" value="1" class="form-range" style="width: 120px;">
-                <button id="pip-toggle-btn-mobile" class="btn btn-link text-secondary btn-hover-white p-2 ms-2" title="Picture-in-Picture">
+            <div class="flex items-center justify-between gap-3">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-volume-up text-blue-700"></i>
+                    <input id="volume-slider-mobile" type="range" min="0" max="1" step="0.01" value="1" class="h-1 w-24 accent-blue-600" />
+                </div>
+                <button id="pip-toggle-btn-mobile" class="rounded-full border border-blue-100 bg-blue-50 px-3 py-2 text-blue-700 transition hover:border-blue-300">
                     <i class="fas fa-compress-alt"></i>
                 </button>
             </div>
@@ -453,7 +459,7 @@ new #[Layout('components.layouts.layout')] class extends Component {
 
     <audio id="player-audio" src="" preload="metadata"></audio>
 
-    <script>
+<script>
         // Use immediate execution and also listen for Livewire load
         (function() {
             let initialized = false;
@@ -568,17 +574,17 @@ new #[Layout('components.layouts.layout')] class extends Component {
 
             // Update icons on play/pause events
             audioPlayer.addEventListener('play', () => {
-                playIcon.classList.add('d-none');
-                pauseIcon.classList.remove('d-none');
-                playIconMobile.classList.add('d-none');
-                pauseIconMobile.classList.remove('d-none');
+                playIcon.classList.add('hidden');
+                pauseIcon.classList.remove('hidden');
+                playIconMobile.classList.add('hidden');
+                pauseIconMobile.classList.remove('hidden');
             });
 
             audioPlayer.addEventListener('pause', () => {
-                playIcon.classList.remove('d-none');
-                pauseIcon.classList.add('d-none');
-                playIconMobile.classList.remove('d-none');
-                pauseIconMobile.classList.add('d-none');
+                playIcon.classList.remove('hidden');
+                pauseIcon.classList.add('hidden');
+                playIconMobile.classList.remove('hidden');
+                pauseIconMobile.classList.add('hidden');
             });
 
             // Update the current time display and seek bar

@@ -11,7 +11,7 @@ use App\Notifications\AppointmentScheduled;
 use Livewire\Attributes\{Layout, Url};
 use Livewire\Volt\Component;
 
-new #[Layout('components.layouts.layout')] class extends Component {
+new #[Layout('components.layouts.tailwind-layout')] class extends Component {
     public ?string $name = null;
     public ?string $email = null;
 
@@ -107,7 +107,7 @@ new #[Layout('components.layouts.layout')] class extends Component {
         $appointment = Appointment::create([
             'title' => $this->title,
             'description' => $this->description,
-            'day' => $this->date, // ✅ Now taken directly from calendar
+            'day' => $this->date,
             'start_time' => $this->startTime,
             'end_time' => $this->endTime,
             'team_id' => $this->selectedTeam,
@@ -117,8 +117,14 @@ new #[Layout('components.layouts.layout')] class extends Component {
             'email' => $this->email,
             'status' => 'pending',
         ]);
-        $team_lead = TeamUser::where('team_id', $this->selectedTeam)->where('role_in_team', 'team-lead')->with('user')->first()?->user;
+
+        $team_lead = TeamUser::where('team_id', $this->selectedTeam)
+            ->where('role_in_team', 'team-lead')
+            ->with('user')
+            ->first()?->user;
+
         $team_lead->notify(new AppointmentScheduled($appointment));
+
         session()->flash('success', 'Appointment booked successfully!');
         $this->resetExcept(['user', 'chapter', 'name', 'email']);
         $this->redirect(route('home'));
@@ -133,29 +139,23 @@ new #[Layout('components.layouts.layout')] class extends Component {
                 'name' => 'required|string|max:255',
                 'email' => 'required|email|max:255',
                 'selectedTeam' => 'required|integer',
-                'date' => 'required|date', // ✅ validate date from calendar
+                'date' => 'required|date',
                 'startTime' => 'required',
                 'endTime' => 'required',
             ],
             [
                 'title.required' => 'Please provide a title for your appointment.',
                 'title.max' => 'The title must not be longer than 255 characters.',
-
                 'description.required' => 'Please enter a reason for the appointment.',
                 'description.min' => 'The reason must be at least 20 characters long.',
-
                 'name.required' => 'Your name is required.',
                 'name.max' => 'Your name must not exceed 255 characters.',
-
                 'email.required' => 'We need your email address to confirm the appointment.',
                 'email.email' => 'Please provide a valid email address.',
                 'email.max' => 'The email must not exceed 255 characters.',
-
                 'selectedTeam.required' => 'Please select a team for this appointment.',
                 'selectedTeam.integer' => 'Invalid team selection.',
-
                 'date.required' => 'Please pick a date for your appointment.',
-
                 'startTime.required' => 'Start time is required.',
                 'endTime.required' => 'End time is required.',
             ],
@@ -163,97 +163,77 @@ new #[Layout('components.layouts.layout')] class extends Component {
     }
 }; ?>
 
-<div>
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
+<div class="mx-auto w-full max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
+    <section class="rounded-3xl border border-blue-100 bg-white p-6 shadow-[0_24px_60px_-40px_rgba(37,99,235,0.5)] sm:p-8">
+        <header class="mb-8 text-center">
+            <p class="text-xs font-semibold uppercase tracking-[0.3em] text-blue-600">Appointments</p>
+            <h1 class="mt-3 text-3xl font-bold text-slate-900">Book an Appointment</h1>
+            <p class="mt-2 text-sm text-slate-600">Schedule time with the church team in a few steps.</p>
+        </header>
 
-        .card-con {
-            max-width: 800px;
-            margin: 100px auto;
-        }
-
-        .section-title {
-            font-size: 23px;
-        }
-
-        .navbar {
-            background: linear-gradient(to right, #357be4, #294dc0) !important;
-            height: 85px;
-        }
-
-        .card {
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-    </style>
-
-    <div class="container card-con">
-        <div class="container container-bg shadow-lg rounded-4 p-4 p-sm-5 mb-5 page-content">
-            <header class="text-center mb-4">
-                <h1 class="fs-2 fw-bold text-dark mb-2">Book An Appointment</h1>
-                <p class="text-secondary">Schedule your time with the church staff.</p>
-            </header>
-
-            <!-- Appointment Booking Form -->
-            <form id="appointmentForm" class="row g-3" wire:submit.prevent='save'>
-                <div class="col-12">
-                    <label for="name" class="form-label text-dark">Your Name</label>
-                    @if ($name)
-                        <input type="text" id="name" class="form-control rounded-3" wire:model.live='name'
-                            value="{{ $name }}" disabled>
-                    @else
-                        <input type="text" id="name" class="form-control rounded-3" wire:model.live='name'>
-                    @endif
+        <form class="space-y-5" wire:submit.prevent="save">
+            <div class="grid gap-5 md:grid-cols-2">
+                <div>
+                    <label for="name" class="mb-2 block text-sm font-medium text-slate-700">Your Name</label>
+                    <input
+                        type="text"
+                        id="name"
+                        wire:model.live="name"
+                        @if($name) disabled @endif
+                        class="w-full rounded-xl border border-blue-100 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200 disabled:bg-slate-50 disabled:text-slate-500"
+                    >
+                    @error('name') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
 
-                <div class="col-12">
-                    <label for="email" class="form-label text-dark">Email Address</label>
-                    @if ($email)
-                        <input type="email" id="email" class="form-control rounded-3" wire:model='email'
-                            value="{{ $email }}" disabled>
-                    @else
-                        <input type="email" id="email" class="form-control rounded-3" wire:model='email'>
-                    @endif
+                <div>
+                    <label for="email" class="mb-2 block text-sm font-medium text-slate-700">Email Address</label>
+                    <input
+                        type="email"
+                        id="email"
+                        wire:model="email"
+                        @if($email) disabled @endif
+                        class="w-full rounded-xl border border-blue-100 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200 disabled:bg-slate-50 disabled:text-slate-500"
+                    >
+                    @error('email') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
+            </div>
 
-                <div class="form-group mt-4">
-                    <label for="chapter" class="form-label text-dark">Pick A Chapter</label>
-                    @if ($currentChapter != null)
-                        <select class="form-control" wire:model.live="selectedChapter" disabled>
-                            <option value="{{ $currentChapter->id }}" selected>{{ $currentChapter->name }}</option>
-                        </select>
-                    @else
-                        <select class="form-control" wire:model.live="selectedChapter">
-                            <option value="">Select A Chapter</option>
-                            @foreach ($chapters as $chapter)
-                                <option value="{{ $chapter['id'] }}">{{ $chapter['name'] }}</option>
-                            @endforeach
-                        </select>
-                    @endif
-                </div>
-
-                @if ($appointmentTeams == 'empty')
-                    <div class="alert alert-warning">
-                        Sorry, there are no teams available for appointments in this chapter.
-                    </div>
+            <div>
+                <label for="chapter" class="mb-2 block text-sm font-medium text-slate-700">Pick a Chapter</label>
+                @if ($currentChapter != null)
+                    <select id="chapter" class="w-full rounded-xl border border-blue-100 px-4 py-3 text-sm text-slate-700" wire:model.live="selectedChapter" disabled>
+                        <option value="{{ $currentChapter->id }}" selected>{{ $currentChapter->name }}</option>
+                    </select>
                 @else
-                    <div class="form-group mt-4">
-                        <label for="team" class="form-label text-dark">Team</label>
-                        <select class="form-control" wire:model.live="selectedTeam">
-                            <option value="">Select A Team</option>
-                            @foreach ($appointmentTeams as $appointment_team)
-                                <option value="{{ $appointment_team->team->id }}">
-                                    {{ $appointment_team->team->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
+                    <select id="chapter" class="w-full rounded-xl border border-blue-100 px-4 py-3 text-sm text-slate-700" wire:model.live="selectedChapter">
+                        <option value="">Select a chapter</option>
+                        @foreach ($chapters as $chapter)
+                            <option value="{{ $chapter['id'] }}">{{ $chapter['name'] }}</option>
+                        @endforeach
+                    </select>
+                @endif
+                @error('selectedChapter') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+            </div>
 
-                    <!-- Date + Time -->
-                    <div class="col-12 row g-3">
-                        <div x-data="{
+            @if ($appointmentTeams == 'empty')
+                <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                    Sorry, there are no teams available for appointments in this chapter.
+                </div>
+            @else
+                <div>
+                    <label for="team" class="mb-2 block text-sm font-medium text-slate-700">Team</label>
+                    <select id="team" class="w-full rounded-xl border border-blue-100 px-4 py-3 text-sm text-slate-700" wire:model.live="selectedTeam">
+                        <option value="">Select a team</option>
+                        @foreach ($appointmentTeams as $appointment_team)
+                            <option value="{{ $appointment_team->team->id }}">{{ $appointment_team->team->name }}</option>
+                        @endforeach
+                    </select>
+                    @error('selectedTeam') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                </div>
+
+                <div class="grid gap-4 lg:grid-cols-3">
+                    <div
+                        x-data="{
                             selectedDate: null,
                             enabledDays: {{ Js::from($freeDays) }},
                             init() {
@@ -266,8 +246,9 @@ new #[Layout('components.layouts.layout')] class extends Component {
                                     friday: 5,
                                     saturday: 6
                                 };
-                                const numericDays = this.enabledDays.map(d => dayMap[d.toLowerCase()]);
-                        
+
+                                const numericDays = this.enabledDays.map((d) => dayMap[d.toLowerCase()]);
+
                                 flatpickr(this.$refs.datePicker, {
                                     dateFormat: 'Y-m-d',
                                     disable: [(date) => !numericDays.includes(date.getDay())],
@@ -278,42 +259,49 @@ new #[Layout('components.layouts.layout')] class extends Component {
                                     }
                                 });
                             }
-                        }" class="bg-white p-4 rounded-2xl shadow w-96">
-                            <h2 class="text-xl font-bold mb-3 text-gray-800">Pick an Available Date</h2>
-                            <input x-ref="datePicker" x-model="selectedDate" type="text"
-                                class="w-full border rounded-lg p-2" placeholder="Select a date">
-                        </div>
-
-                        <!-- Start Time -->
-                        <div class="col-lg-4 col-md-4">
-                            <label class="form-label text-dark">Start Time</label>
-                            <input type="time" class="form-control" wire:model='startTime'>
-                        </div>
-
-                        <!-- End Time -->
-                        <div class="col-lg-4 col-md-4">
-                            <label class="form-label text-dark">End Time</label>
-                            <input type="time" class="form-control" wire:model='endTime'>
-                        </div>
+                        }"
+                        class="rounded-2xl border border-blue-100 bg-blue-50 p-4"
+                    >
+                        <label class="mb-2 block text-sm font-medium text-slate-700">Pick an Available Date</label>
+                        <input
+                            x-ref="datePicker"
+                            x-model="selectedDate"
+                            type="text"
+                            placeholder="Select a date"
+                            class="w-full rounded-xl border border-blue-200 bg-white px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                        >
+                        @error('date') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                     </div>
 
-                    <div class="col-12 form-group mt-3">
-                        <label class="form-label text-dark">Title:</label>
-                        <input type="text" wire:model='title' class="form-control">
+                    <div>
+                        <label class="mb-2 block text-sm font-medium text-slate-700">Start Time</label>
+                        <input type="time" class="w-full rounded-xl border border-blue-100 px-4 py-3 text-sm text-slate-900" wire:model="startTime">
+                        @error('startTime') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                     </div>
 
-                    <div class="col-12 mb-4">
-                        <label class="form-label text-dark">Reason for Appointment</label>
-                        <textarea rows="3" class="form-control" wire:model='description'></textarea>
+                    <div>
+                        <label class="mb-2 block text-sm font-medium text-slate-700">End Time</label>
+                        <input type="time" class="w-full rounded-xl border border-blue-100 px-4 py-3 text-sm text-slate-900" wire:model="endTime">
+                        @error('endTime') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                     </div>
+                </div>
 
-                    <div class="col-12">
-                        <button type="submit" class="btn btn-primary w-100 btn-lg rounded-3 fw-semibold">
-                            Book an Appointment
-                        </button>
-                    </div>
-                @endif
-            </form>
-        </div>
-    </div>
+                <div>
+                    <label for="title" class="mb-2 block text-sm font-medium text-slate-700">Title</label>
+                    <input id="title" type="text" wire:model="title" class="w-full rounded-xl border border-blue-100 px-4 py-3 text-sm text-slate-900">
+                    @error('title') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                </div>
+
+                <div>
+                    <label for="description" class="mb-2 block text-sm font-medium text-slate-700">Reason for Appointment</label>
+                    <textarea id="description" rows="4" wire:model="description" class="w-full rounded-xl border border-blue-100 px-4 py-3 text-sm text-slate-900"></textarea>
+                    @error('description') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                </div>
+
+                <button type="submit" class="inline-flex w-full items-center justify-center rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700">
+                    Book Appointment
+                </button>
+            @endif
+        </form>
+    </section>
 </div>

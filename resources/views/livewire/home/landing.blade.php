@@ -1,15 +1,20 @@
 <?php
 
+use App\Models\{Chapter, LandingPageSetting, Testimony};
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
+use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
-use Livewire\Attributes\{Layout};
-use App\Models\{LandingPageSetting, Testimony};
 use Livewire\WithFileUploads;
 
-new #[Layout('components.layouts.layout')] class extends Component {
+new #[Layout('components.layouts.tailwind-layout')] class extends Component {
     use WithFileUploads;
 
-    public $landing;
-    public $carousels;
+    public ?LandingPageSetting $landing = null;
+    public ?Chapter $activeChapter = null;
+    public array $heroSection = [];
+    public array $services = [];
+    public $testimonies;
 
     // Testimony form fields
     public $name = '';
@@ -17,31 +22,125 @@ new #[Layout('components.layouts.layout')] class extends Component {
     public $testimony = '';
     public $image;
 
-    public function mount()
+    public function mount(): void
     {
-        $this->landing = LandingPageSetting::first();
-        $this->carousels = $this->landing->carousel ?? [
-            [
-                'title' => 'Welcome to Our Church Family',
-                'subtitle' => 'A place where faith, hope, and love come together.',
-                'image' => 'https://images.unsplash.com/photo-1502086223501-9d45c7c9b2b6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80',
-            ],
-            [
-                'title' => 'Sunday Worship Service',
-                'subtitle' => 'Join us every Sunday at 10:00 AM for uplifting worship and teaching.',
-                'image' => 'https://images.unsplash.com/photo-1511795409834-ef04e53d9a6f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80',
-            ],
-            [
-                'title' => 'Grow in Faith Together',
-                'subtitle' => 'Bible studies, youth groups, and community outreach every week.',
-                'image' => 'https://images.unsplash.com/photo-1505455184862-5547d9e4f6b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80',
-            ],
-            [
-                'title' => 'Celebrating God’s Love',
-                'subtitle' => 'Baptisms, weddings, and special events — we rejoice in every milestone.',
-                'image' => 'https://images.unsplash.com/photo-1511795409834-ef04e53d9a6f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80',
-            ],
+        $this->activeChapter = $this->resolveChapterContext();
+        $this->landing = $this->resolveLandingSetting($this->activeChapter?->id);
+
+        $this->heroSection = $this->buildHeroSection($this->landing?->hero_section ?? []);
+        $this->services = $this->buildServices($this->landing?->services ?? []);
+
+        $limit = max(1, (int) ($this->landing?->number_of_testimonies ?? 5));
+        $this->testimonies = Testimony::where('status', 'approved')
+            ->latest()
+            ->take($limit)
+            ->get();
+    }
+
+    protected function resolveChapterContext(): ?Chapter
+    {
+        $requestedChapter = request()->query('chapter');
+
+        if ($requestedChapter) {
+            $chapter = Chapter::where('name', $requestedChapter)->first();
+            if ($chapter) {
+                return $chapter;
+            }
+        }
+
+        $user = auth()->user();
+        if ($user?->chapter_id) {
+            return Chapter::find($user->chapter_id);
+        }
+
+        return null;
+    }
+
+    protected function resolveLandingSetting(?int $chapterId): ?LandingPageSetting
+    {
+        if (!Schema::hasColumn('landing_page_settings', 'chapter_id')) {
+            return LandingPageSetting::first();
+        }
+
+        if ($chapterId) {
+            $chapterSetting = LandingPageSetting::where('chapter_id', $chapterId)->first();
+            if ($chapterSetting) {
+                return $chapterSetting;
+            }
+        }
+
+        return LandingPageSetting::whereNull('chapter_id')->first() ?? LandingPageSetting::first();
+    }
+
+    protected function buildHeroSection(array $hero): array
+    {
+        if (!isset($hero['media_path']) && !empty($hero['image'])) {
+            $hero['media_path'] = $hero['image'];
+            $hero['media_type'] = 'image';
+        }
+
+        $default = [
+            'title' => 'Welcome to Doxa Commission Global',
+            'subtitle' => 'A place where faith, hope, and love come together.',
+            'cta_text' => 'Get Connected',
+            'cta_url' => route('appointment', request()->query()),
+            'media_type' => 'image',
+            'media_path' => null,
         ];
+
+        $hero = array_merge($default, $hero);
+        $hero['media_url'] = $this->resolveMediaUrl($hero['media_path'] ?? null);
+
+        return $hero;
+    }
+
+    protected function buildServices(array $settingsServices): array
+    {
+        $services = collect($settingsServices)
+            ->filter(fn ($service) => !empty($service['name']))
+            ->map(function ($service) {
+                return [
+                    'name' => (string) ($service['name'] ?? ''),
+                    'day_of_week' => (string) ($service['day_of_week'] ?? ''),
+                    'start_time' => $this->normalizeTime($service['start_time'] ?? null),
+                    'end_time' => $this->normalizeTime($service['end_time'] ?? null),
+                    'location' => (string) ($service['location'] ?? ''),
+                    'livestream_url' => (string) ($service['livestream_url'] ?? ''),
+                ];
+            })
+            ->values();
+
+        return $services->all();
+    }
+
+    protected function normalizeTime($value): ?string
+    {
+        if (!$value) {
+            return null;
+        }
+
+        try {
+            return \Carbon\Carbon::parse($value)->format('H:i');
+        } catch (\Throwable $e) {
+            return is_string($value) ? $value : null;
+        }
+    }
+
+    protected function resolveMediaUrl($path): ?string
+    {
+        if (!$path || !is_string($path)) {
+            return null;
+        }
+
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return $path;
+        }
+
+        if (Storage::disk('public')->exists($path)) {
+            return Storage::disk('public')->url($path);
+        }
+
+        return null;
     }
 
     public function submitTestimony()
@@ -66,550 +165,355 @@ new #[Layout('components.layouts.layout')] class extends Component {
             'status' => 'pending',
         ]);
 
-        // Reset form
         $this->reset(['name', 'email', 'testimony', 'image']);
-
-        // Show success message
         $this->dispatch('testimony-submitted');
     }
 }; ?>
 
-<div>
+<div class="min-h-screen bg-white">
+    @php
+        $fallbackHero = asset('/Img/IMG-20250101-WA0021.jpg');
+        $heroType = $heroSection['media_type'] ?? 'image';
+        $heroMedia = $heroSection['media_url'] ?? null;
+        $chapterQuery = request()->query();
 
-    <!-- Offcanvas menu -->
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNav" aria-labelledby="offcanvasNavLabel">
-        <div class="offcanvas-header">
-            <h5 class="offcanvas-title text-white" id="offcanvasNavLabel">Doxa Commission Global</h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
-                aria-label="Close"></button>
+        $formatServiceTime = function (?string $time): ?string {
+            if (!$time) {
+                return null;
+            }
+
+            try {
+                return \Carbon\Carbon::createFromFormat('H:i', $time)->format('g:i A');
+            } catch (\Throwable $e) {
+                return $time;
+            }
+        };
+    @endphp
+
+    <section class="relative overflow-hidden border-b border-blue-100">
+        <div class="relative h-[68vh] min-h-[460px]">
+            @if($heroType === 'video' && $heroMedia)
+                <video autoplay muted loop playsinline class="absolute inset-0 h-full w-full object-cover">
+                    <source src="{{ $heroMedia }}" type="video/mp4">
+                </video>
+            @else
+                <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('{{ $heroMedia ?: $fallbackHero }}');"></div>
+            @endif
+
+            <div class="absolute inset-0 bg-slate-950/55"></div>
+
+            <div class="relative z-10 mx-auto flex h-full w-full max-w-6xl items-center px-4 sm:px-6 lg:px-8">
+                <div class="max-w-3xl text-white">
+                    @if($activeChapter)
+                        <p class="text-xs font-semibold uppercase tracking-[0.3em] text-blue-200">{{ $activeChapter->name }}</p>
+                    @endif
+                    <h1 class="mt-3 text-4xl font-semibold leading-tight sm:text-5xl">{{ $heroSection['title'] }}</h1>
+                    <p class="mt-5 max-w-2xl text-base leading-7 text-blue-50 sm:text-lg">{{ $heroSection['subtitle'] }}</p>
+
+                    @if(!empty($heroSection['cta_text']) && !empty($heroSection['cta_url']))
+                        <a href="{{ $heroSection['cta_url'] }}" wire:navigate class="mt-8 inline-flex rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-blue-700">
+                            {{ $heroSection['cta_text'] }}
+                        </a>
+                    @endif
+                </div>
+            </div>
         </div>
-        <div class="offcanvas-body">
-            <ul class="navbar-nav">
-                <div class="navcon">
-                    <li class="nav-item"><a class="nav-link" href="{{ route('home') }}" wire:navigate>Home</a></li>
-                </div>
-                <div class="navcon">
-                    <li class="nav-item"><a class="nav-link" href="{{ route('sermons.index') }}" wire:navigate>Message</a></li>
-                </div>
-                <div class="navcon">
-                    <li class="nav-item"><a class="nav-link" href="{{ route('home') }}" wire:navigate>About</a></li>
-                </div>
-                <div class="navcon">
-                    <li class="nav-item"><a class="nav-link" href="{{ route('home') }}" wire:navigate>Cell</a></li>
-                </div>
-                <div class="navcon">
-                    <li class="nav-item"><a class="nav-link" href="{{ route('events.index') }}" wire:navigate>Event</a></li>
-                </div>
-                <div class="navcon">
-                    <li class="nav-item"><a class="nav-link" href="{{ route('home') }}" wire:navigate>Location</a></li>
-                </div>
-                <div class="navcon">
-                    <li class="nav-item"><a class="nav-link" href="{{ route('believers.academy') }}" wire:navigate>Believers academy</a></li>
-                </div>
-                <div class="navcon">
-                    <li class="nav-item"><a class="nav-link" href="{{ route('transport') }}" wire:navigate>Need a Ride</a></li>
-                </div>
-                <div class="navcon">
-                    @auth
-                        <li class="nav-item">
-                            <form method="POST" action="{{ route('logout') }}" class="d-inline w-100">
-                                @csrf
-                                <button type="submit" class="nav-link bg-transparent border-0 text-white w-100 text-start" style="cursor: pointer;">Logout</button>
-                            </form>
-                        </li>
-                    @else
-                        <li class="nav-item"><a class="nav-link" href="{{ route('home.login') }}" wire:navigate>Login</a></li>
-                    @endauth
-                </div>
+    </section>
 
-            </ul>
-        </div>
-    </div>
-
-
-
-    <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="3000">
-        <div class="carousel-inner">
-            @foreach ($carousels as $index => $carousel)
-                @php
-                    $carousel_image = $carousel['image'] ?? null;
-                    $defaultImage = asset('/Img/IMG-20250101-WA0021.jpg');
-
-                    // Check if image exists in storage
-                    if ($carousel_image && Storage::disk('public')->exists($carousel_image)) {
-                        $imageUrl = asset("storage/{$carousel_image}");
-                    } else {
-                        $imageUrl = $defaultImage;
-                    }
-                @endphp
-
-                <div class="carousel-item {{ $index === 0 ? 'active' : '' }}"
-                    style="background-image: url('{{ $imageUrl }}'); background-size: cover; background-position: center;">
-                    <div class="carousel-caption">
-                        <h1>{{ $carousel['title'] }}</h1>
-                        <p>{{ $carousel['subtitle'] }}</p>
-                    </div>
-                </div>
-            @endforeach
-
-
-
+    <section class="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
+        <div class="mb-6 flex items-end justify-between gap-4">
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-[0.25em] text-blue-600">Service Schedule</p>
+                <h2 class="mt-2 text-2xl font-semibold text-slate-900">Worship with us this week</h2>
+            </div>
         </div>
 
-        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon"></span>
-            <span class="visually-hidden">Previous</span>
-        </button>
-
-        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon"></span>
-            <span class="visually-hidden">Next</span>
-        </button>
-    </div>
-
-    <script>
-        const carousel = document.querySelector('#heroCarousel');
-        const carouselInstance = new bootstrap.Carousel(carousel, {
-            interval: 3000,
-            ride: 'carousel',
-            wrap: true
-        });
-
-        carousel.addEventListener('mouseenter', () => carouselInstance.pause());
-        carousel.addEventListener('mouseleave', () => carouselInstance.cycle());
-    </script>
-
-    <div class=" mt-4 main">
-        <!-- -----contdown------- -->
-        <section class="countdown-section mt-5">
-            <div class="container">
-                <div class="row g-4">
-                    <div class="col-lg-6">
-                        <div class="service-cards">
-                            <div class="section-title">Sunday Service</div>
-                            <div id="sunday-countdown" class="countdown text-center"></div>
-                            <p class="mt-3 text-center">Sundays: 7:00AM, 8:30AM, 10:00AM & 4:00 PM</p>
+        @if(!empty($services))
+            <div class="grid gap-4 md:grid-cols-2">
+                @foreach($services as $service)
+                    <article
+                        class="service-card rounded-2xl border border-blue-100 bg-white p-5 shadow-sm transition-colors duration-200"
+                        data-service-day="{{ strtolower((string) ($service['day_of_week'] ?? '')) }}"
+                        data-service-start="{{ $service['start_time'] ?? '' }}"
+                        data-service-end="{{ $service['end_time'] ?? '' }}"
+                    >
+                        <div class="flex flex-wrap items-start justify-between gap-2">
+                            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">{{ $service['day_of_week'] ?: 'Service' }}</p>
+                            <span class="service-status rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-blue-700">
+                                Checking
+                            </span>
                         </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="service-cards">
-                            <div class="section-title">Thursday Service</div>
-                            <div id="thursday-countdown" class="countdown text-center"></div>
-                            <p class="mt-3 text-center">Thursdays @ 5:30 PM</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
 
-        <!-- Doxa Related News / Special Service Announcements -->
-        <section class="mt-5">
-            <h2 class="section-title">Doxa News & Special Services</h2>
-            <div class="news-grid">
-                <!-- News Item 1 -->
-                <div class="news-item">
-                    <h3>Thanksgiving Service Announced!</h3>
-                    <p>
-                        Join us for a special Thanksgiving Service on [Date] at [Time].
-                        Come with a heart of gratitude!
-                    </p>
-                    <a href="#" class="read-more-link">Read More</a>
-                </div>
-                <!-- News Item 2 -->
-                <div class="news-item">
-                    <h3>PDS (Prophetic Deliverance Service)</h3>
-                    <p>
-                        Prepare for a powerful Prophetic Deliverance Service on [Date] at
-                        [Time]. Don't miss out!
-                    </p>
-                    <a href="#" class="read-more-link">Read More</a>
-                </div>
-                <!-- News Item 3 -->
-                <div class="news-item">
-                    <h3>New Sermon Series: "Faith Unlocked"</h3>
-                    <p>
-                        Starting next Sunday, dive deep into our new series on unlocking
-                        your faith. Be there!
-                    </p>
-                    <a href="#" class="read-more-link">Read More</a>
-                </div>
-            </div>
-        </section>
+                        <h3 class="mt-2 text-lg font-semibold text-slate-900">{{ $service['name'] }}</h3>
 
-        <!-- GET CONNECTED -->
-        <header class="page-header text-center mt-5">
-            <div class="container">
-                <h1 class="display-6">Get Connected</h1>
-                <p class="mt-2">Take your next step in faith and community with these quick actions</p>
+                        <p class="mt-2 text-sm text-slate-600">
+                            @php
+                                $start = $formatServiceTime($service['start_time'] ?? null);
+                                $end = $formatServiceTime($service['end_time'] ?? null);
+                            @endphp
+                            @if($start && $end)
+                                {{ $start }} - {{ $end }}
+                            @elseif($start)
+                                {{ $start }}
+                            @else
+                                Time TBD
+                            @endif
+                        </p>
+
+                        @if(!empty($service['location']))
+                            <p class="mt-1 text-sm text-slate-500">{{ $service['location'] }}</p>
+                        @endif
+
+                        @if(!empty($service['livestream_url']))
+                            <a href="{{ $service['livestream_url'] }}" target="_blank" rel="noopener noreferrer" class="mt-3 inline-flex rounded-full border border-blue-200 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-blue-700 transition hover:bg-blue-50">Join Live</a>
+                        @endif
+                    </article>
+                @endforeach
             </div>
+        @else
+            <div class="rounded-2xl border border-dashed border-blue-200 bg-blue-50/40 px-6 py-12 text-center">
+                <p class="text-sm text-slate-600">No services published for this chapter yet. Add services in Landing Page Settings.</p>
+            </div>
+        @endif
+    </section>
+
+    <section class="mx-auto max-w-6xl px-4 pb-12 sm:px-6 lg:px-8">
+        <header class="mb-6 text-center">
+            <p class="text-xs font-semibold uppercase tracking-[0.25em] text-blue-600">Get Connected</p>
+            <h2 class="mt-2 text-2xl font-semibold text-slate-900">Take your next step</h2>
         </header>
-        <!-- GET CONNECTED GRID -->
-        <main class="container pb-4">
-            <div class="row gc-grid">
-                <!-- Book Appointment -->
-                <div class="col-12 col-md-6 col-lg-4">
-                    <div class="gc-card h-100 d-flex flex-column">
-                        <div>
-                            <div class="d-flex align-items-start gap-3">
-                                <div class="gc-icon"><i class="bi bi-calendar2-check"></i></div>
-                                <div>
-                                    <div class="gc-title">Book Appointment</div>
-                                    <div class="gc-desc">Schedule time with our pastor or counselors</div>
-                                </div>
-                            </div>
-                            <div class="mt-3">
-                                <a href="{{ route('appointment') }}" class="btn btn-brand w-100 py-2"
-                                    wire:navigate>Book Now</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Prayer Request -->
-                <div class="col-12 col-md-6 col-lg-4">
-                    <div class="gc-card h-100 d-flex flex-column">
-                        <div class="d-flex align-items-start gap-3">
-                            <div class="gc-icon" style="background:#fff2f2; color:#ef4444; border-color:#ffc9c9"><i
-                                    class="bi bi-heart" aria-hidden="true"></i></div>
-                            <div>
-                                <div class="gc-title">Prayer Request</div>
-                                <div class="gc-desc">Submit your prayer needs to our community</div>
-                            </div>
-                        </div>
-                        <div class="mt-3">
-                            <a href="{{ route('prayer.request') }}" class="btn btn-brand w-100 py-2"
-                                wire:navigate>Submit Request</a>
-                        </div>
-                    </div>
-                </div>
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <a href="{{ route('appointment', $chapterQuery) }}" wire:navigate class="rounded-2xl border border-blue-100 bg-white p-5 shadow-sm transition hover:border-blue-300 hover:shadow-md">
+                <h3 class="text-base font-semibold text-slate-900">Book Appointment</h3>
+                <p class="mt-1 text-sm text-slate-600">Talk to our pastors or counselors.</p>
+            </a>
+            <a href="{{ route('prayer.request', $chapterQuery) }}" wire:navigate class="rounded-2xl border border-blue-100 bg-white p-5 shadow-sm transition hover:border-blue-300 hover:shadow-md">
+                <h3 class="text-base font-semibold text-slate-900">Prayer Request</h3>
+                <p class="mt-1 text-sm text-slate-600">Submit your prayer needs.</p>
+            </a>
+            <a href="{{ route('events.index', $chapterQuery) }}" wire:navigate class="rounded-2xl border border-blue-100 bg-white p-5 shadow-sm transition hover:border-blue-300 hover:shadow-md">
+                <h3 class="text-base font-semibold text-slate-900">Upcoming Events</h3>
+                <p class="mt-1 text-sm text-slate-600">Discover and register for events.</p>
+            </a>
+            <a href="{{ route('believers.academy', $chapterQuery) }}" wire:navigate class="rounded-2xl border border-blue-100 bg-white p-5 shadow-sm transition hover:border-blue-300 hover:shadow-md">
+                <h3 class="text-base font-semibold text-slate-900">Believers Academy</h3>
+                <p class="mt-1 text-sm text-slate-600">Grow in doctrine and discipleship.</p>
+            </a>
+            <a href="{{ route('home.partnership.index', $chapterQuery) }}" wire:navigate class="rounded-2xl border border-blue-100 bg-white p-5 shadow-sm transition hover:border-blue-300 hover:shadow-md">
+                <h3 class="text-base font-semibold text-slate-900">Partnership</h3>
+                <p class="mt-1 text-sm text-slate-600">Explore ways to partner with us.</p>
+            </a>
+            <a href="{{ route('sermons.index', $chapterQuery) }}" wire:navigate class="rounded-2xl border border-blue-100 bg-white p-5 shadow-sm transition hover:border-blue-300 hover:shadow-md">
+                <h3 class="text-base font-semibold text-slate-900">Watch Sermons</h3>
+                <p class="mt-1 text-sm text-slate-600">Catch up on recent messages.</p>
+            </a>
+        </div>
+    </section>
 
-                <!-- Event Sign-Up (Coming Soon) -->
-                <div class="col-12 col-md-6 col-lg-4">
-                    <div class="gc-card h-100 d-flex flex-column">
-                        <div class="d-flex align-items-start gap-3">
-                            <div class="gc-icon" style="background:#eef7ff; color:#1d4ed8; border-color:#cfe3ff"><i
-                                    class="bi bi-calendar-event"></i></div>
-                            <div>
-                                <div class="gc-title">Event Sign-Up</div>
-                                <div class="gc-desc">Register for upcoming conferences and retreats</div>
-                            </div>
-                        </div>
-                        <div class="mt-3">
-                            <a href="{{ route('events.index') }}" class="btn btn-brand w-100 py-2">Learn More</a>
-
-                        </div>
-                    </div>
+    <section class="border-y border-blue-100 bg-blue-50/40 py-12">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+            <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.25em] text-blue-600">Testimonies</p>
+                    <h2 class="mt-2 text-2xl font-semibold text-slate-900">What God is doing</h2>
                 </div>
-
-                <!-- Believers' Class (Open badge) -->
-                <div class="col-12 col-md-6 col-lg-4">
-                    <div class="gc-card h-100 d-flex flex-column">
-                        <div class="d-flex align-items-start gap-3">
-                            <div class="gc-icon" style="background:#eefcf3; color:#16a34a; border-color:#c7f0d7"><i
-                                    class="bi bi-mortarboard"></i></div>
-                            <div>
-                                <div class="d-flex align-items-center gap-2">
-                                    <div class="gc-title mb-0">Believers' Class</div>
-                                    <span class="badge rounded-pill badge-open">Open</span>
-                                </div>
-                                <div class="gc-desc">Join our faith development program</div>
-                            </div>
-                        </div>
-                        <div class="mt-3">
-                            <a href="{{ route('believers.academy') }}" class="btn btn-brand w-100 py-2">Learn More</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Partnership Inquiry -->
-                <div class="col-12 col-md-6 col-lg-4">
-                    <div class="gc-card h-100 d-flex flex-column">
-                        <div class="d-flex align-items-start gap-3">
-                            <div class="gc-icon" style="background:#f4f1ff; color:#6d28d9; border-color:#e3dbff"><i
-                                    class="bi bi-people"></i></div>
-                            <div>
-                                <div class="gc-title">Partnership Inquiry</div>
-                                <div class="gc-desc">Explore partnership opportunities and learn more on being a
-                                    partner
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mt-3">
-                            <a href="{{ route('home.partnership.index', request()->query()) }}"
-                                class="btn btn-brand w-100 py-2">Apply Now</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Watch Previous Services -->
-                <div class="col-12 col-md-6 col-lg-4">
-                    <div class="gc-card h-100 d-flex flex-column">
-                        <div class="d-flex align-items-start gap-3">
-                            <div class="gc-icon" style="background:#f0f9ff; color:#0ea5e9; border-color:#cfefff"><i
-                                    class="bi bi-play-circle"></i></div>
-                            <div>
-                                <div class="gc-title">Watch Previous Services</div>
-                                <div class="gc-desc">Catch up on recent worship services</div>
-                            </div>
-                        </div>
-                        <div class="mt-3">
-                            <a href="#" class="btn btn-brand w-100 py-2">Watch Now</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="page-end"></div>
-        </main>
-
-        <!-- Testimonies Section (Kept on Home as it's a common feature) -->
-        <section class="mt-5">
-            <h2 class="section-title">Inspiring Testimonies</h2>
-            <div class="testimony-grid">
-                <!-- Testimony 1 -->
-                <div class="testimony-item">
-                    <p>
-                        "God healed me miraculously from a chronic illness after attending
-                        the healing service. I am forever grateful!"
-                    </p>
-                    <p class="author">- Sister Joy Emmanuel</p>
-                </div>
-                <!-- Testimony 2 -->
-                <div class="testimony-item">
-                    <p>
-                        "Through the teachings at Doxa Church, my business experienced
-                        unprecedented growth. To God be the glory!"
-                    </p>
-                    <p class="author">- Brother David Okoro</p>
-                </div>
-                <!-- Add more testimonies as needed -->
-            </div>
-            <div class="share-testimony-wrapper">
-                <p class="victory-report-text"></p>
-                <!-- Modal trigger button -->
-                <button type="button" class="share-testimony-button" data-bs-toggle="modal"
-                    data-bs-target="#modalId">
-                    Share your testiomny
+                <button type="button" class="rounded-full bg-blue-600 px-5 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-blue-700" onclick="openTestimonyModal()">
+                    Share Testimony
                 </button>
             </div>
-        </section>
 
-        <!-- -----CONTACT US/SEND MESSAGE -->
-        <section class=" mt-5 mb-3">
-            <div class="card p-3">
-                <div class="row">
-                    <div class="col-lg-6">
-                        <section id="contact">
-                            <h2 class="section-title">Contact Us</h2>
-                            <div class="contact-grid">
-                                <div class="contact-info">
-                                    <p>
-                                        <i class="fa-solid fa-location-dot"></i>129 Goldie, Adjacent amika
-                                        utuk, Calabar, Cross River State, Nigeria.
-                                    </p>
-                                    <p><i class="fa-solid fa-phone"></i>+234 [Your Phone Number]</p>
-                                    <p>
-                                        <i class="fa-regular fa-envelope"></i>
-                                        <a href="mailto:info@doxachurch.org">info@doxachurch.org</a>
-                                    </p>
-                                    <p><strong>Service Times:</strong></p>
-                                    <ul class="service-times-list">
-                                        <p><b>Sunday we hold four Glory Life services</b></p>
-                                        <li><b>Sundays:</b> 7am, 8:30am, 10am and 4pm</li>
-                                        <p><b>Glory Exprience</b></p>
-                                        <li><b>Thursday:</b> 5:30 PM</li>
-                                    </ul>
-                                </div>
-                                <div class="contact-form-wrapper" id="message">
-                                </div>
-
-                            </div>
+            <div class="grid gap-4 md:grid-cols-2">
+                @forelse($testimonies as $item)
+                    <article class="rounded-2xl border border-blue-100 bg-white p-5 shadow-sm">
+                        <p class="text-sm italic leading-7 text-slate-600">"{{ \Illuminate\Support\Str::limit($item->testimony, 240) }}"</p>
+                        <p class="mt-3 text-sm font-semibold text-slate-800">- {{ $item->name ?: 'Anonymous' }}</p>
+                    </article>
+                @empty
+                    <div class="md:col-span-2 rounded-2xl border border-dashed border-blue-200 bg-white px-6 py-12 text-center">
+                        <p class="text-sm text-slate-500">No approved testimonies yet.</p>
                     </div>
-                    <div class="col-lg-6">
-                        <h3>Send Us a Message</h3>
-                        <form action="">
-                            <div class="row">
-                                <label for="" class="form-label">Name:</label>
-                                <div>
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control " name="formId1" id="formId1"
-                                            placeholder="" />
-                                        <label for="formId1">Name</label>
-                                    </div>
-
-                                </div>
-                                <label for="" class="form-label">Email:</label>
-                                <div>
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control " name="formId1" id="formId1"
-                                            placeholder="" />
-                                        <label for="formId1">Email</label>
-                                    </div>
-
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="" class="form-label">Message</label>
-                                <textarea class="form-control" name="" id="" rows="3"></textarea>
-                            </div>
-                            <input type="submit" value="contact" class="btn btn-sm"
-                                style="background: var(--accent-color); color: white;">
-                        </form>
-                    </div>
-                </div>
+                @endforelse
             </div>
-        </section>
-    </div>
+        </div>
+    </section>
 
-    <!-- All the modals  -->
-    <div class="modal fade" id="modalId" tabindex="-1" role="dialog" aria-labelledby="modalTitleId"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title section-title" id="modalTitleId">
-                        Victory Report Form
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form wire:submit.prevent="submitTestimony">
-                        <div class="row">
-                            <div>
-                                <label for="name" class="form-label">Your Name (Optional)</label>
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" wire:model="name" id="testimonyName"
-                                        placeholder="" />
-                                    <label for="testimonyName">Name</label>
-                                </div>
-                                @error('name')
-                                    <span class="text-danger small">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div>
-                                <label for="testimonyEmail" class="form-label">Your Email *</label>
-                                <div class="form-floating mb-3">
-                                    <input type="email" class="form-control" wire:model="email"
-                                        id="testimonyEmail" placeholder="" required />
-                                    <label for="testimonyEmail">Email</label>
-                                </div>
-                                @error('email')
-                                    <span class="text-danger small">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="testimonyText" class="form-label">Testimony *</label>
-                            <textarea class="form-control" wire:model="testimony" id="testimonyText" rows="5" required></textarea>
-                            @error('testimony')
-                                <span class="text-danger small">{{ $message }}</span>
-                            @enderror
-                        </div>
-                        <div class="mb-3">
-                            <label for="testimonyImage" class="form-label">Choose file (optional)</label>
-                            <input type="file" class="form-control" wire:model="image" id="testimonyImage"
-                                aria-describedby="fileHelpId" accept="image/*" />
-                            <div id="fileHelpId" class="form-text">Upload image (e.g Before and after, Doctor report
-                                etc)</div>
-                            @error('image')
-                                <span class="text-danger small">{{ $message }}</span>
-                            @enderror
-                            @if ($image)
-                                <div class="mt-2">
-                                    <small class="text-success">Image selected:
-                                        {{ $image->getClientOriginalName() }}</small>
-                                </div>
-                            @endif
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" wire:click="submitTestimony"
-                        wire:loading.attr="disabled">
-                        <span wire:loading.remove>Submit Testimony</span>
-                        <span wire:loading>Submitting...</span>
-                    </button>
-                </div>
+    <div id="testimony-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/55 p-4">
+        <div class="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl">
+            <div class="mb-4 flex items-center justify-between">
+                <h3 class="text-xl font-semibold text-slate-900">Share Your Testimony</h3>
+                <button type="button" class="rounded border border-blue-100 px-3 py-1 text-xs font-semibold text-slate-500 hover:text-slate-700" onclick="closeTestimonyModal()">Close</button>
             </div>
+
+            <form wire:submit.prevent="submitTestimony" class="space-y-4">
+                <div>
+                    <label for="testimonyName" class="block text-sm font-medium text-slate-700">Your Name (Optional)</label>
+                    <input id="testimonyName" type="text" wire:model="name" placeholder="Your name" class="mt-2 w-full rounded-xl border border-blue-100 px-4 py-2.5 text-sm focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100">
+                    @error('name')
+                        <span class="text-xs text-red-500">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <div>
+                    <label for="testimonyEmail" class="block text-sm font-medium text-slate-700">Your Email</label>
+                    <input id="testimonyEmail" type="email" wire:model="email" placeholder="you@example.com" class="mt-2 w-full rounded-xl border border-blue-100 px-4 py-2.5 text-sm focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100" required>
+                    @error('email')
+                        <span class="text-xs text-red-500">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <div>
+                    <label for="testimonyText" class="block text-sm font-medium text-slate-700">Testimony</label>
+                    <textarea id="testimonyText" rows="5" wire:model="testimony" placeholder="Share your testimony..." class="mt-2 w-full rounded-xl border border-blue-100 px-4 py-2.5 text-sm focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100" required></textarea>
+                    @error('testimony')
+                        <span class="text-xs text-red-500">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <div>
+                    <label for="testimonyImage" class="block text-sm font-medium text-slate-700">Image (Optional)</label>
+                    <input id="testimonyImage" type="file" wire:model="image" accept="image/*" class="mt-2 w-full rounded-xl border border-blue-100 px-4 py-2 text-sm file:mr-4 file:rounded-md file:border-0 file:bg-blue-50 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-blue-700 hover:file:bg-blue-100">
+                    @error('image')
+                        <span class="text-xs text-red-500">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" class="rounded-xl border border-blue-100 px-4 py-2 text-sm font-medium text-slate-600 hover:bg-blue-50" onclick="closeTestimonyModal()">Cancel</button>
+                    <button type="submit" class="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">Submit</button>
+                </div>
+            </form>
         </div>
     </div>
 
-
-    <!-- Optional: Place to the bottom of scripts -->
     <script>
-        const myModal = new bootstrap.Modal(
-            document.getElementById("modalId"),
-            // opti/ons,
-        );
-
-        // Listen for testimony submission success
-        document.addEventListener('livewire:init', () => {
-            Livewire.on('testimony-submitted', () => {
-                // Close modal
-                const modal = bootstrap.Modal.getInstance(document.getElementById('modalId'));
-                if (modal) {
-                    modal.hide();
-                }
-                // Show success alert
-                alert('Thank you for sharing your testimony! It will be reviewed before being published.');
-            });
-        });
-    </script>
-
-    @fluxScripts
-
-    <!-- COUNTDOWN -->
-    <script>
-        function getNextSundayService() {
-            const now = new Date();
-            const sundayMorning = new Date();
-            sundayMorning.setDate(now.getDate() + ((0 + 7 - now.getDay()) % 7));
-            sundayMorning.setHours(8, 0, 0, 0);
-            const sundayEvening = new Date(sundayMorning);
-            sundayEvening.setHours(16, 0, 0, 0);
-
-            if (now < sundayMorning) return sundayMorning;
-            if (now >= sundayMorning && now < new Date(sundayMorning.getTime() + 5 * 60 * 60 * 1000)) {
-                // Service ongoing until 1 PM, show countdown to evening
-                return sundayEvening;
+        function parseServiceWindow(dayName, startTime, endTime) {
+            if (!dayName || !startTime || !endTime) {
+                return null;
             }
-            if (now < sundayEvening) return sundayEvening;
 
-            // After evening service, go to next week's morning
-            sundayMorning.setDate(sundayMorning.getDate() + 7);
-            return sundayMorning;
-        }
+            const dayMap = {
+                sunday: 0,
+                monday: 1,
+                tuesday: 2,
+                wednesday: 3,
+                thursday: 4,
+                friday: 5,
+                saturday: 6,
+            };
 
-        function getNextOccurrence(dayOfWeek, hour, minute) {
+            const targetDay = dayMap[dayName.toLowerCase()];
+            if (typeof targetDay === 'undefined') {
+                return null;
+            }
+
             const now = new Date();
-            let result = new Date();
-            result.setDate(now.getDate() + ((dayOfWeek + 7 - now.getDay()) % 7));
-            result.setHours(hour, minute, 0, 0);
-            if (result < now) result.setDate(result.getDate() + 7);
-            return result;
+            const [startHour, startMinute] = startTime.split(':').map(Number);
+            const [endHour, endMinute] = endTime.split(':').map(Number);
+
+            const start = new Date(now);
+            const dayOffset = (targetDay - now.getDay() + 7) % 7;
+            start.setDate(now.getDate() + dayOffset);
+            start.setHours(startHour, startMinute, 0, 0);
+
+            const end = new Date(start);
+            end.setHours(endHour, endMinute, 0, 0);
+            if (end <= start) {
+                end.setDate(end.getDate() + 1);
+            }
+
+            if (now > end) {
+                start.setDate(start.getDate() + 7);
+                end.setDate(end.getDate() + 7);
+            }
+
+            return { start, end };
         }
 
-        function updateCountdown(elementId, targetDate) {
-            const now = new Date().getTime();
-            const distance = targetDate - now;
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-            document.getElementById(elementId).textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+        function formatDuration(ms) {
+            if (ms <= 0) {
+                return 'now';
+            }
+
+            const totalMinutes = Math.floor(ms / 60000);
+            const days = Math.floor(totalMinutes / (60 * 24));
+            const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
+            const minutes = totalMinutes % 60;
+
+            if (days > 0) {
+                return `${days}d ${hours}h`;
+            }
+
+            if (hours > 0) {
+                return `${hours}h ${minutes}m`;
+            }
+
+            return `${Math.max(1, minutes)}m`;
         }
 
-        function startCountdowns() {
-            setInterval(() => {
-                updateCountdown('sunday-countdown', getNextSundayService());
-                updateCountdown('thursday-countdown', getNextOccurrence(4, 17, 30));
-            }, 1000);
+        function updateServiceStatuses() {
+            const cards = document.querySelectorAll('.service-card');
+            const now = new Date();
+
+            cards.forEach((card) => {
+                const day = card.dataset.serviceDay;
+                const startTime = card.dataset.serviceStart;
+                const endTime = card.dataset.serviceEnd;
+                const chip = card.querySelector('.service-status');
+                if (!chip) {
+                    return;
+                }
+
+                const window = parseServiceWindow(day, startTime, endTime);
+                if (!window) {
+                    chip.textContent = 'Schedule needed';
+                    chip.className = 'service-status rounded-full border border-slate-200 bg-slate-100 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-slate-600';
+                    card.classList.remove('border-green-300', 'bg-green-50/40');
+                    return;
+                }
+
+                if (now >= window.start && now < window.end) {
+                    const remaining = formatDuration(window.end - now);
+                    chip.textContent = `Ongoing • ${remaining} left`;
+                    chip.className = 'service-status rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-emerald-700';
+                    card.classList.add('border-emerald-200', 'bg-emerald-50/30');
+                    return;
+                }
+
+                const untilStart = formatDuration(window.start - now);
+                chip.textContent = `Starts in ${untilStart}`;
+                chip.className = 'service-status rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-blue-700';
+                card.classList.remove('border-emerald-200', 'bg-emerald-50/30');
+            });
         }
 
-        startCountdowns();
+        function openTestimonyModal() {
+            const modal = document.getElementById('testimony-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        }
+
+        function closeTestimonyModal() {
+            const modal = document.getElementById('testimony-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        const testimonyModal = document.getElementById('testimony-modal');
+        if (testimonyModal) {
+            testimonyModal.addEventListener('click', function (e) {
+                if (e.target === testimonyModal) {
+                    closeTestimonyModal();
+                }
+            });
+        }
+
+        updateServiceStatuses();
+        setInterval(updateServiceStatuses, 60000);
+        document.addEventListener('livewire:navigated', updateServiceStatuses);
     </script>
-    </body>
-
-    </html>
 </div>

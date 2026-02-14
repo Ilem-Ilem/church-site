@@ -13,7 +13,18 @@ new #[Layout('components.layouts.admin')] class extends Component {
     public function mount()
     {
         $user = Auth::user();
-        if ($user->hasRole('team-lead')) {
+        $chapterName = request()->query('chapter');
+
+        if ($user->hasRole('super-admin')) {
+            if ($chapterName) {
+                $chapter = Chapter::where('name', '=', $chapterName)->first();
+                $this->total_members = $chapter ? User::where('chapter_id', $chapter->id)->count() : 0;
+            } else {
+                // Default to first chapter or global
+                $chapter = Chapter::first();
+                $this->total_members = $chapter ? User::where('chapter_id', $chapter->id)->count() : 0;
+            }
+        } elseif ($user->hasRole('team-lead')) {
             // Get the IDs of the teams where the user is the team-lead
             $teamIds = $user->teams
                 ->filter(fn($team) => $team->pivot->role_in_team === 'team-lead')
@@ -21,8 +32,9 @@ new #[Layout('components.layouts.admin')] class extends Component {
 
             // Count all users who belong to these teams
             $this->total_members = User::whereHas('teams', fn($q) => $q->whereIn('teams.id', $teamIds))->count();
-        }else{
-            $this->total_members = User::where('chapter_id', '=', Chapter::where('name', '=', request()->query('chapter'))->first()->id)->count();
+        } else {
+            // Regular admin or others, use their chapter
+            $this->total_members = User::where('chapter_id', $user->chapter_id)->count();
         }
     }
 }; ?>

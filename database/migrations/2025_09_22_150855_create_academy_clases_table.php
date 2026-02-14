@@ -17,7 +17,7 @@ return new class extends Migration
             $table->date('date');
             $table->string('time');
             $table->text('description')->nullable();
-            $table->foreignId('academy_id')->constrained('belivers_academies', 'id')->cascadeOnDelete();
+            $table->foreignId('academy_id')->constrained('believers_academies', 'id')->cascadeOnDelete();
             $table->text('study_material')->nullable();
             $table->foreignId('tutor')->constrained('users', 'id')->cascadeOnDelete();
             $table->timestamps();

@@ -27,7 +27,7 @@ TODO: Add Active route indicators
         </flux:navlist>
         <flux:navlist variant="outline">
 
-            @role(['admin', 'team-lead', 'lead-assist'])
+             @role(['admin', 'team-lead', 'lead-assist', 'super-admin'])
             <flux:navlist.group expandable heading="Members"
                 :expanded="request()->routeIs('admin.dashboard.members.*') ? 'true' : 'false'">
                 <flux:navlist.item :href="route('admin.dashboard.members', ['chapter' => request()->get('chapter')])"
@@ -51,7 +51,7 @@ TODO: Add Active route indicators
             {{-- Report Group --}}
             
             @endrole
-            @role('admin')
+             @role(['admin', 'super-admin'])
             {{-- Teams Group --}}
             <flux:navlist.group expandable heading="Teams"
                 :expanded=" request()->routeIs('admin.dashboard.teams.*') ? 'true' : 'false' ">
@@ -172,6 +172,7 @@ TODO: Add Active route indicators
         </flux:dropdown>
     </flux:header>
     <flux:main class="dark:bg-zinc-800">
+        <livewire:admin.components.chapter-switcher />
         <x-toast />
         <x-dialog />
         {{ $slot }}

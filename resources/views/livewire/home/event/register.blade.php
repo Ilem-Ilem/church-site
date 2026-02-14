@@ -2,7 +2,6 @@
 
 use App\Models\EventForm;
 use App\Models\Events;
-use App\Models\User;
 use App\Notifications\EventRegistered;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
@@ -10,7 +9,7 @@ use Livewire\Volt\Component;
 use Livewire\WithFileUploads;
 use TallStackUi\Traits\Interactions;
 
-new #[Layout('components.layouts.layout')] class extends Component
+new #[Layout('components.layouts.tailwind-layout')] class extends Component
 {
     use Interactions, WithFileUploads;
 
@@ -31,23 +30,20 @@ new #[Layout('components.layouts.layout')] class extends Component
 
         $this->event = Events::findOrFail($this->event_id);
 
-        // Check if event requires registration
         if (! $this->event->registration_required) {
             abort(403, 'This event does not require registration');
         }
 
-        // Check if registration is open using the model method
         if (! $this->event->isRegistrationOpen()) {
             if ($this->event->status !== 'published') {
                 abort(403, 'This event is not currently published');
             }
-            
+
             if ($this->event->hasStarted()) {
                 abort(403, 'Registration for this event has closed. The event has already started.');
             }
         }
 
-        // Check capacity
         if ($this->event->isAtCapacity()) {
             abort(403, 'This event has reached maximum capacity. No more registrations can be accepted.');
         }
@@ -55,7 +51,6 @@ new #[Layout('components.layouts.layout')] class extends Component
 
     public function submit()
     {
-        // Build validation rules dynamically based on form schema
         $rules = [];
         $messages = [];
 
@@ -69,7 +64,6 @@ new #[Layout('components.layouts.layout')] class extends Component
                     $fieldRules[] = 'nullable';
                 }
 
-                // Add type-specific validation
                 switch ($field['type']) {
                     case 'email':
                         $fieldRules[] = 'email';
@@ -82,7 +76,7 @@ new #[Layout('components.layouts.layout')] class extends Component
                         break;
                     case 'file':
                         $fieldRules[] = 'file';
-                        $fieldRules[] = 'max:10240'; // 10MB
+                        $fieldRules[] = 'max:10240';
                         break;
                     case 'phone':
                         $fieldRules[] = 'string';
@@ -101,7 +95,6 @@ new #[Layout('components.layouts.layout')] class extends Component
         $this->validate($rules, $messages);
 
         try {
-            // Handle file uploads
             $processedData = [];
             foreach ($this->formData as $key => $value) {
                 if ($value instanceof \Illuminate\Http\UploadedFile) {
@@ -112,12 +105,10 @@ new #[Layout('components.layouts.layout')] class extends Component
                 }
             }
 
-            // Extract name and email for top-level fields
             $name = $processedData['name'] ?? $processedData['full_name'] ?? 'Unknown';
             $email = $processedData['email'] ?? null;
             $phone = $processedData['phone'] ?? null;
 
-            // Create event form submission
             EventForm::create([
                 'event_id' => $this->event_id,
                 'chapter_id' => $this->event->chapter_id,
@@ -130,10 +121,8 @@ new #[Layout('components.layouts.layout')] class extends Component
                 'status' => 'confirmed',
             ]);
 
-            // If user is authenticated, also create AccountEvent record
             $user = auth()->user();
             if ($user && $user->account) {
-                // Check if account is not already registered
                 $existingRegistration = \App\Models\AccountEvent::where('account_id', $user->account->id)
                     ->where('event_id', $this->event_id)
                     ->first();
@@ -147,7 +136,6 @@ new #[Layout('components.layouts.layout')] class extends Component
                     ]);
                 }
 
-                // Notify event team/organizer
                 $eventTeam = $this->event->eventTeams()->first();
                 if ($eventTeam && $eventTeam->team) {
                     $teamLead = $eventTeam->team->leader()->with('user')->first();
@@ -171,7 +159,7 @@ new #[Layout('components.layouts.layout')] class extends Component
             \Log::error('Event registration failed', [
                 'event_id' => $this->event_id,
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
             $this->toast()
@@ -183,300 +171,180 @@ new #[Layout('components.layouts.layout')] class extends Component
 
 ?>
 
-<style>
-    .registration-page {
-        min-height: 100vh;
-        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-        padding-top: 3rem;
-        padding-bottom: 3rem;
-    }
+<div class="bg-white py-10 sm:py-14">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+        <article class="overflow-hidden rounded-3xl border border-blue-100 bg-white shadow-sm">
+            @if($event->banner)
+                <img src="{{ Storage::url($event->banner) }}" alt="{{ $event->title }}" class="h-60 w-full object-cover sm:h-72">
+            @endif
 
-    .event-header-card {
-        border: none;
-        border-radius: 1.5rem;
-        overflow: hidden;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-    }
+            <div class="space-y-5 p-6 sm:p-8">
+                <p class="text-xs font-semibold uppercase tracking-[0.25em] text-blue-600">Event Registration</p>
+                <h1 class="text-3xl font-semibold text-slate-900">{{ $event->title }}</h1>
 
-    .event-banner {
-        height: 280px;
-        object-fit: cover;
-        width: 100%;
-    }
+                @if($event->description)
+                    <p class="text-sm leading-7 text-slate-600">{{ $event->description }}</p>
+                @endif
 
-    .form-card {
-        border: none;
-        border-radius: 1.5rem;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-    }
-
-    .event-info-icon {
-        font-size: 1.25rem;
-        color: #667eea;
-        margin-right: 0.5rem;
-    }
-
-    .form-control, .form-select {
-        border-radius: 0.75rem;
-        padding: 0.75rem 1rem;
-        border: 1px solid #dee2e6;
-    }
-
-    .form-control:focus, .form-select:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
-    }
-
-    .btn-register {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        border-radius: 0.75rem;
-        padding: 0.875rem 2rem;
-        font-weight: 600;
-        transition: all 0.3s ease;
-    }
-
-    .btn-register:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-    }
-
-    .form-check-input:checked {
-        background-color: #667eea;
-        border-color: #667eea;
-    }
-
-    .back-link {
-        color: #667eea;
-        text-decoration: none;
-        font-weight: 500;
-    }
-
-    .back-link:hover {
-        text-decoration: underline;
-    }
-</style>
-
-<div class="registration-page">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-8 col-md-10">
-                <!-- Event Header -->
-                <div class="card event-header-card mb-4">
-                    @if($event->banner)
-                        <img src="{{ Storage::url($event->banner) }}" alt="{{ $event->title }}" class="event-banner">
+                <div class="grid gap-3 text-sm text-slate-600 sm:grid-cols-2">
+                    <p><span class="font-semibold text-slate-800">Date:</span> {{ $event->start_at->format('F j, Y') }}</p>
+                    <p>
+                        <span class="font-semibold text-slate-800">Time:</span>
+                        {{ $event->start_at->format('g:i A') }}
+                        @if($event->end_at)
+                            - {{ $event->end_at->format('g:i A') }}
+                        @endif
+                        @if($event->timezone)
+                            ({{ $event->timezone }})
+                        @endif
+                    </p>
+                    @if($event->location)
+                        <p><span class="font-semibold text-slate-800">Location:</span> {{ $event->location }}</p>
                     @endif
+                    @if($event->chapter)
+                        <p><span class="font-semibold text-slate-800">Chapter:</span> {{ $event->chapter->name }}</p>
+                    @endif
+                    @if($event->is_online)
+                        <p class="sm:col-span-2"><span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">Online Event</span></p>
+                    @endif
+                </div>
+            </div>
+        </article>
 
-                    <div class="card-body p-4 p-md-5">
-                        <h1 class="display-5 fw-bold mb-3">{{ $event->title }}</h1>
+        <section class="mt-6 rounded-3xl border border-blue-100 bg-white p-6 shadow-sm sm:p-8">
+            <h2 class="text-2xl font-semibold text-slate-900">Complete Your Registration</h2>
 
-                        @if($event->description)
-                            <p class="text-muted mb-4 fs-6">{{ $event->description }}</p>
-                        @endif
+            @if(session('success'))
+                <div class="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                    {{ session('success') }}
+                </div>
+            @endif
 
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="d-flex align-items-center text-muted">
-                                    <i class="bi bi-calendar-event event-info-icon"></i>
-                                    <span>{{ $event->start_at->format('F j, Y') }}</span>
-                                </div>
-                            </div>
+            <form wire:submit.prevent="submit" class="mt-6 space-y-5">
+                @if($event->form_schema)
+                    @foreach($event->form_schema as $field)
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700">
+                                {{ $field['label'] }}
+                                @if($field['required'] ?? false)
+                                    <span class="text-rose-600">*</span>
+                                @endif
+                            </label>
 
-                            <div class="col-md-6">
-                                <div class="d-flex align-items-center text-muted">
-                                    <i class="bi bi-clock event-info-icon"></i>
-                                    <span>
-                                        {{ $event->start_at->format('g:i A') }}
-                                        @if($event->end_at)
-                                            - {{ $event->end_at->format('g:i A') }}
+                            @if($field['description'] ?? false)
+                                <p class="mt-1 text-xs text-slate-500">{{ $field['description'] }}</p>
+                            @endif
+
+                            @switch($field['type'])
+                                @case('textarea')
+                                    <textarea
+                                        wire:model="formData.{{ $field['name'] }}"
+                                        placeholder="{{ $field['placeholder'] ?? '' }}"
+                                        rows="4"
+                                        class="mt-2 w-full rounded-2xl border border-blue-100 px-4 py-3 text-sm text-slate-700 placeholder:text-slate-400 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                                    ></textarea>
+                                    @break
+
+                                @case('select')
+                                    <select
+                                        wire:model="formData.{{ $field['name'] }}"
+                                        class="mt-2 w-full rounded-2xl border border-blue-100 px-4 py-3 text-sm text-slate-700 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                                    >
+                                        <option value="">Select an option...</option>
+                                        @if(isset($field['options']))
+                                            @foreach($field['options'] as $option)
+                                                <option value="{{ $option }}">{{ $option }}</option>
+                                            @endforeach
                                         @endif
-                                        @if($event->timezone)
-                                            <small class="text-muted">({{ $event->timezone }})</small>
+                                    </select>
+                                    @break
+
+                                @case('radio')
+                                    <div class="mt-3 space-y-2">
+                                        @if(isset($field['options']))
+                                            @foreach($field['options'] as $option)
+                                                <label for="radio_{{ $field['name'] }}_{{ $loop->index }}" class="flex items-center gap-2 text-sm text-slate-700">
+                                                    <input
+                                                        id="radio_{{ $field['name'] }}_{{ $loop->index }}"
+                                                        type="radio"
+                                                        wire:model="formData.{{ $field['name'] }}"
+                                                        value="{{ $option }}"
+                                                        class="h-4 w-4 border-blue-200 text-blue-600 focus:ring-blue-200"
+                                                    >
+                                                    <span>{{ $option }}</span>
+                                                </label>
+                                            @endforeach
                                         @endif
-                                    </span>
-                                </div>
-                            </div>
-
-                            @if($event->location)
-                                <div class="col-md-6">
-                                    <div class="d-flex align-items-center text-muted">
-                                        <i class="bi bi-geo-alt event-info-icon"></i>
-                                        <span>{{ $event->location }}</span>
                                     </div>
-                                </div>
-                            @endif
+                                    @break
 
-                            @if($event->is_online)
-                                <div class="col-md-6">
-                                    <div class="d-flex align-items-center" style="color: #667eea;">
-                                        <i class="bi bi-camera-video event-info-icon"></i>
-                                        <span class="fw-semibold">Online Event</span>
+                                @case('checkbox')
+                                    <div class="mt-3 space-y-2">
+                                        @if(isset($field['options']))
+                                            @foreach($field['options'] as $option)
+                                                <label for="checkbox_{{ $field['name'] }}_{{ $loop->index }}" class="flex items-center gap-2 text-sm text-slate-700">
+                                                    <input
+                                                        id="checkbox_{{ $field['name'] }}_{{ $loop->index }}"
+                                                        type="checkbox"
+                                                        wire:model="formData.{{ $field['name'] }}.{{ $loop->index }}"
+                                                        value="{{ $option }}"
+                                                        class="h-4 w-4 rounded border-blue-200 text-blue-600 focus:ring-blue-200"
+                                                    >
+                                                    <span>{{ $option }}</span>
+                                                </label>
+                                            @endforeach
+                                        @endif
                                     </div>
-                                </div>
-                            @endif
+                                    @break
 
-                            @if($event->chapter)
-                                <div class="col-md-6">
-                                    <div class="d-flex align-items-center text-muted">
-                                        <i class="bi bi-building event-info-icon"></i>
-                                        <span>{{ $event->chapter->name }}</span>
-                                    </div>
-                                </div>
-                            @endif
+                                @case('file')
+                                    <input
+                                        type="file"
+                                        wire:model="formData.{{ $field['name'] }}"
+                                        class="mt-2 block w-full rounded-2xl border border-blue-100 px-4 py-2.5 text-sm text-slate-700 file:mr-4 file:rounded-full file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-xs file:font-semibold file:text-blue-700 hover:file:bg-blue-100 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                                    >
+                                    <p class="mt-1 text-xs text-slate-500">Maximum file size: 10MB</p>
+                                    @break
+
+                                @default
+                                    <input
+                                        type="{{ $field['type'] }}"
+                                        wire:model="formData.{{ $field['name'] }}"
+                                        placeholder="{{ $field['placeholder'] ?? '' }}"
+                                        class="mt-2 w-full rounded-2xl border border-blue-100 px-4 py-3 text-sm text-slate-700 placeholder:text-slate-400 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                                    >
+                            @endswitch
+
+                            @error('formData.' . $field['name'])
+                                <p class="mt-1 text-xs text-rose-600">{{ $message }}</p>
+                            @enderror
                         </div>
-                    </div>
-                </div>
-
-                <!-- Registration Form -->
-                <div class="card form-card">
-                    <div class="card-body p-4 p-md-5">
-                        <h2 class="h3 fw-bold mb-4">Register for this Event</h2>
-
-                        @if(session('success'))
-                            <div class="alert alert-success border-0 rounded-3 mb-4" role="alert">
-                                <i class="bi bi-check-circle-fill me-2"></i>
-                                {{ session('success') }}
-                            </div>
-                        @endif
-
-                        <form wire:submit.prevent="submit">
-                            @if($event->form_schema)
-                                @foreach($event->form_schema as $field)
-                                    <div class="mb-4">
-                                        <label class="form-label fw-semibold">
-                                            {{ $field['label'] }}
-                                            @if($field['required'] ?? false)
-                                                <span class="text-danger">*</span>
-                                            @endif
-                                        </label>
-
-                                        @if($field['description'] ?? false)
-                                            <p class="text-muted small mb-2">{{ $field['description'] }}</p>
-                                        @endif
-
-                                        @switch($field['type'])
-                                            @case('textarea')
-                                                <textarea
-                                                    wire:model="formData.{{ $field['name'] }}"
-                                                    placeholder="{{ $field['placeholder'] ?? '' }}"
-                                                    class="form-control"
-                                                    rows="4"
-                                                ></textarea>
-                                                @break
-
-                                            @case('select')
-                                                <select
-                                                    wire:model="formData.{{ $field['name'] }}"
-                                                    class="form-select"
-                                                >
-                                                    <option value="">Select an option...</option>
-                                                    @if(isset($field['options']))
-                                                        @foreach($field['options'] as $option)
-                                                            <option value="{{ $option }}">{{ $option }}</option>
-                                                        @endforeach
-                                                    @endif
-                                                </select>
-                                                @break
-
-                                            @case('radio')
-                                                <div>
-                                                    @if(isset($field['options']))
-                                                        @foreach($field['options'] as $option)
-                                                            <div class="form-check mb-2">
-                                                                <input
-                                                                    class="form-check-input"
-                                                                    type="radio"
-                                                                    wire:model="formData.{{ $field['name'] }}"
-                                                                    value="{{ $option }}"
-                                                                    id="radio_{{ $field['name'] }}_{{ $loop->index }}"
-                                                                >
-                                                                <label class="form-check-label" for="radio_{{ $field['name'] }}_{{ $loop->index }}">
-                                                                    {{ $option }}
-                                                                </label>
-                                                            </div>
-                                                        @endforeach
-                                                    @endif
-                                                </div>
-                                                @break
-
-                                            @case('checkbox')
-                                                <div>
-                                                    @if(isset($field['options']))
-                                                        @foreach($field['options'] as $option)
-                                                            <div class="form-check mb-2">
-                                                                <input
-                                                                    class="form-check-input"
-                                                                    type="checkbox"
-                                                                    wire:model="formData.{{ $field['name'] }}.{{ $loop->index }}"
-                                                                    value="{{ $option }}"
-                                                                    id="checkbox_{{ $field['name'] }}_{{ $loop->index }}"
-                                                                >
-                                                                <label class="form-check-label" for="checkbox_{{ $field['name'] }}_{{ $loop->index }}">
-                                                                    {{ $option }}
-                                                                </label>
-                                                            </div>
-                                                        @endforeach
-                                                    @endif
-                                                </div>
-                                                @break
-
-                                            @case('file')
-                                                <input
-                                                    type="file"
-                                                    wire:model="formData.{{ $field['name'] }}"
-                                                    class="form-control"
-                                                />
-                                                <div class="form-text">Maximum file size: 10MB</div>
-                                                @break
-
-                                            @default
-                                                <input
-                                                    type="{{ $field['type'] }}"
-                                                    wire:model="formData.{{ $field['name'] }}"
-                                                    placeholder="{{ $field['placeholder'] ?? '' }}"
-                                                    class="form-control"
-                                                />
-                                        @endswitch
-
-                                        @error('formData.' . $field['name'])
-                                            <div class="text-danger small mt-1">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                @endforeach
-                            @else
-                                <div class="alert alert-info border-0 rounded-3">
-                                    <i class="bi bi-info-circle-fill me-2"></i>
-                                    No registration form has been configured for this event.
-                                </div>
-                            @endif
-
-                            @if($event->form_schema)
-                                <div class="d-grid gap-2 mt-4">
-                                    <button type="submit" class="btn btn-primary btn-lg btn-register">
-                                        <i class="bi bi-check-circle me-2"></i>
-                                        Complete Registration
-                                    </button>
-                                </div>
-                            @endif
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Info Box -->
-                @if($event->hasStarted())
-                    <div class="alert alert-success border-0 rounded-3 mt-4">
-                        <i class="bi bi-images me-2"></i>
-                        <strong>Event Underway!</strong> View photos from the event in the gallery once registration is complete.
+                    @endforeach
+                @else
+                    <div class="rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700">
+                        No registration form has been configured for this event.
                     </div>
                 @endif
 
-                <!-- Back Link -->
-                <div class="text-center mt-4">
-                    <a href="{{ route('home') }}" class="back-link">
-                        <i class="bi bi-arrow-left me-1"></i> Back to Home
-                    </a>
+                @if($event->form_schema)
+                    <button
+                        type="submit"
+                        class="inline-flex w-full items-center justify-center rounded-2xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
+                    >
+                        Complete Registration
+                    </button>
+                @endif
+            </form>
+
+            @if($event->hasStarted())
+                <div class="mt-6 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700">
+                    Event underway: photos may be available in the event gallery.
                 </div>
+            @endif
+
+            <div class="mt-6 text-center">
+                <a href="{{ route('home') }}" wire:navigate class="text-sm font-medium text-blue-700 transition hover:text-blue-800">Back to Home</a>
             </div>
-        </div>
+        </section>
     </div>
 </div>

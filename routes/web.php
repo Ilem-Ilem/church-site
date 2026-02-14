@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
+use App\Http\Controllers\CertificateController;
 
 Volt::route('/', 'home.landing')->name('home');
 
@@ -37,6 +38,13 @@ Volt::route('location', 'home.location.index')->name('location.index');
 Volt::route('believers_academy', 'home.believers.index')->name('believers.academy');
 Volt::route('believers_academy/register', 'home.believers.register')->name('believers_academy.register');
 Volt::route('believers_academy/dashboard', 'home.believers.dashboard')->name('believers_academy.dashboard');
+//-----------------------------------------------------------------------------------
+//CERTIFICATE ROUTES
+//-----------------------------------------------------------------------------------
+Route::middleware('auth')->group(function () {
+    Route::get('certificate/form', [CertificateController::class, 'showForm'])->name('certificate.form');
+    Route::get('certificate/generate', [CertificateController::class, 'generateCertificate'])->name('certificate.generate');
+});
 //-----------------------------------------------------------------------------------
 //pARTNERSHIP ROUTES
 //------------------------------------------------------------------------------------

@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
+use setasign\Fpdi\Fpdi;
 
 class CertificateController extends Controller
 {
@@ -15,38 +16,53 @@ class CertificateController extends Controller
 
     public function generateCertificate(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'date' => 'required|date',
-        ]);
+        $name = $request->query('name');
+        $requestedDate = $request->query('date');
 
-        $name = $request->input('name');
-        $requestedDate = $request->input('date');
-        $originalImagePath = public_path('certificate_template.jpg'); // Ensure you upload the certificate image to public/
+        if (!$name || !$requestedDate) {
+            abort(400, 'Name and date required');
+        }
 
-        $img = Image::make($originalImagePath);
+        $user = Auth::user();
+        $chapterId = $user->chapter_id;
+        $academy = \App\Models\BelieversAcademy::where('chapter_id', $chapterId)->first();
 
-        // Assuming the original name "Jacob Doris" is at a specific position
-        $img->text($name, 400, 300, function ($font) {
-            $font->file(public_path('fonts/arial.ttf')); // Use a font similar to the certificate
-            $font->size(50);
-            $font->color('#1e3a8a');
-            $font->align('center');
-            $font->valign('top');
-        });
+        if (!$academy || !$academy->certificate_template) {
+            abort(404, 'Certificate template not found for your chapter');
+        }
 
-        // Replace the date "Aug. 4th, 2024" at its position
-        $img->text($requestedDate, 400, 400, function ($font) {
-            $font->file(public_path('fonts/arial.ttf'));
-            $font->size(20);
-            $font->color('#dc2626');
-            $font->align('center');
-            $font->valign('top');
-        });
+        $templatePath = Storage::disk('public')->path($academy->certificate_template);
 
-        $fileName = 'certificate_' . str_replace(' ', '_', strtolower($name)) . '_' . now()->timestamp . '.jpg';
-        $img->save(storage_path('app/public/certificates/' . $fileName));
+        if (!file_exists($templatePath)) {
+            abort(404, 'Certificate template file not found');
+        }
 
-        return response()->download(storage_path('app/public/certificates/' . $fileName))->deleteFileAfterSend(true);
+        // Create new PDF
+        $pdf = new Fpdi();
+
+        // Import the template
+        $pageCount = $pdf->setSourceFile($templatePath);
+        $tplIdx = $pdf->importPage(1);
+
+        // Add a page
+        $pdf->AddPage();
+        $pdf->useTemplate($tplIdx);
+
+        // Set font
+        $pdf->SetFont('Arial', 'B', 24);
+        $pdf->SetTextColor(30, 58, 138); // Blue
+
+        // Add name (adjust position as needed)
+        $pdf->SetXY(50, 100); // Adjust coordinates
+        $pdf->Cell(0, 10, $name, 0, 1, 'C');
+
+        // Add date
+        $pdf->SetFont('Arial', '', 16);
+        $pdf->SetTextColor(220, 38, 38); // Red
+        $pdf->SetXY(50, 120); // Adjust
+        $pdf->Cell(0, 10, 'Completed on: ' . $requestedDate, 0, 1, 'C');
+
+        // Output the PDF
+        $pdf->Output('I', 'certificate.pdf');
     }
 }

@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Series - Doxa Commission</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1e3a8a',
+                        'primary-light': '#3b82f6',
+                        'primary-dark': '#1e40af',
+                        accent: '#f59e0b',
+                        'accent-light': '#fbbf24',
+                        text: '#1f2937',
+                        'text-light': '#6b7280',
+                    },
+                    fontFamily: {
+                        'poppins': ['Poppins', 'sans-serif'],
+                    },
+                    spacing: {
+                        '18': '4.5rem',
+                        '88': '22rem',
+                        '128': '32rem',
+                    },
+                    backdropBlur: {
+                        'glass': '25px',
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.8s ease-in-out',
+                        'slide-up': 'slideUp 0.6s ease-out',
+                        'scale-in': 'scaleIn 0.5s ease-out',
+                    },
+                    boxShadow: {
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
+                        'soft': '0 4px 20px rgba(0, 0, 0, 0.08)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            @keyframes slideUp {
+                from { 
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to { 
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        }
+          :root {
+            --primary: #3b82f6;
+            --secondary: #4b5563;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        /* Series card animations */
+        .series-card {
+            transition: all 0.3s ease;
+        }
+        
+        .series-card:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        /* Glassmorphic effect */
+        .glassmorphic {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .glassmorphic-strong {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Animation for grid items */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+        
+        /* Mobile bottom navigation */
+        .mobile-nav {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-nav {
+                display: flex;
+            }
+            
+            body {
+                padding-bottom: 80px;
+            }
+        }
+        
+        /* Hover overlay effect - shows folder icon */
+        .series-overlay {
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .series-card:hover .series-overlay {
+            opacity: 1;
+        }
+        
+        /* Series info always visible */
+        .series-info {
+            transition: all 0.3s ease;
+        }
+        
+        .series-card:hover .series-info {
+            opacity: 0;
+        }
+                /* Social media hover effects */
+        .social-facebook:hover {
+            background-color: white !important;
+        }
+
+        .social-facebook:hover i {
+            color: #3b5998 !important;
+        }
+
+        .social-instagram:hover {
+            background-color: white !important;
+        }
+
+        .social-instagram:hover i {
+            color: #E1306C !important;
+        }
+
+        .social-youtube:hover {
+            background-color: white !important;
+        }
+
+        .social-youtube:hover i {
+            color: #FF0000 !important;
+        }
+
+        .social-tiktok:hover {
+            background-color: white !important;
+        }
+
+        .social-tiktok:hover i {
+            color: #000000 !important;
+        }
+
+        .social-spotify:hover {
+            background-color: white !important;
+        }
+
+        .social-spotify:hover i {
+            color: #1DB954 !important;
+        }
+    </style>
+
+</head>
+
+<body class="bg-gray-50">
+    <!-- Desktop Navbar -->
+    <nav class="hidden lg:flex items-center justify-between px-8 py-5 bg-white shadow-md sticky top-0 z-50">
+        <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center">
+                <img src="img/doxa.PNG" alt="logo">
+            </div>
+            <span class="text-xl font-bold text-primary">Doxa Commission Global</span>
+        </div>
+
+        <div class="flex space-x-10">
+            <a href="index.html"
+                class="font-medium text-gray-600 hover:text-primary transition-colors duration-300">Home</a>
+            <a href="message.html" class="font-medium text-primary border-b-2 border-primary pb-1">Message</a>
+            <a href="about.html"
+                class="font-medium text-gray-600 hover:text-primary transition-colors duration-300">About</a>
+            <a href="cell.html"
+                class="font-medium text-gray-600 hover:text-primary transition-colors duration-300">Cell</a>
+            <a href="event.html"
+                class="font-medium text-gray-600 hover:text-primary transition-colors duration-300">Event</a>
+            <a href="location.html"
+                class="font-medium text-gray-600 hover:text-primary transition-colors duration-300">Location</a>
+            <a href="belivers-academy.html"
+                class="font-medium text-gray-600 hover:text-primary transition-colors duration-300">Believers
+                Academy</a>
+            <a href="transportaion.html"
+                class="font-medium text-gray-600 hover:text-primary transition-colors duration-300">Need a Ride</a>
+        </div>
+
+        <button
+            class="bg-primary text-white px-7 py-3 rounded-full font-medium hover:bg-primary-dark transition-colors duration-300 shadow-md">
+            Connect With Us
+        </button>
+    </nav>
+
+    <!-- Bottom Navigation (Mobile Only) -->
+    <nav
+        class="fixed bottom-0 left-0 right-0 bg-white shadow-2xl rounded-t-3xl p-4 flex justify-between items-center lg:hidden z-50">
+        <a href="index.html" class="flex flex-col items-center text-gray-500 py-2">
+            <i class="fas fa-home text-xl mb-1"></i>
+            <span class="text-xs">Home</span>
+        </a>
+        <a href="message.html" class="flex flex-col items-center text-primary py-2">
+            <i class="fas fa-play-circle text-xl mb-1"></i>
+            <span class="text-xs">Message</span>
+        </a>
+        <a href="about.html" class="flex flex-col items-center text-gray-500 py-2">
+            <i class="fas fa-info-circle text-xl mb-1"></i>
+            <span class="text-xs">About</span>
+        </a>
+        <a href="cell.html" class="flex flex-col items-center text-gray-500 py-2">
+            <i class="fas fa-users text-xl mb-1"></i>
+            <span class="text-xs">Cell</span>
+        </a>
+        <a href="event.html" class="flex flex-col items-center text-gray-500 py-2">
+            <i class="fas fa-calendar-alt text-xl mb-1"></i>
+            <span class="text-xs">Event</span>
+        </a>
+        <a href="location.html" class="flex flex-col items-center text-gray-500 py-2">
+            <i class="fas fa-map-marker-alt text-xl mb-1"></i>
+            <span class="text-xs">Location</span>
+        </a>
+        <a href="belivers-academy.html" class="flex flex-col items-center text-gray-500 py-2">
+            <i class="fas fa-graduation-cap text-xl mb-1"></i>
+            <span class="text-xs">Academy</span>
+        </a>
+        <a href="transportaion.html" class="flex flex-col items-center text-gray-500 py-2">
+            <i class="fas fa-car text-xl mb-1"></i>
+            <span class="text-xs">Ride</span>
+        </a>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Header Section with Back Button -->
+        <header class="mb-8">
+            <div class="flex items-center mb-4">
+                <a href="message.html" class="flex items-center text-blue-600 hover:text-blue-800 transition">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    <span class="font-medium">Back to Messages</span>
+                </a>
+            </div>
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">All Series</h1>
+            <p class="text-lg text-gray-600 max-w-2xl">Explore every teaching collection and message series.</p>
+        </header>
+
+        <!-- Search + Filter Section -->
+        <section class="mb-8">
+            <div class="flex flex-col md:flex-row gap-4">
+                <!-- Search Bar -->
+                <div class="relative flex-grow">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-search text-gray-400"></i>
+                    </div>
+                    <input type="text" placeholder="Search series..."
+                        class="w-full pl-10 pr-4 py-3 rounded-lg bg-white border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+                <!-- Filter Chips -->
+                <div class="flex flex-wrap gap-2">
+                    <button
+                        class="glassmorphic-strong px-4 py-2 rounded-full text-sm font-medium text-gray-700 border border-blue-500 bg-blue-50">
+                        Latest
+                    </button>
+                    <button class="glassmorphic px-4 py-2 rounded-full text-sm font-medium text-gray-700">
+                        Most Popular
+                    </button>
+                    <button class="glassmorphic px-4 py-2 rounded-full text-sm font-medium text-gray-700">
+                        Topic
+                    </button>
+                    <button class="glassmorphic px-4 py-2 rounded-full text-sm font-medium text-gray-700">
+                        Minister
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Series Grid -->
+        <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- Series Card 1 -->
+            <a href="series card.html">
+                <div class="series-card bg-white rounded-2xl shadow-md overflow-hidden cursor-pointer fade-in-up">
+                    <div class="relative h-64 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
+                            alt="Series thumbnail" class="w-full h-full object-cover">
+
+                        <!-- Series Info (Always Visible) -->
+                        <div
+                            class="series-info absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-6">
+                            <div class="text-white">
+                                <h3 class="text-xl font-bold mb-2">Stay Woke (No Shaking)</h3>
+                                <div class="flex items-center text-blue-200">
+                                    <i class="fas fa-play-circle mr-2"></i>
+                                    <span>8 Messages</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hover Overlay (Shows Folder Icon) -->
+                        <div
+                            class="series-overlay absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center">
+                            <div class="text-white text-center">
+                                <i class="fas fa-folder text-5xl mb-3"></i>
+                                <p class="font-medium">View Series</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Series Card 2 -->
+            <a href="series card.html">
+                <div class="series-card bg-white rounded-2xl shadow-md overflow-hidden cursor-pointer fade-in-up">
+                    <div class="relative h-64 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
+                            alt="Series thumbnail" class="w-full h-full object-cover">
+
+                        <!-- Series Info (Always Visible) -->
+                        <div
+                            class="series-info absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-6">
+                            <div class="text-white">
+                                <h3 class="text-xl font-bold mb-2">Don't Escape, Engage</h3>
+                                <div class="flex items-center text-blue-200">
+                                    <i class="fas fa-play-circle mr-2"></i>
+                                    <span>6 Messages</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hover Overlay (Shows Folder Icon) -->
+                        <div
+                            class="series-overlay absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center">
+                            <div class="text-white text-center">
+                                <i class="fas fa-folder text-5xl mb-3"></i>
+                                <p class="font-medium">View Series</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </a>
+
+            <!-- Series Card 3 -->
+            <a href="series card.html">
+                <div class="series-card bg-white rounded-2xl shadow-md overflow-hidden cursor-pointer fade-in-up">
+                    <div class="relative h-64 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1545235617-9465d2a55698?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
+                            alt="Series thumbnail" class="w-full h-full object-cover">
+
+                        <!-- Series Info (Always Visible) -->
+                        <div
+                            class="series-info absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-6">
+                            <div class="text-white">
+                                <h3 class="text-xl font-bold mb-2">One Man 2</h3>
+                                <div class="flex items-center text-blue-200">
+                                    <i class="fas fa-play-circle mr-2"></i>
+                                    <span>5 Messages</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hover Overlay (Shows Folder Icon) -->
+                        <div
+                            class="series-overlay absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center">
+                            <div class="text-white text-center">
+                                <i class="fas fa-folder text-5xl mb-3"></i>
+                                <p class="font-medium">View Series</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Series Card 4 -->
+            <a href="series card.html">
+                <div class="series-card bg-white rounded-2xl shadow-md overflow-hidden cursor-pointer fade-in-up">
+                    <div class="relative h-64 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
+                            alt="Series thumbnail" class="w-full h-full object-cover">
+
+                        <!-- Series Info (Always Visible) -->
+                        <div
+                            class="series-info absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-6">
+                            <div class="text-white">
+                                <h3 class="text-xl font-bold mb-2">The Power of Gratitude</h3>
+                                <div class="flex items-center text-blue-200">
+                                    <i class="fas fa-play-circle mr-2"></i>
+                                    <span>4 Messages</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hover Overlay (Shows Folder Icon) -->
+                        <div
+                            class="series-overlay absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center">
+                            <div class="text-white text-center">
+                                <i class="fas fa-folder text-5xl mb-3"></i>
+                                <p class="font-medium">View Series</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Series Card 5 -->
+            <a href="series card.html">
+                <div class="series-card bg-white rounded-2xl shadow-md overflow-hidden cursor-pointer fade-in-up">
+                    <div class="relative h-64 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
+                            alt="Series thumbnail" class="w-full h-full object-cover">
+
+                        <!-- Series Info (Always Visible) -->
+                        <div
+                            class="series-info absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-6">
+                            <div class="text-white">
+                                <h3 class="text-xl font-bold mb-2">Finding Your Purpose</h3>
+                                <div class="flex items-center text-blue-200">
+                                    <i class="fas fa-play-circle mr-2"></i>
+                                    <span>7 Messages</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hover Overlay (Shows Folder Icon) -->
+                        <div
+                            class="series-overlay absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center">
+                            <div class="text-white text-center">
+                                <i class="fas fa-folder text-5xl mb-3"></i>
+                                <p class="font-medium">View Series</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Series Card 6 -->
+            <a href="series card.html">
+                <div class="series-card bg-white rounded-2xl shadow-md overflow-hidden cursor-pointer fade-in-up">
+                    <div class="relative h-64 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1545235617-9465d2a55698?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
+                            alt="Series thumbnail" class="w-full h-full object-cover">
+
+                        <!-- Series Info (Always Visible) -->
+                        <div
+                            class="series-info absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-6">
+                            <div class="text-white">
+                                <h3 class="text-xl font-bold mb-2">Overcoming Adversity</h3>
+                                <div class="flex items-center text-blue-200">
+                                    <i class="fas fa-play-circle mr-2"></i>
+                                    <span>5 Messages</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hover Overlay (Shows Folder Icon) -->
+                        <div
+                            class="series-overlay absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center">
+                            <div class="text-white text-center">
+                                <i class="fas fa-folder text-5xl mb-3"></i>
+                                <p class="font-medium">View Series</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Series Card 7 -->
+            <a href="series card.html">
+                <div class="series-card bg-white rounded-2xl shadow-md overflow-hidden cursor-pointer fade-in-up">
+                    <div class="relative h-64 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
+                            alt="Series thumbnail" class="w-full h-full object-cover">
+
+                        <!-- Series Info (Always Visible) -->
+                        <div
+                            class="series-info absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-6">
+                            <div class="text-white">
+                                <h3 class="text-xl font-bold mb-2">Love Your Neighbor</h3>
+                                <div class="flex items-center text-blue-200">
+                                    <i class="fas fa-play-circle mr-2"></i>
+                                    <span>6 Messages</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hover Overlay (Shows Folder Icon) -->
+                        <div
+                            class="series-overlay absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center">
+                            <div class="text-white text-center">
+                                <i class="fas fa-folder text-5xl mb-3"></i>
+                                <p class="font-medium">View Series</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Series Card 8 -->
+            <a href="series card.html">
+                <div class="series-card bg-white rounded-2xl shadow-md overflow-hidden cursor-pointer fade-in-up">
+                    <div class="relative h-64 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
+                            alt="Series thumbnail" class="w-full h-full object-cover">
+
+                        <!-- Series Info (Always Visible) -->
+                        <div
+                            class="series-info absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-6">
+                            <div class="text-white">
+                                <h3 class="text-xl font-bold mb-2">The Joy of Giving</h3>
+                                <div class="flex items-center text-blue-200">
+                                    <i class="fas fa-play-circle mr-2"></i>
+                                    <span>4 Messages</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hover Overlay (Shows Folder Icon) -->
+                        <div
+                            class="series-overlay absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center">
+                            <div class="text-white text-center">
+                                <i class="fas fa-folder text-5xl mb-3"></i>
+                                <p class="font-medium">View Series</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </section>
+
+        <!-- Load More Button -->
+        <div class="mt-12 text-center">
+            <button class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition font-medium">
+                Load More Series
+            </button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-blue-900 text-white py-12 px-4">
+        <div class="container mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Column 1 -->
+                <div>
+                    <h2 class="text-xl font-bold mb-4">Doxa Commission Global</h2>
+                    <h4 class="text-gray-300 mb-4">Bringing nations into God's glory worldwide</h4>
+                    <div class="space-y-3">
+                        <p class="flex items-start">
+                            <i class="fas fa-location-dot mt-1 mr-2 text-blue-400"></i>
+                            <a href="https://maps.app.goo.gl/4ZqPqRu1CMYQnppW7"
+                                class="hover:text-blue-300 transition">129 Goldie, Adjacent Amika Utuk,
+                                Calabar, Cross River State, Nigeria.</a>
+                        </p>
+                        <p class="flex items-center cursor-pointer" id="call-us">
+                            <i class="fas fa-phone mr-2 text-blue-400"></i>
+                            <a href="" class="hover:text-blue-300 transition">+234 1234567890</a>
+                        </p>
+                        <p class="flex items-center">
+                            <i class="far fa-envelope mr-2 text-blue-400"></i>
+                            <a href="mailto:info@doxachurch.org"
+                                class="hover:text-blue-300 transition">info@doxachurch.org</a>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Column 2 -->
+                <div>
+                    <h2 class="text-xl font-bold mb-4">Service Times</h2>
+                    <p class="mb-4">Sunday Glory Life Service:<br>7am, 8:30am, 10am and 4pm</p>
+                    <h4 class="font-bold mb-2">Thursday Glory Experience</h4>
+                    <p>5:30pm</p>
+                </div>
+
+                <!-- Column 3 -->
+                <div>
+                    <h2 class="text-xl font-bold mb-4">Quick Links</h2>
+                    <ul class="space-y-2">
+                        <li><a href="index.html" class="hover:text-blue-300 transition">Home</a></li>
+                        <li><a href="message.html" class="hover:text-blue-300 transition">Messages</a></li>
+                        <li><a href="about.html" class="hover:text-blue-300 transition">About</a></li>
+                        <li><a href="cell.html" class="hover:text-blue-300 transition">Cell</a></li>
+                        <li><a href="location.html" class="hover:text-blue-300 transition">Location</a></li>
+                        <li><a href="belivers-academy.html" class="hover:text-blue-300 transition">Believers Academy</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Column 4 -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Stay Connected</h3>
+                    <p class="mb-4">Subscribe to our newsletter for updates and spiritual insights.</p>
+                    <form class="mb-6">
+                        <div class="flex">
+                            <input type="email" placeholder="Your email address"
+                                class="flex-grow px-4 py-2 rounded-l-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <button type="submit"
+                                class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-r-lg transition">
+                                Subscribe
+                            </button>
+                        </div>
+                    </form>
+                    <div class="flex space-x-4 mb-2">
+                        <a href="https://www.facebook.com/DoxaCommissionGlobal/" aria-label="Facebook"
+                            class="social-facebook bg-blue-800 w-10 h-10 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-facebook-f text-white"></i>
+                        </a>
+                        <a href="https://www.instagram.com/doxa_commission/?hl=en" aria-label="Instagram"
+                            class="social-instagram bg-blue-800 w-10 h-10 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-instagram text-white"></i>
+                        </a>
+                        <a href="https://www.youtube.com/channel/UCZtReUAxK3S6qBKnV5G6PTw" aria-label="YouTube"
+                            class="social-youtube bg-blue-800 w-10 h-10 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-youtube text-white"></i>
+                        </a>
+                        <a href="https://www.tiktok.com/discover/doxa-commission-global" aria-label="TikTok"
+                            class="social-tiktok bg-blue-800 w-10 h-10 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-tiktok"></i>
+                        </a>
+                        <a href="https://open.spotify.com/show/05Jdb4jyuqHoUdQ89VLvnF?si=1310344dc60e4d01"
+                            aria-label="Spotify"
+                            class="social-spotify bg-blue-800 w-10 h-10 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-spotify text-white"></i>
+                        </a>
+                    </div>
+                    <p class="text-blue-300 text-sm">Follow us for updates and inspiration!</p>
+                </div>
+            </div>
+
+            <div class="border-t border-blue-700 mt-8 pt-6 text-center">
+                <p>&copy; Copyright Doxa Commission Global <span id="current-year"></span> All Rights Reserved. Designed
+                    and Developed by Doxa Database</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Set current year in footer
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        // Phone call functionality for "Call Us" button
+        document.getElementById('call-us').addEventListener('click', function (e) {
+            e.preventDefault();
+            // Initiate a phone call
+            window.open('tel:+2341234567890');
+        });
+
+        // Stagger animation for grid items
+        document.addEventListener('DOMContentLoaded', () => {
+            const items = document.querySelectorAll('.fade-in-up');
+            items.forEach((item, index) => {
+                item.style.animationDelay = `${index * 0.1}s`;
+            });
+
+            // Add click handlers for series cards
+            const seriesCards = document.querySelectorAll('.series-card');
+            seriesCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    // In a real implementation, this would navigate to the series detail page
+                    alert('Navigating to Series Detail Page');
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sermon Archive - Doxa Commission</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1e3a8a',
+                        'primary-light': '#3b82f6',
+                        'primary-dark': '#1e40af',
+                        accent: '#f59e0b',
+                        'accent-light': '#fbbf24',
+                        text: '#1f2937',
+                        'text-light': '#6b7280',
+                    },
+                    fontFamily: {
+                        'poppins': ['Poppins', 'sans-serif'],
+                    },
+                    spacing: {
+                        '18': '4.5rem',
+                        '88': '22rem',
+                        '128': '32rem',
+                    },
+                    backdropBlur: {
+                        'glass': '25px',
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.8s ease-in-out',
+                        'slide-up': 'slideUp 0.6s ease-out',
+                        'scale-in': 'scaleIn 0.5s ease-out',
+                    },
+                    boxShadow: {
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
+                        'soft': '0 4px 20px rgba(0, 0, 0, 0.08)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            @keyframes slideUp {
+                from { 
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to { 
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        }
+               :root {
+            --primary: #3b82f6;
+            --secondary: #4b5563;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Card animations */
+        .sermon-card,
+        .series-card {
+            transition: all 0.3s ease;
+        }
+
+        .sermon-card:hover,
+        .series-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Audio player animations */
+        .audio-player-bar {
+            transition: all 0.3s ease;
+            transform: translateY(100%);
+            opacity: 0;
+        }
+
+        .audio-player-bar.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Custom range slider styles */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            background: white;
+            height: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-track {
+            background: #4b5563;
+            border-radius: 9999px;
+            height: 4px;
+        }
+
+        input[type="range"]::-moz-range-track {
+            background: #4b5563;
+            border-radius: 9999px;
+            height: 4px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 14px;
+            width: 14px;
+            background-color: #3b82f6;
+            border-radius: 50%;
+            margin-top: -1px;
+            box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            height: 15px;
+            width: 15px;
+            background-color: #f8f8f8;
+            border-radius: 50%;
+            border: none;
+        }
+
+        /* Social media hover effects */
+        .social-facebook:hover {
+            background-color: white !important;
+        }
+
+        .social-facebook:hover i {
+            color: #3b5998 !important;
+        }
+
+        .social-instagram:hover {
+            background-color: white !important;
+        }
+
+        .social-instagram:hover i {
+            color: #E1306C !important;
+        }
+
+        .social-youtube:hover {
+            background-color: white !important;
+        }
+
+        .social-youtube:hover i {
+            color: #FF0000 !important;
+        }
+
+        .social-tiktok:hover {
+            background-color: white !important;
+        }
+
+        .social-tiktok:hover i {
+            color: #000000 !important;
+        }
+
+        .social-spotify:hover {
+            background-color: white !important;
+        }
+
+        .social-spotify:hover i {
+            color: #1DB954 !important;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+    <!-- Destop View -->
+    <nav class="hidden lg:flex items-center justify-between px-8 py-5 bg-white shadow-md sticky top-0 z-50">
+        <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center">
+                <img src="img/doxa.PNG" alt="logo">
+            </div>
+            <span class="text-xl font-bold text-primary">Doxa Commission Global</span>
+        </div>
+
+        <div class="flex space-x-10">
+            <a href="index.html"
+                class="font-medium text-gray-600 hover:text-primary transition-colors duration-300">Home</a>
+            <a href="message.html" class="font-medium text-primary border-b-2 border-primary pb-1">Message</a>
+            <a href="about.html"
+                class="font-medium text-gray-600 hover:text-primary transition-colors duration-300">About</a>
+            <a href="cell.html"
+                class="font-medium text-gray-600 hover:text-primary transition-colors duration-300">Cell</a>
+            <a href="event.html"
+                class="font-medium text-gray-600 hover:text-primary transition-colors duration-300">Event</a>
+            <a href="location.html"
+                class="font-medium text-gray-600 hover:text-primary transition-colors duration-300">Location</a>
+            <a href="belivers-academy.html"
+                class="font-medium text-gray-600 hover:text-primary transition-colors duration-300">Believers
+                Academy</a>
+            <a href="transportaion.html"
+                class="font-medium text-gray-600 hover:text-primary transition-colors duration-300">Need a Ride</a>
+        </div>
+
+        <button
+            class="bg-primary text-white px-7 py-3 rounded-full font-medium hover:bg-primary-dark transition-colors duration-300 shadow-md">
+            Connect With Us
+        </button>
+    </nav>
+
+    <!-- Bottom Navigation (Mobile Only) -->
+    <nav
+        class="fixed bottom-0 left-0 right-0 bg-white shadow-2xl rounded-t-3xl p-4 flex justify-between items-center lg:hidden z-50">
+        <a href="index.html" class="flex flex-col items-center text-gray-500 py-2">
+            <i class="fas fa-home text-xl mb-1"></i>
+            <span class="text-xs">Home</span>
+        </a>
+        <a href="message.html" class="flex flex-col items-center text-primary py-2">
+            <i class="fas fa-play-circle text-xl mb-1"></i>
+            <span class="text-xs">Message</span>
+        </a>
+        <a href="about.html" class="flex flex-col items-center text-gray-500 py-2">
+            <i class="fas fa-info-circle text-xl mb-1"></i>
+            <span class="text-xs">About</span>
+        </a>
+        <a href="cell.html" class="flex flex-col items-center text-gray-500 py-2">
+            <i class="fas fa-users text-xl mb-1"></i>
+            <span class="text-xs">Cell</span>
+        </a>
+        <a href="event.html" class="flex flex-col items-center text-gray-500 py-2">
+            <i class="fas fa-calendar-alt text-xl mb-1"></i>
+            <span class="text-xs">Event</span>
+        </a>
+        <a href="location.html" class="flex flex-col items-center text-gray-500 py-2">
+            <i class="fas fa-map-marker-alt text-xl mb-1"></i>
+            <span class="text-xs">Location</span>
+        </a>
+        <a href="belivers-academy.html" class="flex flex-col items-center text-gray-500 py-2">
+            <i class="fas fa-graduation-cap text-xl mb-1"></i>
+            <span class="text-xs">Academy</span>
+        </a>
+        <a href="transportaion.html" class="flex flex-col items-center text-gray-500 py-2">
+            <i class="fas fa-car text-xl mb-1"></i>
+            <span class="text-xs">Ride</span>
+        </a>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Header Section -->
+        <header class="mb-8">
+            <div class="flex items-center mb-4">
+                <a href="message.html" class="flex items-center text-blue-600 hover:text-blue-800 transition">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    <span class="font-medium">Back to Messages</span>
+                </a>
+            </div>
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">Sermon Archive</h1>
+            <p class="text-lg text-gray-600 max-w-2xl">Browse every message, teaching, and prophetic moment.</p>
+        </header>
+
+        <!-- Filters and Search Section -->
+        <section class="mb-8">
+            <div class="flex flex-col md:flex-row gap-4">
+                <!-- Search Bar -->
+                <div class="relative flex-grow">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-search text-gray-400"></i>
+                    </div>
+                    <input type="text" placeholder="Search sermons..."
+                        class="w-full pl-10 pr-4 py-3 rounded-lg bg-white border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+                <!-- Filter Chips -->
+                <div class="flex flex-wrap gap-2">
+                    <button
+                        class="glassmorphic px-4 py-2 rounded-full text-sm font-medium text-gray-700 border border-blue-500 bg-blue-50">
+                        Latest
+                    </button>
+                    <button class="glassmorphic px-4 py-2 rounded-full text-sm font-medium text-gray-700">
+                        Speaker
+                    </button>
+                    <button class="glassmorphic px-4 py-2 rounded-full text-sm font-medium text-gray-700">
+                        Topic
+                    </button>
+                    <button class="glassmorphic px-4 py-2 rounded-full text-sm font-medium text-gray-700">
+                        Year
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sermon List -->
+        <section class="bg-white rounded-xl shadow-sm overflow-hidden">
+            <!-- Sermon Row 1 -->
+            <div class="sermon-row border-b border-gray-100 p-4 hover:bg-blue-50 cursor-pointer fade-in-up"
+                data-title="Stay Woke (No Shaking)" data-artist="Dr. Flourish Peters"
+                data-image="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80">
+                <div class="flex items-center">
+                    <!-- Thumbnail -->
+                    <div class="relative mr-4 flex-shrink-0">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
+                            alt="Sermon thumbnail" class="w-20 h-20 md:w-24 md:h-24 rounded-lg object-cover">
+                        <div
+                            class="play-overlay absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 transition rounded-lg">
+                            <i class="fas fa-play text-white text-2xl"></i>
+                        </div>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="flex-grow">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-1">Stay Woke (No Shaking)</h3>
+                        <p class="text-gray-600 text-sm mb-3 line-clamp-2">Dr. Flourish Peters teaches about spiritual
+                            alertness in challenging times and how to remain steadfast in faith when everything around
+                            seems to be shaking.</p>
+
+                        <!-- Meta Information -->
+                        <div class="flex flex-wrap items-center text-gray-500 text-sm gap-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-user-circle mr-1"></i>
+                                <span>Dr. Flourish Peters</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-clock mr-1"></i>
+                                <span>108:58</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-calendar-alt mr-1"></i>
+                                <span>Aug 10, 2025</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sermon Row 2 -->
+            <div class="sermon-row border-b border-gray-100 p-4 hover:bg-blue-50 cursor-pointer fade-in-up"
+                data-title="Don't Escape, Engage" data-artist="Dr. Flourish Peters"
+                data-image="https://images.unsplash.com/photo-1544717305-2782549b5136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80">
+                <div class="flex items-center">
+                    <!-- Thumbnail -->
+                    <div class="relative mr-4 flex-shrink-0">
+                        <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
+                            alt="Sermon thumbnail" class="w-20 h-20 md:w-24 md:h-24 rounded-lg object-cover">
+                        <div
+                            class="play-overlay absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 transition rounded-lg">
+                            <i class="fas fa-play text-white text-2xl"></i>
+                        </div>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="flex-grow">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-1">Don't Escape, Engage</h3>
+                        <p class="text-gray-600 text-sm mb-3 line-clamp-2">Learning to actively engage with the world
+                            through faith rather than withdrawing from it. A powerful message about being salt and light
+                            in our communities.</p>
+
+                        <!-- Meta Information -->
+                        <div class="flex flex-wrap items-center text-gray-500 text-sm gap-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-user-circle mr-1"></i>
+                                <span>Dr. Flourish Peters</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-clock mr-1"></i>
+                                <span>90:41</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-calendar-alt mr-1"></i>
+                                <span>Jun 23, 2025</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sermon Row 3 -->
+            <div class="sermon-row border-b border-gray-100 p-4 hover:bg-blue-50 cursor-pointer fade-in-up"
+                data-title="One Man 2" data-artist="Pastor Lanre Olubaji"
+                data-image="https://images.unsplash.com/photo-1545235617-9465d2a55698?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80">
+                <div class="flex items-center">
+                    <!-- Thumbnail -->
+                    <div class="relative mr-4 flex-shrink-0">
+                        <img src="https://images.unsplash.com/photo-1545235617-9465d2a55698?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
+                            alt="Sermon thumbnail" class="w-20 h-20 md:w-24 md:h-24 rounded-lg object-cover">
+                        <div
+                            class="play-overlay absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 transition rounded-lg">
+                            <i class="fas fa-play text-white text-2xl"></i>
+                        </div>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="flex-grow">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-1">One Man 2</h3>
+                        <p class="text-gray-600 text-sm mb-3 line-clamp-2">Exploring the impact of one person's faith
+                            journey and how a single individual can change the course of history through obedience to
+                            God's calling.</p>
+
+                        <!-- Meta Information -->
+                        <div class="flex flex-wrap items-center text-gray-500 text-sm gap-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-user-circle mr-1"></i>
+                                <span>Pastor Lanre Olubaji</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-clock mr-1"></i>
+                                <span>189:41</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-calendar-alt mr-1"></i>
+                                <span>Jun 22, 2025</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sermon Row 4 -->
+            <div class="sermon-row border-b border-gray-100 p-4 hover:bg-blue-50 cursor-pointer fade-in-up"
+                data-title="The Power of Gratitude" data-artist="Mark Wilson"
+                data-image="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80">
+                <div class="flex items-center">
+                    <!-- Thumbnail -->
+                    <div class="relative mr-4 flex-shrink-0">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
+                            alt="Sermon thumbnail" class="w-20 h-20 md:w-24 md:h-24 rounded-lg object-cover">
+                        <div
+                            class="play-overlay absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 transition rounded-lg">
+                            <i class="fas fa-play text-white text-2xl"></i>
+                        </div>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="flex-grow">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-1">The Power of Gratitude</h3>
+                        <p class="text-gray-600 text-sm mb-3 line-clamp-2">How cultivating thankfulness transforms your
+                            life, relationships, and spiritual walk. Discover the biblical foundation for a lifestyle of
+                            gratitude.</p>
+
+                        <!-- Meta Information -->
+                        <div class="flex flex-wrap items-center text-gray-500 text-sm gap-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-user-circle mr-1"></i>
+                                <span>Mark Wilson</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-clock mr-1"></i>
+                                <span>45:30</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-calendar-alt mr-1"></i>
+                                <span>Jul 1, 2025</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sermon Row 5 -->
+            <div class="sermon-row p-4 hover:bg-blue-50 cursor-pointer fade-in-up" data-title="Finding Your Purpose"
+                data-artist="Sarah Adams"
+                data-image="https://images.unsplash.com/photo-1544717305-2782549b5136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80">
+                <div class="flex items-center">
+                    <!-- Thumbnail -->
+                    <div class="relative mr-4 flex-shrink-0">
+                        <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
+                            alt="Sermon thumbnail" class="w-20 h-20 md:w-24 md:h-24 rounded-lg object-cover">
+                        <div
+                            class="play-overlay absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 transition rounded-lg">
+                            <i class="fas fa-play text-white text-2xl"></i>
+                        </div>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="flex-grow">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-1">Finding Your Purpose</h3>
+                        <p class="text-gray-600 text-sm mb-3 line-clamp-2">Discover your divine calling and live with
+                            intention. This message explores how to align your gifts, passions, and opportunities with
+                            God's plan for your life.</p>
+
+                        <!-- Meta Information -->
+                        <div class="flex flex-wrap items-center text-gray-500 text-sm gap-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-user-circle mr-1"></i>
+                                <span>Sarah Adams</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-clock mr-1"></i>
+                                <span>58:12</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-calendar-alt mr-1"></i>
+                                <span>Jul 15, 2025</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Load More Button -->
+        <div class="mt-8 text-center">
+            <button class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition font-medium">
+                Load More Sermons
+            </button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-blue-900 text-white py-12 px-4">
+        <div class="container mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Column 1 -->
+                <div>
+                    <h2 class="text-xl font-bold mb-4">Doxa Commission Global</h2>
+                    <h4 class="text-gray-300 mb-4">Bringing nations into God's glory worldwide</h4>
+                    <div class="space-y-3">
+                        <p class="flex items-start">
+                            <i class="fas fa-location-dot mt-1 mr-2 text-blue-400"></i>
+                            <a href="https://maps.app.goo.gl/4ZqPqRu1CMYQnppW7"
+                                class="hover:text-blue-300 transition">129 Goldie, Adjacent Amika Utuk,
+                                Calabar, Cross River State, Nigeria.</a>
+                        </p>
+                        <p class="flex items-center cursor-pointer" id="call-us">
+                            <i class="fas fa-phone mr-2 text-blue-400"></i>
+                            <a href="" class="hover:text-blue-300 transition">+234 1234567890</a>
+                        </p>
+                        <p class="flex items-center">
+                            <i class="far fa-envelope mr-2 text-blue-400"></i>
+                            <a href="mailto:info@doxachurch.org"
+                                class="hover:text-blue-300 transition">info@doxachurch.org</a>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Column 2 -->
+                <div>
+                    <h2 class="text-xl font-bold mb-4">Service Times</h2>
+                    <p class="mb-4">Sunday Glory Life Service:<br>7am, 8:30am, 10am and 4pm</p>
+                    <h4 class="font-bold mb-2">Thursday Glory Experience</h4>
+                    <p>5:30pm</p>
+                </div>
+
+                <!-- Column 3 -->
+                <div>
+                    <h2 class="text-xl font-bold mb-4">Quick Links</h2>
+                    <ul class="space-y-2">
+                        <li><a href="index.html" class="hover:text-blue-300 transition">Home</a></li>
+                        <li><a href="message.html" class="hover:text-blue-300 transition">Messages</a></li>
+                        <li><a href="about.html" class="hover:text-blue-300 transition">About</a></li>
+                        <li><a href="cell.html" class="hover:text-blue-300 transition">Cell</a></li>
+                        <li><a href="location.html" class="hover:text-blue-300 transition">Location</a></li>
+                        <li><a href="belivers-academy.html" class="hover:text-blue-300 transition">Believers Academy</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Column 4 -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Stay Connected</h3>
+                    <p class="mb-4">Subscribe to our newsletter for updates and spiritual insights.</p>
+                    <form class="mb-6">
+                        <div class="flex">
+                            <input type="email" placeholder="Your email address"
+                                class="flex-grow px-4 py-2 rounded-l-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <button type="submit"
+                                class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-r-lg transition">
+                                Subscribe
+                            </button>
+                        </div>
+                    </form>
+                    <div class="flex space-x-4 mb-2">
+                        <a href="https://www.facebook.com/DoxaCommissionGlobal/" aria-label="Facebook"
+                            class="social-facebook bg-blue-800 w-10 h-10 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-facebook-f text-white"></i>
+                        </a>
+                        <a href="https://www.instagram.com/doxa_commission/?hl=en" aria-label="Instagram"
+                            class="social-instagram bg-blue-800 w-10 h-10 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-instagram text-white"></i>
+                        </a>
+                        <a href="https://www.youtube.com/channel/UCZtReUAxK3S6qBKnV5G6PTw" aria-label="YouTube"
+                            class="social-youtube bg-blue-800 w-10 h-10 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-youtube text-white"></i>
+                        </a>
+                        <a href="https://www.tiktok.com/discover/doxa-commission-global" aria-label="TikTok"
+                            class="social-tiktok bg-blue-800 w-10 h-10 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-tiktok"></i>
+                        </a>
+                        <a href="https://open.spotify.com/show/05Jdb4jyuqHoUdQ89VLvnF?si=1310344dc60e4d01"
+                            aria-label="Spotify"
+                            class="social-spotify bg-blue-800 w-10 h-10 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-spotify text-white"></i>
+                        </a>
+                    </div>
+                    <p class="text-blue-300 text-sm">Follow us for updates and inspiration!</p>
+                </div>
+            </div>
+
+            <div class="border-t border-blue-700 mt-8 pt-6 text-center">
+                <p>&copy; Copyright Doxa Commission Global <span id="current-year"></span> All Rights Reserved. Designed
+                    and Developed by Doxa Database</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Audio Player -->
+    <div id="audio-player-bar"
+        class="audio-player-bar fixed bottom-0 left-0 right-0 bg-sky-950 text-white p-4 shadow-lg z-40">
+        <div class="container mx-auto">
+            <div class="flex items-center justify-between w-full mb-2">
+                <!-- Track Info -->
+                <div class="flex items-center flex-shrink-0 w-1/4">
+                    <div id="player-album-art" class="bg-blue-800 rounded mr-3" style="width: 3rem; height: 3rem;">
+                        <img id="album-art-img" src="" class="w-full h-full object-cover rounded" alt="Album Art">
+                    </div>
+                    <div class="flex flex-col truncate">
+                        <span id="player-title" class="font-bold text-sm truncate">Select a Sermon</span>
+                        <span id="player-artist" class="text-blue-300 text-xs mt-1 truncate">--</span>
+                    </div>
+                </div>
+
+                <!-- Playback Controls -->
+                <div class="flex justify-center items-center flex-grow mx-4">
+                    <button id="prev-btn" class="text-blue-300 hover:text-white mx-4 transition">
+                        <i class="fas fa-step-backward text-xl"></i>
+                    </button>
+                    <button id="play-pause-btn" class="text-blue-300 hover:text-white transition">
+                        <i id="play-icon" class="fas fa-play text-xl"></i>
+                        <i id="pause-icon" class="fas fa-pause text-xl hidden"></i>
+                    </button>
+                    <button id="next-btn" class="text-blue-300 hover:text-white mx-4 transition">
+                        <i class="fas fa-step-forward text-xl"></i>
+                    </button>
+                </div>
+
+                <!-- Volume and Close -->
+                <div class="flex items-center justify-end flex-shrink-0 w-1/4">
+                    <div class="flex items-center mr-4">
+                        <i class="fas fa-volume-up text-blue-300 mr-2"></i>
+                        <input id="volume-slider" type="range" min="0" max="1" step="0.01" value="1" class="w-20">
+                    </div>
+                    <button id="close-player-btn" class="text-blue-300 hover:text-white transition">
+                        <i class="fas fa-times text-lg"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="flex items-center w-full">
+                <span id="current-time" class="text-blue-300 text-xs mr-2 w-12 text-right">0:00</span>
+                <input id="seek-bar" type="range" min="0" max="100" value="0" step="0.1" class="flex-grow">
+                <span id="duration" class="text-blue-300 text-xs ml-2 w-12">--:--</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio Element -->
+    <audio id="audio-element" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+
+    <script>
+        // Set current year in footer
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        // Phone call functionality for "Call Us" button
+        document.getElementById('call-us').addEventListener('click', function (e) {
+            e.preventDefault();
+            // Initiate a phone call
+            window.open('tel:+2341234567890');
+        });
+
+        // Audio player functionality
+        const audioPlayerBar = document.getElementById('audio-player-bar');
+        const playPauseBtn = document.getElementById('play-pause-btn');
+        const playIcon = document.getElementById('play-icon');
+        const pauseIcon = document.getElementById('pause-icon');
+        const playerTitle = document.getElementById('player-title');
+        const playerArtist = document.getElementById('player-artist');
+        const albumArtImg = document.getElementById('album-art-img');
+        const closePlayerBtn = document.getElementById('close-player-btn');
+        const sermonRows = document.querySelectorAll('.sermon-row');
+        const audioElement = document.getElementById('audio-element');
+        const volumeSlider = document.getElementById('volume-slider');
+        const seekBar = document.getElementById('seek-bar');
+        const currentTimeEl = document.getElementById('current-time');
+        const durationEl = document.getElementById('duration');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+
+        let isPlaying = false;
+        let currentSermonIndex = 0;
+
+        // Format time function
+        function formatTime(seconds) {
+            const min = Math.floor(seconds / 60);
+            const sec = Math.floor(seconds % 60);
+            return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+        }
+
+        // Update time display
+        function updateTimeDisplay() {
+            currentTimeEl.textContent = formatTime(audioElement.currentTime);
+            seekBar.value = (audioElement.currentTime / audioElement.duration) * 100 || 0;
+        }
+
+        // Add click event listeners to sermon rows
+        sermonRows.forEach((row, index) => {
+            row.addEventListener('click', () => {
+                const title = row.dataset.title;
+                const artist = row.dataset.artist;
+                const image = row.dataset.image;
+
+                // Update player with sermon info
+                playerTitle.textContent = title;
+                playerArtist.textContent = artist;
+                albumArtImg.src = image;
+
+                // Show audio player
+                audioPlayerBar.classList.add('visible');
+
+                // Play the audio
+                audioElement.play();
+                isPlaying = true;
+                playIcon.classList.add('hidden');
+                pauseIcon.classList.remove('hidden');
+
+                // Highlight the active row
+                sermonRows.forEach(r => r.classList.remove('bg-blue-100', 'border-blue-300'));
+                row.classList.add('bg-blue-100', 'border-blue-300');
+
+                currentSermonIndex = index;
+
+                // On mobile, scroll to player
+                if (window.innerWidth < 768) {
+                    setTimeout(() => {
+                        audioPlayerBar.scrollIntoView({ behavior: 'smooth' });
+                    }, 300);
+                }
+            });
+        });
+
+        // Play/Pause button functionality
+        playPauseBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                audioElement.pause();
+                playIcon.classList.remove('hidden');
+                pauseIcon.classList.add('hidden');
+            } else {
+                audioElement.play();
+                playIcon.classList.add('hidden');
+                pauseIcon.classList.remove('hidden');
+            }
+            isPlaying = !isPlaying;
+        });
+
+        // Close player functionality
+        closePlayerBtn.addEventListener('click', () => {
+            audioPlayerBar.classList.remove('visible');
+            audioElement.pause();
+            isPlaying = false;
+            playIcon.classList.remove('hidden');
+            pauseIcon.classList.add('hidden');
+
+            // Remove highlight from active row
+            sermonRows.forEach(r => r.classList.remove('bg-blue-100', 'border-blue-300'));
+        });
+
+        // Volume control
+        volumeSlider.addEventListener('input', () => {
+            audioElement.volume = volumeSlider.value;
+        });
+
+        // Seek functionality
+        seekBar.addEventListener('input', () => {
+            const seekTime = (seekBar.value / 100) * audioElement.duration;
+            audioElement.currentTime = seekTime;
+        });
+
+        // Update time as audio plays
+        audioElement.addEventListener('timeupdate', updateTimeDisplay);
+
+        // Update duration when metadata is loaded
+        audioElement.addEventListener('loadedmetadata', () => {
+            durationEl.textContent = formatTime(audioElement.duration);
+        });
+
+        // Previous button functionality
+        prevBtn.addEventListener('click', () => {
+            if (currentSermonIndex > 0) {
+                currentSermonIndex--;
+                sermonRows[currentSermonIndex].click();
+            }
+        });
+
+        // Next button functionality
+        nextBtn.addEventListener('click', () => {
+            if (currentSermonIndex < sermonRows.length - 1) {
+                currentSermonIndex++;
+                sermonRows[currentSermonIndex].click();
+            }
+        });
+
+        // Reset when audio ends
+        audioElement.addEventListener('ended', () => {
+            isPlaying = false;
+            playIcon.classList.remove('hidden');
+            pauseIcon.classList.add('hidden');
+        });
+
+        // Stagger animation for list items
+        document.addEventListener('DOMContentLoaded', () => {
+            const items = document.querySelectorAll('.fade-in-up');
+            items.forEach((item, index) => {
+                item.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+    </script>
+</body>
+
+</html>
