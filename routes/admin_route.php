@@ -76,6 +76,8 @@ Route::prefix('admin/dashboard')
 
         // Attendance Reports
         Volt::route('attendance/reports', 'admin.dashboard.attendance.reports.index')->name('admin.dashboard.attendance.reports.index');
+        Volt::route('attendance/manage', 'admin.dashboard.attendance.manage')->name('admin.dashboard.attendance.manage');
+        Volt::route('attendance/checkin', 'admin.dashboard.attendance.checkin')->name('admin.dashboard.attendance.checkin');
 
         // -----------------------------------------------------------------
         //              CELL GROUPS
@@ -93,6 +95,7 @@ Route::prefix('admin/dashboard')
         //              PARTNERSHIP SECTION
         //-------------------------------------------------------------------
         Volt::route('partnerships', 'admin.dashboard.partnership.index')->name('admin.dashboard.partnerships.index');
+        Volt::route('partnership/intents', 'admin.dashboard.partnership.intents')->name('admin.dashboard.partnership.intents');
         Volt::route('partnership/accounts', 'admin.dashboard.partnership.accounts')->name('admin.dashboard.partnership.accounts');
         //--------------------------------------------------------------------
         //             EVENTS SECTION

@@ -2,6 +2,8 @@
 
 use App\Models\Chapter;
 use App\Models\Report;
+use App\Models\User;
+use App\Notifications\ReportEscalated;
 use Livewire\Attributes\{Layout, Url};
 use Livewire\Volt\Component;
 use TallStackUi\Traits\Interactions;
@@ -134,13 +136,37 @@ new #[Layout('components.layouts.admin')] class extends Component {
 
         // Save promotion with timestamp tracking
         $report->level = $level;
+        $report->status = 'forwarded';
         $report->save();
+
+        $this->notifyEscalation($report, $currentLevel, $level);
 
         // Success messages with context
         if ($level === 'chapter') {
             $this->toast()->success('✅ Report Escalated', "Report sent to Chapter Admin for review")->send();
         } elseif ($level === 'hq') {
             $this->toast()->success('🚀 Report Escalated', "Report sent to HQ for final review")->send();
+        }
+    }
+
+    private function notifyEscalation(Report $report, string $fromLevel, string $toLevel): void
+    {
+        if ($toLevel === 'chapter') {
+            $recipients = User::role('admin')
+                ->where('chapter_id', $report->chapter_id)
+                ->get();
+        } elseif ($toLevel === 'hq') {
+            $recipients = User::role('super-admin')->get();
+        } else {
+            return;
+        }
+
+        if ($recipients->isEmpty()) {
+            return;
+        }
+
+        foreach ($recipients as $recipient) {
+            $recipient->notify(new ReportEscalated($report, $fromLevel, $toLevel));
         }
     }
 

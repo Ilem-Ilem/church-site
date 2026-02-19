@@ -64,20 +64,11 @@ new #[Layout('components.layouts.tailwind-layout')] class extends Component {
 <div class="font-poppins" style="font-family: 'Poppins', sans-serif;">
 
     <!-- Hero Section -->
-    <section class="relative min-h-[70vh] flex items-center justify-center px-5 py-20 bg-gradient-to-br from-blue-900 to-indigo-900 overflow-hidden mobile-section">
-        <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1534337621606-e3df5ee0e97f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')] bg-cover bg-center"></div>
-        <div class="absolute inset-0 bg-black/40"></div>
-
-        <div class="relative z-10 w-full max-w-4xl glass rounded-2xl shadow-glass p-10 md:p-12 text-center animate-fade-in mx-4">
-            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 animate-slide-up">Believers Academy</h1>
-            <p class="text-xl md:text-2xl text-white/90 mb-8 animate-slide-up animation-delay-200 max-w-3xl mx-auto">Grow in the Word. Build foundations. Become established.</p>
-            <p class="text-lg text-white/80 italic animate-slide-up animation-delay-400">"But grow in the grace and knowledge of our Lord and Savior Jesus Christ." - 2 Peter 3:18</p>
-        </div>
-
-        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-            <a href="#overview" class="text-white/80 hover:text-white transition-colors">
-                <i class="fas fa-chevron-down text-2xl"></i>
-            </a>
+    <section class="flex items-center justify-center px-5 py-16 bg-gradient-to-br from-blue-900 to-indigo-900 mobile-section">
+        <div class="w-full max-w-4xl text-center text-white">
+            <p class="text-xs font-semibold uppercase tracking-[0.3em] text-blue-200">Believers Academy</p>
+            <h1 class="mt-4 text-3xl md:text-5xl font-bold">Grow in the Word. Build foundations.</h1>
+            <p class="mt-4 text-base md:text-lg text-white/85">A structured discipleship path to help you mature in Christ and live your faith with confidence.</p>
         </div>
     </section>
 
@@ -94,57 +85,27 @@ new #[Layout('components.layouts.tailwind-layout')] class extends Component {
                 </select>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <div class="animate-scale-in">
-                    <h2 class="text-3xl md:text-4xl font-bold mb-6 text-gray-800">Deepen Your Faith Journey</h2>
-                    <p class="text-gray-600 mb-6 text-lg leading-relaxed">
-                        Believers Academy is our comprehensive discipleship program designed to help you build a strong biblical foundation, understand core Christian doctrines, and develop a vibrant, growing relationship with Jesus Christ.
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+                <div>
+                    <h2 class="text-2xl md:text-3xl font-bold mb-4 text-gray-800">Deepen Your Faith Journey</h2>
+                    <p class="text-gray-600 mb-6 text-base leading-relaxed">
+                        Believers Academy is a structured discipleship journey to build biblical foundations and practical Christian living.
                     </p>
-                    <p class="text-gray-600 mb-8 text-lg leading-relaxed">
-                        Through systematic teaching, practical application, and community support, you'll gain the knowledge and tools needed to live out your faith confidently and impact your world for Christ.
-                    </p>
-                    <div class="bg-blue-50 rounded-xl p-5 border border-blue-200 mb-8">
-                        <p class="text-blue-700 italic text-lg">"Then you will know the truth, and the truth will set you free." - John 8:32</p>
+                    <ul class="space-y-3 text-sm text-gray-700">
+                        <li class="flex items-start gap-3"><span class="mt-1 h-2 w-2 rounded-full bg-blue-500"></span>Understand core doctrines and Scripture</li>
+                        <li class="flex items-start gap-3"><span class="mt-1 h-2 w-2 rounded-full bg-blue-500"></span>Develop spiritual disciplines</li>
+                        <li class="flex items-start gap-3"><span class="mt-1 h-2 w-2 rounded-full bg-blue-500"></span>Grow in community and service</li>
+                    </ul>
+                    <div class="mt-8">
+                        @if(!$isRegistered)
+                            <a href="{{ route('believers_academy.register', request()->query()) }}" class="bg-blue-600 text-white px-8 py-3 rounded-full font-bold hover:bg-blue-700 transition-colors duration-300 shadow-md text-sm inline-block" wire:navigate>Register Now</a>
+                        @else
+                            <a href="{{ route('believers_academy.dashboard', request()->query()) }}" class="bg-green-500 text-white px-8 py-3 rounded-full font-bold hover:bg-green-600 transition-colors duration-300 shadow-md text-sm inline-block" wire:navigate>View Dashboard</a>
+                        @endif
                     </div>
-                    @if(!$isRegistered)
-                        <a href="{{ route('believers_academy.register') }}" class="bg-primary text-white px-10 py-4 rounded-full font-bold hover:bg-primary-dark transition-colors duration-300 shadow-md text-lg inline-block" wire:navigate>Register Now</a>
-                    @else
-                        <a href="{{ route('home.believers.dashboard', request()->query()) }}" class="bg-green-500 text-white px-10 py-4 rounded-full font-bold hover:bg-green-600 transition-colors duration-300 shadow-md text-lg inline-block" wire:navigate>View Dashboard</a>
-                    @endif
                 </div>
-                <div class="animate-scale-in animation-delay-200">
-                    <div class="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-8 border border-blue-100 h-full">
-                        <div class="grid grid-cols-2 gap-6">
-                            <div class="text-center">
-                                <div class="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-                                    <i class="fas fa-book-bible text-blue-500 text-2xl"></i>
-                                </div>
-                                <h3 class="font-bold text-gray-800 mb-2">Biblical Foundation</h3>
-                                <p class="text-gray-600 text-sm">Understand Scripture and core doctrines</p>
-                            </div>
-                            <div class="text-center">
-                                <div class="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-                                    <i class="fas fa-pray text-green-500 text-2xl"></i>
-                                </div>
-                                <h3 class="font-bold text-gray-800 mb-2">Spiritual Growth</h3>
-                                <p class="text-gray-600 text-sm">Develop prayer life and spiritual disciplines</p>
-                            </div>
-                            <div class="text-center">
-                                <div class="w-16 h-16 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-                                    <i class="fas fa-people-group text-purple-500 text-2xl"></i>
-                                </div>
-                                <h3 class="font-bold text-gray-800 mb-2">Community</h3>
-                                <p class="text-gray-600 text-sm">Learn and grow with fellow believers</p>
-                            </div>
-                            <div class="text-center">
-                                <div class="w-16 h-16 bg-amber-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-                                    <i class="fas fa-hands-holding text-amber-500 text-2xl"></i>
-                                </div>
-                                <h3 class="font-bold text-gray-800 mb-2">Practical Ministry</h3>
-                                <p class="text-gray-600 text-sm">Apply your faith in everyday life</p>
-                            </div>
-                        </div>
-                    </div>
+                <div class="rounded-2xl border border-blue-100 bg-blue-50 p-6">
+                    <p class="text-blue-700 italic text-base">"Then you will know the truth, and the truth will set you free." - John 8:32</p>
                 </div>
             </div>
         </div>
@@ -178,7 +139,7 @@ new #[Layout('components.layouts.tailwind-layout')] class extends Component {
                             </div>
                         @endif
                         @if(!$isRegistered)
-                            <a href="{{ route('believers_academy.register') }}" class="w-full bg-blue-500 text-white py-3 rounded-xl font-medium hover:bg-blue-600 transition-colors inline-block text-center" wire:navigate>Enroll Now</a>
+                            <a href="{{ route('believers_academy.register', request()->query()) }}" class="w-full bg-blue-500 text-white py-3 rounded-xl font-medium hover:bg-blue-600 transition-colors inline-block text-center" wire:navigate>Enroll Now</a>
                         @else
                             <span class="w-full bg-gray-400 text-white py-3 rounded-xl font-medium inline-block text-center">Already Enrolled</span>
                         @endif
@@ -193,19 +154,4 @@ new #[Layout('components.layouts.tailwind-layout')] class extends Component {
         </div>
     </section>
 
-    <!-- Call-to-Action Section -->
-    <section class="py-20 px-5 bg-gradient-to-br from-blue-900 to-indigo-900 text-white mobile-section">
-        <div class="max-w-4xl mx-auto text-center">
-            <h2 class="text-3xl md:text-4xl font-bold mb-6">Begin Your Discipleship Journey</h2>
-            <p class="text-xl mb-8 max-w-2xl mx-auto leading-relaxed">
-                Take the next step in your spiritual growth and become established in God's Word through our comprehensive discipleship program.
-            </p>
-            @if(!$isRegistered)
-                <a href="{{ route('believers_academy.register') }}" class="bg-accent text-white px-12 py-5 rounded-full font-bold hover:bg-accent-light transition-all duration-300 transform hover:-translate-y-1 text-lg shadow-lg inline-block" wire:navigate>Join the Next Class</a>
-            @else
-                <a href="{{ route('home.believers.dashboard', request()->query()) }}" class="bg-green-500 text-white px-12 py-5 rounded-full font-bold hover:bg-green-600 transition-all duration-300 transform hover:-translate-y-1 text-lg shadow-lg inline-block" wire:navigate>Continue Your Journey</a>
-            @endif
-            <p class="text-white/70 mt-6">Next session begins soon • Limited spots available</p>
-        </div>
-    </section>
 </div>

@@ -39,7 +39,7 @@ new #[Layout('components.layouts.tailwind-layout')] class extends Component {
             $student = StudentClasses::where('user_id', $user->id)->first();
             if($student) {
                 session()->flash('info', 'You are already registered for the Believers Academy.');
-                $this->redirect(route('home.believers.dashboard', request()->query()));
+                $this->redirect(route('believers_academy.dashboard', request()->query()));
             }
             $this->name = $user->name;
             $this->email = $user->email;
@@ -49,6 +49,15 @@ new #[Layout('components.layouts.tailwind-layout')] class extends Component {
         }
 
         $this->chapters = Chapter::all();
+        if ($this->user) {
+            $this->selectedChapter = $this->user->chapter_id;
+        } elseif (request('chapter')) {
+            $this->selectedChapter = Chapter::where('name', request('chapter'))->first()?->id;
+        }
+
+        if ($this->selectedChapter) {
+            $this->updatedSelectedChapter();
+        }
     }
 
     public function updatedSelectedChapter()
@@ -189,7 +198,7 @@ new #[Layout('components.layouts.tailwind-layout')] class extends Component {
         $this->reset(['name', 'email', 'number', 'howDidYouKnowAboutUs', 'interest', 'selectedChapter', 'statusMessage', 'statusType', 'academy', 'academyTeam']);
         $this->errorMessages = [];
         session()->flash('success', 'Registration successful!');
-        $this->redirect(route('home.believers.dashboard', request()->query()));
+        $this->redirect(route('believers_academy.dashboard', request()->query()));
     }
 };
 ?>

@@ -15,9 +15,15 @@
         foreach ($relations as $var => $model) {
             $$var = $model::where('chapter_id', $chapterId)->pluck('team_id')->all();
         }
+
+        $isPartnershipTeamMember = auth()->user()->teams()
+            ->where('teams.chapter_id', $chapterId)
+            ->whereRaw('LOWER(teams.name) LIKE ?', ['%partnership%'])
+            ->exists();
     } else {
         // Super admin sees all
         $appointment_teams = $prayerRequestTeams = $believersAcademyTeam = $eventTeams = [];
+        $isPartnershipTeamMember = false;
     }
 @endphp
 
@@ -83,9 +89,16 @@
         </flux:navlist.item>
     </flux:navlist.group>
 
-    <flux:navlist.group expandable heading="Partnerships">
+@endif
+@if($isSuperAdmin || auth()->user()->hasRole('admin') || $isPartnershipTeamMember)
+    <flux:navlist.group expandable heading="Partnerships"
+        :expanded="request()->routeIs('admin.dashboard.partnership.*') ? 'true' : 'false'">
+        <flux:navlist.item :href="route('admin.dashboard.partnership.intents', request()->query())" wire:navigate
+            :active="request()->routeIs('admin.dashboard.partnership.intents') ? 'true' : 'false'">
+            Intent Management
+        </flux:navlist.item>
         <flux:navlist.item :href="route('admin.dashboard.partnership.accounts', request()->query())" wire:navigate
-            :active="request()->routeIs('admin.dashboard.partnership.account') ? 'true' : 'false'">
+            :active="request()->routeIs('admin.dashboard.partnership.accounts') ? 'true' : 'false'">
             Accounts
         </flux:navlist.item>
     </flux:navlist.group>
@@ -129,6 +142,24 @@
 
 </flux:navlist.group>
 @endrole
+
+@if($isSuperAdmin || auth()->user()->hasRole('admin'))
+    <flux:navlist.group expandable heading="Attendance"
+        :expanded="request()->routeIs('admin.dashboard.attendance.*') ? 'true' : 'false'">
+        <flux:navlist.item :href="route('admin.dashboard.attendance.manage', request()->query())" wire:navigate
+            :active="request()->routeIs('admin.dashboard.attendance.manage') ? 'true' : 'false'">
+            Manage Attendance
+        </flux:navlist.item>
+        <flux:navlist.item :href="route('admin.dashboard.attendance.checkin', request()->query())" wire:navigate
+            :active="request()->routeIs('admin.dashboard.attendance.checkin') ? 'true' : 'false'">
+            Check-in
+        </flux:navlist.item>
+        <flux:navlist.item :href="route('admin.dashboard.attendance.reports.index', request()->query())" wire:navigate
+            :active="request()->routeIs('admin.dashboard.attendance.reports.index') ? 'true' : 'false'">
+            Reports
+        </flux:navlist.item>
+    </flux:navlist.group>
+@endif
 
 @if ($isSuperAdmin || auth()->user()->hasRole('admin') || ($leadersTeam && in_array($leadersTeam->id, $eventTeams)))
     <flux:navlist.group expandable :expanded="false" heading="Events">

@@ -60,6 +60,11 @@ class User extends Authenticatable
         return $this->belongsTo(Chapter::class);
     }
 
+    public function partnershipIntents()
+    {
+        return $this->hasMany(PartnershipIntent::class);
+    }
+
     /**
      * Get the attributes that should be cast.
      *

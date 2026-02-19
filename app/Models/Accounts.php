@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Accounts extends Model
 {
@@ -114,9 +117,19 @@ class Accounts extends Model
     }
     
     // Relationships
-    public function events()
+    public function chapter(): BelongsTo
+    {
+        return $this->belongsTo(Chapter::class, 'chapter_id');
+    }
+
+    public function events(): BelongsToMany
     {
         return $this->belongsToMany(Events::class, 'account_events', 'account_id', 'event_id');
+    }
+
+    public function partnershipIntents(): HasMany
+    {
+        return $this->hasMany(PartnershipIntent::class, 'account_id');
     }
 
     // Methods

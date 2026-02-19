@@ -69,6 +69,11 @@ class Events extends Model
         return $this->hasMany(EventTeam::class, 'event_id');
     }
 
+    public function partnershipIntents()
+    {
+        return $this->hasMany(PartnershipIntent::class, 'event_id');
+    }
+
     /**
      * Check if registration is currently open
      */

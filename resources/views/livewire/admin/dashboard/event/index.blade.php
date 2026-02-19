@@ -8,6 +8,7 @@ use Livewire\WithPagination;
 use Illuminate\Validation\Rule;
 use TallStackUi\Traits\Interactions;
 use Livewire\WithFileUploads;
+use Illuminate\Support\Str;
 
 new #[Layout('components.layouts.admin')] class extends Component {
     use Interactions, WithPagination, WithFileUploads;
@@ -59,7 +60,14 @@ new #[Layout('components.layouts.admin')] class extends Component {
     public function with(): array
     {
         return [
-            'headers' => [['index' => 'title', 'label' => 'Title'], ['index' => 'start_at', 'label' => 'Starts'], ['index' => 'end_at', 'label' => 'Ends'], ['index' => 'status', 'label' => 'Status'], ['index' => 'action', 'label' => 'Action']],
+            'headers' => [
+                ['index' => 'title', 'label' => 'Title'],
+                ['index' => 'event_status', 'label' => 'Event Status'],
+                ['index' => 'start_at', 'label' => 'Starts'],
+                ['index' => 'end_at', 'label' => 'Ends'],
+                ['index' => 'status', 'label' => 'Publish Status'],
+                ['index' => 'action', 'label' => 'Action']
+            ],
             'rows' => $this->rows(),
         ];
     }
@@ -221,7 +229,13 @@ new #[Layout('components.layouts.admin')] class extends Component {
 };
 ?>
 <div>
-    <x-fancy-header title="Events" subtitle="View and Manage All Events" :breadcrumbs="[['label' => 'Home', 'url' => route('admin.dashboard', request()->query())], ['label' => 'Events']]" />
+    <x-fancy-header title="Events" subtitle="View and Manage All Events" :breadcrumbs="[['label' => 'Home', 'url' => route('admin.dashboard', request()->query())], ['label' => 'Events']]">
+        <x-slot:actions>
+            <a href="{{ route('admin.dashboard.events.create', request()->query()) }}">
+                <x-button color="primary" icon="plus" label="Create Event" />
+            </a>
+        </x-slot:actions>
+    </x-fancy-header>
 
     <x-modal id="event-edit-modal" title="Event Management" size="2xl">
         <div x-data="{ openSection: 'edit' }" class="space-y-4">
@@ -453,11 +467,30 @@ new #[Layout('components.layouts.admin')] class extends Component {
                 ]" wire:model.live='status' class="mb-4" />
             </x-slot:header>
 
+            @interact('column_event_status', $row)
+                @php
+                    $eventStatus = $row->getEventStatusText();
+                    $statusColors = [
+                        'Upcoming' => 'bg-blue-100 text-blue-800',
+                        'Ongoing' => 'bg-green-100 text-green-800',
+                        'Ended' => 'bg-gray-100 text-gray-800',
+                        'Not Published' => 'bg-yellow-100 text-yellow-800',
+                    ];
+                    $colorClass = $statusColors[$eventStatus] ?? 'bg-gray-100 text-gray-800';
+                @endphp
+                <span class="px-2 py-1 rounded-full text-xs font-semibold {{ $colorClass }}">
+                    {{ $eventStatus }}
+                </span>
+                @if($row->registration_required && $row->isAtCapacity())
+                    <span class="ml-1 px-2 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">Full</span>
+                @endif
+            @endinteract
+
             @interact('column_action', $row)
                 <div class="flex items-center space-x-2">
-                    <x-button.circle color="green" icon="eye"
-                        x-on:click="$modalOpen('event-modal');$wire.call('loadEvent', {{ $row->id }})"
-                        title="View Details" />
+                    <a href="{{ route('events.register', ['event_id' => $row->id]) }}" target="_blank" title="View on Site">
+                        <x-button.circle color="green" icon="eye" />
+                    </a>
 
                     <x-button color="blue" icon="pencil" sm
                         x-on:click="$wire.call('selectedEvent', {{ $row?->id }}).then(() => $modalOpen('event-edit-modal'))">
@@ -477,6 +510,10 @@ new #[Layout('components.layouts.admin')] class extends Component {
                             </x-button>
                         </a>
                     @endif
+
+                    <a href="{{ route('admin.dashboard.events.gallery', array_merge(['event' => $row->id], request()->query())) }}" title="Manage Gallery">
+                        <x-button.circle color="yellow" icon="photo" />
+                    </a>
 
                     <x-button.circle color="red" icon="trash" wire:click="deleteEvent('{{ $row->id }}')"
                         title="Delete Event" />

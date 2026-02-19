@@ -7,9 +7,13 @@ use App\Models\SermonSeries;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Url;
 
 new #[Layout('components.layouts.tailwind-layout')] class extends Component {
     use WithPagination;
+
+    #[Url(keep: true)]
+    public $page = 1;
 
     public $search = '';
     public $selectedSeries = null;
@@ -20,7 +24,8 @@ new #[Layout('components.layouts.tailwind-layout')] class extends Component {
             ->when($this->search, fn($q) => $q->where('title', 'like', "%{$this->search}%"))
             ->when($this->selectedSeries, fn($q) => $q->where('series_id', $this->selectedSeries))
             ->latest('preached_at')
-            ->paginate(12);
+            ->paginate(12)
+            ->withQueryString();
 
         $series = SermonSeries::withCount('sermons')->latest()->take(6)->get();
         $latestSermon = Sermons::with(['series', 'media'])->latest('preached_at')->first();

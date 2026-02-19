@@ -1,361 +1,649 @@
 <?php
 
-use Livewire\Volt\Component;
-use Livewire\Attributes\{Layout, Rule, Comoputed};
 use App\Models\Accounts;
+use App\Models\Chapter;
 use App\Models\Events;
 use App\Models\Partnership;
-use App\Models\Chapter;
+use App\Models\PartnershipCategory;
+use App\Models\PartnershipIntent;
+use Illuminate\Validation\Rule;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Url;
+use Livewire\Volt\Component;
 
 new #[Layout('components.layouts.tailwind-layout')] class extends Component {
-    public $selected_chapter = '';
-    public $name;
-    public $email;
-    public $phone;
-    public $preferred_location;
-    public $partnership_interests;
-    public $organization;
-    public $website;
-    public $partnership_type;
-    public $proposed_amount;
-    public $conclaves;
-    public $donationAccounts;
+    #[Url]
+    public ?string $chapter = null;
 
-    public function mount()
-    {
-        $this->conclaves = Chapter::all();
-        $this->donationAccounts = collect();
-    }
+    public ?int $selectedChapterId = null;
+    public $chapters;
 
-    public function updatedSelectedChapter($value)
+    public string $name = '';
+    public string $email = '';
+    public ?string $phone = null;
+    public ?string $organization = null;
+    public ?string $website = null;
+
+    public string $intentType = 'general';
+    public ?int $categoryId = null;
+    public ?int $accountId = null;
+    public ?int $eventId = null;
+
+    public string $intentTitle = '';
+    public ?float $pledgeAmount = null;
+    public string $pledgeCurrency = 'NGN';
+    public string $pledgeFrequency = 'one_time';
+    public ?string $intentNotes = null;
+
+    public $chapterAccounts;
+    public $chapterCategories;
+    public $chapterEvents;
+    public $eventAccounts;
+
+    public ?string $message = null;
+    public string $messageType = 'success';
+
+    public function mount(): void
     {
-        if ($value) {
-            $this->donationAccounts = Accounts::where('account_type', 'donation')->where('chapter_id', $value)
-            ->get();
-        } else {
-            $this->donationAccounts = collect();
+        $this->chapters = Chapter::query()->orderBy('name')->get(['id', 'name']);
+
+        $this->setInitialChapter();
+        $this->loadChapterResources();
+
+        if (auth()->check()) {
+            $this->name = (string) auth()->user()->name;
+            $this->email = (string) auth()->user()->email;
+        }
+
+        if ($this->intentTitle === '') {
+            $this->intentTitle = 'Partnership Intent';
         }
     }
 
-    public function submit()
+    public function updatedSelectedChapterId($value): void
     {
-        $this->validate([
+        $this->selectedChapterId = $value ? (int) $value : null;
+
+        $selected = $this->chapters->firstWhere('id', $this->selectedChapterId);
+        $this->chapter = $selected?->name;
+
+        $this->accountId = null;
+        $this->categoryId = null;
+        $this->eventId = null;
+
+        $this->loadChapterResources();
+    }
+
+    public function updatedIntentType(string $value): void
+    {
+        if ($value !== 'event') {
+            $this->eventId = null;
+            $this->eventAccounts = collect();
+        }
+
+        if ($value !== 'project') {
+            $this->categoryId = null;
+        }
+
+        $this->accountId = null;
+    }
+
+    public function updatedCategoryId($value): void
+    {
+        if ($this->intentType !== 'project') {
+            $this->categoryId = null;
+            return;
+        }
+
+        $this->categoryId = $value ? (int) $value : null;
+
+        if (!$this->categoryId) {
+            $this->accountId = null;
+            return;
+        }
+
+        $linkedAccountId = PartnershipCategory::query()
+            ->where('chapter_id', $this->selectedChapterId)
+            ->where('is_active', true)
+            ->where('id', $this->categoryId)
+            ->whereHas('account', function ($query): void {
+                $query->where('is_active', true)
+                    ->where(function ($inner): void {
+                        $inner->where('chapter_id', $this->selectedChapterId)
+                            ->orWhereNull('chapter_id');
+                    });
+            })
+            ->value('account_id');
+
+        $this->accountId = $linkedAccountId ? (int) $linkedAccountId : null;
+    }
+
+    public function updatedEventId($value): void
+    {
+        if ($this->intentType !== 'event') {
+            $this->eventId = null;
+            $this->eventAccounts = collect();
+            return;
+        }
+
+        $this->eventId = $value ? (int) $value : null;
+        $this->accountId = null;
+        $this->loadEventAccounts();
+    }
+
+    public function submit(): void
+    {
+        $validated = $this->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
-            'phone' => 'nullable|string|max:20',
-            'preferred_location' => 'nullable|string|max:255',
-            'partnership_interests' => 'nullable|string',
+            'phone' => 'nullable|string|max:30',
             'organization' => 'nullable|string|max:255',
             'website' => 'nullable|url|max:255',
-            'partnership_type' => 'nullable|in:financial,strategic,ministry,technology,other',
-            'proposed_amount' => 'nullable|numeric|min:0',
+            'selectedChapterId' => 'required|integer|exists:chapters,id',
+            'intentType' => 'required|in:general,event,project',
+            'categoryId' => $this->intentType === 'project'
+                ? [
+                    'required',
+                    'integer',
+                    Rule::exists('partnership_categories', 'id')->where(fn($query) => $query
+                        ->where('chapter_id', $this->selectedChapterId)
+                        ->where('is_active', true)
+                        ->whereNotNull('account_id')),
+                ]
+                : ['nullable', 'integer'],
+            'eventId' => $this->intentType === 'event'
+                ? [
+                    'required',
+                    'integer',
+                    Rule::exists('events', 'id')->where(fn($query) => $query->where('chapter_id', $this->selectedChapterId)),
+                ]
+                : ['nullable', 'integer'],
+            'accountId' => $this->intentType === 'general'
+                ? [
+                    'required',
+                    'integer',
+                    Rule::exists('accounts', 'id')->where(fn($query) => $query
+                        ->where('is_active', true)
+                        ->where(function ($inner): void {
+                            $inner->where('chapter_id', $this->selectedChapterId)
+                                ->orWhereNull('chapter_id');
+                        })),
+                ]
+                : ['nullable', 'integer'],
+            'intentTitle' => 'required|string|max:255',
+            'pledgeAmount' => 'nullable|numeric|min:0',
+            'pledgeCurrency' => 'required|string|size:3',
+            'pledgeFrequency' => 'required|in:one_time,weekly,monthly,quarterly,yearly,custom',
+            'intentNotes' => 'nullable|string|max:5000',
         ]);
 
+        if ($validated['intentType'] === 'project') {
+            $selectedCategory = PartnershipCategory::query()
+                ->with(['account' => function ($query): void {
+                    $query->where('is_active', true)
+                        ->where(function ($inner): void {
+                            $inner->where('chapter_id', $this->selectedChapterId)
+                                ->orWhereNull('chapter_id');
+                        });
+                }])
+                ->where('chapter_id', $this->selectedChapterId)
+                ->where('is_active', true)
+                ->find($validated['categoryId']);
+
+            if (!$selectedCategory || !$selectedCategory->account) {
+                $this->addError('categoryId', 'Selected category does not have an active linked account.');
+                return;
+            }
+
+            $this->accountId = (int) $selectedCategory->account->id;
+        }
+
+        if ($validated['intentType'] === 'event') {
+            $eventAccounts = Accounts::query()
+                ->whereHas('events', fn($query) => $query->where('events.id', $validated['eventId']))
+                ->where('is_active', true)
+                ->orderBy('account_name')
+                ->get(['id']);
+
+            if ($eventAccounts->isEmpty()) {
+                $this->addError('eventId', 'Selected event does not have a linked contribution account.');
+                return;
+            }
+
+            if (!$validated['accountId'] && $eventAccounts->count() === 1) {
+                $this->accountId = (int) $eventAccounts->first()->id;
+            } else {
+                $this->accountId = $validated['accountId'] ? (int) $validated['accountId'] : null;
+            }
+
+            if (!$this->accountId || !$eventAccounts->pluck('id')->contains($this->accountId)) {
+                $this->addError('accountId', 'Select a contribution account linked to the event.');
+                return;
+            }
+        }
+
+        $chapter = Chapter::find($validated['selectedChapterId']);
+
+        PartnershipIntent::create([
+            'chapter_id' => $validated['selectedChapterId'],
+            'user_id' => auth()->id(),
+            'partnership_category_id' => $validated['categoryId'] ?? null,
+            'account_id' => $this->accountId ?? null,
+            'event_id' => $validated['eventId'] ?? null,
+            'intent_type' => $validated['intentType'],
+            'title' => $validated['intentTitle'],
+            'pledge_amount' => $validated['pledgeAmount'] ?? null,
+            'pledge_currency' => strtoupper($validated['pledgeCurrency']),
+            'pledge_frequency' => $validated['pledgeFrequency'],
+            'status' => 'pending',
+            'notes' => $validated['intentNotes'] ?? null,
+            'pledged_at' => now(),
+        ]);
+
+        // Keep legacy partnership pipeline populated while transition is ongoing.
         Partnership::create([
-            'name' => $this->name,
-            'email' => $this->email,
-            'phone' => $this->phone,
-            'preferred_location' => $this->preferred_location,
-            'partnership_interests' => $this->partnership_interests,
-            'organization' => $this->organization,
-            'website' => $this->website,
-            'partnership_type' => $this->partnership_type,
-            'proposed_amount' => $this->proposed_amount,
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'] ?? null,
+            'preferred_location' => $chapter?->name,
+            'partnership_interests' => $validated['intentNotes'] ?? null,
+            'organization' => $validated['organization'] ?? null,
+            'website' => $validated['website'] ?? null,
+            'partnership_type' => $this->mapIntentTypeToLegacyPartnershipType($validated['intentType']),
+            'proposed_amount' => $validated['pledgeAmount'] ?? null,
+            'status' => 'pending',
         ]);
 
-        session()->flash('message', 'Partnership inquiry submitted successfully!');
+        $this->messageType = 'success';
+        $this->message = 'Partnership intent submitted successfully. The partnership team will review it shortly.';
 
-        // Reset form
-        $this->reset(['name', 'email', 'phone', 'preferred_location', 'partnership_interests', 'organization', 'website', 'partnership_type', 'proposed_amount']);
+        $this->reset([
+            'phone',
+            'organization',
+            'website',
+            'intentType',
+            'categoryId',
+            'accountId',
+            'eventId',
+            'intentTitle',
+            'pledgeAmount',
+            'pledgeCurrency',
+            'pledgeFrequency',
+            'intentNotes',
+        ]);
+
+        $this->intentType = 'general';
+        $this->intentTitle = 'Partnership Intent';
+        $this->pledgeCurrency = 'NGN';
+        $this->pledgeFrequency = 'one_time';
+
+        if (auth()->check()) {
+            $this->name = (string) auth()->user()->name;
+            $this->email = (string) auth()->user()->email;
+        }
+    }
+
+    private function setInitialChapter(): void
+    {
+        $selected = null;
+
+        if ($this->chapter) {
+            $selected = $this->chapters->firstWhere('name', $this->chapter);
+        }
+
+        if (!$selected && auth()->check() && auth()->user()->chapter_id) {
+            $selected = $this->chapters->firstWhere('id', (int) auth()->user()->chapter_id);
+        }
+
+        if (!$selected) {
+            $selected = $this->chapters->first();
+        }
+
+        $this->selectedChapterId = $selected?->id;
+        $this->chapter = $selected?->name;
+    }
+
+    private function loadChapterResources(): void
+    {
+        if (!$this->selectedChapterId) {
+            $this->chapterAccounts = collect();
+            $this->chapterCategories = collect();
+            $this->chapterEvents = collect();
+            $this->eventAccounts = collect();
+            return;
+        }
+
+        $this->chapterAccounts = Accounts::query()
+            ->where(function ($query): void {
+                $query->where('chapter_id', $this->selectedChapterId)
+                    ->orWhereNull('chapter_id');
+            })
+            ->where('is_active', true)
+            ->orderBy('account_type')
+            ->orderBy('account_name')
+            ->get([
+                'id',
+                'account_name',
+                'account_number',
+                'bank_name',
+                'currency',
+                'account_type',
+                'contact_email',
+                'contact_phone',
+                'special_instructions',
+                'chapter_id',
+            ]);
+
+        $this->chapterCategories = PartnershipCategory::query()
+            ->where('chapter_id', $this->selectedChapterId)
+            ->where('is_active', true)
+            ->whereNotNull('account_id')
+            ->whereHas('account', function ($query): void {
+                $query->where('is_active', true)
+                    ->where(function ($inner): void {
+                        $inner->where('chapter_id', $this->selectedChapterId)
+                            ->orWhereNull('chapter_id');
+                    });
+            })
+            ->with('account:id,account_name,account_number,bank_name,chapter_id,is_active')
+            ->orderBy('name')
+            ->get(['id', 'name', 'description', 'account_id']);
+
+        $this->chapterEvents = Events::query()
+            ->where('chapter_id', $this->selectedChapterId)
+            ->where('status', 'published')
+            ->orderBy('start_at')
+            ->get(['id', 'title', 'start_at']);
+
+        $this->loadEventAccounts();
+    }
+
+    private function loadEventAccounts(): void
+    {
+        if (!$this->eventId || $this->intentType !== 'event') {
+            $this->eventAccounts = collect();
+            return;
+        }
+
+        $this->eventAccounts = Accounts::query()
+            ->whereHas('events', fn($query) => $query->where('events.id', $this->eventId))
+            ->where('is_active', true)
+            ->orderBy('account_name')
+            ->get(['id', 'account_name', 'account_number', 'bank_name', 'chapter_id']);
+
+        if ($this->eventAccounts->count() === 1 && !$this->accountId) {
+            $this->accountId = (int) $this->eventAccounts->first()->id;
+        }
+    }
+
+    private function mapIntentTypeToLegacyPartnershipType(string $intentType): string
+    {
+        return match ($intentType) {
+            'event' => 'ministry',
+            'project' => 'strategic',
+            default => 'financial',
+        };
     }
 }; ?>
 
-<div>
+<div class="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
+    <section class="overflow-hidden rounded-3xl border border-blue-100 bg-white shadow-[0_24px_60px_-40px_rgba(37,99,235,0.45)]">
+        <div class="bg-gradient-to-r from-blue-600 to-blue-500 px-6 py-12 text-white sm:px-10">
+            <p class="text-xs font-semibold uppercase tracking-[0.3em] text-blue-100">Partnership</p>
+            <h1 class="mt-3 text-3xl font-bold sm:text-4xl">Partnership Intent</h1>
+            <p class="mt-3 max-w-3xl text-sm text-blue-100 sm:text-base">
+                Submit your partnership intent, choose a category, and link it to a chapter/global account.
+                This records intent only and does not process payments online.
+            </p>
+        </div>
 
-    <div class="d-flex flex-column min-vh-100">
-        <!-- Main Content -->
-        <main class="flex-grow-1">
-            <div class="container-fluid px-4 px-sm-6 px-lg-8 py-5">
-                <div class="row g-5 align-items-center">
-                    <div class="col-lg-6">
-                        <div class="d-flex flex-column gap-5">
-                            <div class="position-relative w-100" style="height: 384px;">
-                                <div class="w-100 h-100 rounded-lg shadow-lg overflow-hidden">
-                                    <div class="w-100 h-100 bg-cover bg-center"
-                                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBQgJsLm3cy4TkE1XuD8Bras0FFkONp001tRfZVehPEsSg9ZPsqMgfaQufhm0Byl752-P9BIPqU_R3JNThN5UfrxaRxTz3P-uTRJ_A3BKEdQRHEJ78mVpmsSGPy4qvoS04QFY82x6QrdIq87TMW8vCZsUZ_CN8xGhPxXYt50B1BQvSwFy_J8Qd2pA2Xl_zH-QFJsGZaQh5DeUEQqnhmXSU-cNHShZJminRImAARDNiudEJ48ElwWTsswtLJDnbLAcFUE4SQKGBXLjVs");'>
-                                    </div>
-                                    <div class="position-absolute top-0 start-0 w-100 h-100 dark-image-overlay"></div>
-                                    <div class="position-absolute bottom-0 start-0 p-4 text-white">
-                                        <h1 class="fs-2 fw-bold">Want to be a Partner?</h1>
-                                        <p class="mt-2 text-white">Explore partnership opportunities and leverage our
-                                            cutting-edge technology to drive mutual growth and success.</p>
-                                        <button class="btn custom-primary text-white mt-3 rounded-lg fw-bold">Become a
-                                            Partner</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card p-4 shadow-lg border">
-                                <h2 class="fs-3 fw-bold">Location Payment Details</h2>
-                                <p class="text-muted mt-2">Select a location to view details on supported payment
-                                    methods, fees, and currencies.</p>
-                                <div class="col-12 mt-3">
-                                    <label class="form-label text-muted" for="conclave-location">Select Conclave</label>
-                                    <select class="form-select rounded-lg" id="conclave-location"
-                                        name="conclave-location" wire:model.live="selected_chapter">
-                                        <option value="">Select a Conclave</option>
-                                        @foreach ($this->conclaves as $conclave)
-                                            <option value="{{ $conclave->id }}">{{ $conclave->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div id="payment-details" class="mt-4">
-                                    @if ($donationAccounts->isNotEmpty())
-                                        <h5 class="fw-bold">Donation Accounts for
-                                            {{ $this->conclaves->where('id', $this->selected_chapter)->first()->name ?? 'Selected Conclave' }}:
-                                        </h5>
-                                        @foreach ($donationAccounts as $account)
-                                            <div class="card mb-3 p-3">
-                                                <h6>{{ $account->account_name }}</h6>
-                                                <ul class="list-unstyled">
-                                                    <li><strong>Account Number:</strong>
-                                                        {{ $account->formatted_account_number }}</li>
-                                                    <li><strong>Bank:</strong> {{ $account->bank_name }}</li>
-                                                    <li><strong>Currency:</strong> {{ $account->currency }}</li>
-                                                    @if ($account->supported_payment_methods)
-                                                        <li><strong>Supported Payment Methods:</strong>
-                                                            {{ implode(', ', $account->supported_payment_methods) }}
-                                                        </li>
-                                                    @endif
-                                                    @if ($account->minimum_amount)
-                                                        <li><strong>Minimum Amount:</strong> {{ $account->currency }}
-                                                            {{ number_format($account->minimum_amount, 2) }}</li>
-                                                    @endif
-                                                    @if ($account->maximum_amount)
-                                                        <li><strong>Maximum Amount:</strong> {{ $account->currency }}
-                                                            {{ number_format($account->maximum_amount, 2) }}</li>
-                                                    @endif
-                                                    @if ($account->special_instructions)
-                                                        <li><strong>Special Instructions:</strong>
-                                                            {{ $account->special_instructions }}</li>
-                                                    @endif
-                                                    <li><strong>Contact:</strong> {{ $account->contact_email }}</li>
-                                                </ul>
-                                            </div>
-                                        @endforeach
-                                    @elseif($this->selected_chapter)
-                                        <div class="text-center text-muted">
-                                            <p>No donation accounts available for this location.</p>
-                                        </div>
-                                    @else
-                                        <div class="text-center text-muted">
-                                            <p>Please select a location from the dropdown above to view payment
-                                                information.</p>
-                                        </div>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
+        <div class="space-y-8 px-6 py-8 sm:px-10">
+            @if ($message)
+                <div class="rounded-2xl border px-4 py-3 text-sm {{ $messageType === 'success' ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-red-200 bg-red-50 text-red-700' }}">
+                    {{ $message }}
+                </div>
+            @endif
+
+            <div class="grid gap-6 lg:grid-cols-[1.15fr_1fr]">
+                <article class="rounded-2xl border border-blue-100 bg-white p-5">
+                    <h2 class="text-lg font-semibold text-slate-900">Chapter Accounts</h2>
+                    <p class="mt-1 text-sm text-slate-600">Available chapter and global partnership accounts.</p>
+
+                    <div class="mt-4">
+                        <label for="selected_chapter_id" class="mb-2 block text-sm font-medium text-slate-700">Chapter</label>
+                        <select
+                            id="selected_chapter_id"
+                            wire:model.live="selectedChapterId"
+                            class="w-full rounded-xl border border-blue-100 px-4 py-3 text-sm text-slate-900"
+                        >
+                            <option value="">Select chapter</option>
+                            @foreach($chapters as $chapterOption)
+                                <option value="{{ $chapterOption->id }}">{{ $chapterOption->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('selectedChapterId') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                     </div>
-                    <div class="col-lg-6">
-                        <div class="card p-4 shadow-lg border">
-                            <h2 class="fs-3 fw-bold">Partnership Form</h2>
-                            <p class="text-muted mt-2">Fill out the form below to get in touch with our partnerships
-                                team.</p>
-                            <form class="mt-4 row g-3" wire:submit.prevent="submit">
-                                @if (session('message'))
-                                    <div class="alert alert-success">
-                                        {{ session('message') }}
-                                    </div>
+
+                    <div class="mt-4 max-h-[350px] space-y-3 overflow-y-auto pr-1">
+                        @forelse($chapterAccounts as $account)
+                            <div class="rounded-xl border border-blue-100 bg-blue-50/60 p-3">
+                                <p class="text-sm font-semibold text-slate-900">{{ $account->account_name }}</p>
+                                <p class="mt-1 text-xs text-slate-600">{{ $account->bank_name }} • {{ $account->account_number }}</p>
+                                <p class="mt-1 text-xs text-slate-600">{{ strtoupper($account->account_type) }} • {{ $account->currency }}</p>
+                                @if($account->chapter_id === null)
+                                    <p class="mt-1 text-xs font-medium text-indigo-600">Global account</p>
                                 @endif
-                                <div class="col-12">
-                                    <label class="form-label text-muted" for="company-name">Name</label>
-                                    <input class="form-control rounded-lg" id="company-name" name="company-name"
-                                        placeholder="Your name" type="text" wire:model="name" />
-                                    @error('name')
-                                        <div class="text-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label text-muted" for="email">Email Address</label>
-                                    <input class="form-control rounded-lg" id="email" name="email"
-                                        placeholder="you@example.com" type="email" wire:model="email" />
-                                    @error('email')
-                                        <div class="text-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label text-muted" for="phone">Phone Number</label>
-                                    <input class="form-control rounded-lg" id="phone" name="phone"
-                                        placeholder="(123) 456-7890" type="text" wire:model="phone" />
-                                    @error('phone')
-                                        <div class="text-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label text-muted" for="preferred_location">Preferred Location
-                                        Conclave</label>
-                                    <select class="form-select rounded-lg" id="preferred_location"
-                                        name="preferred_location" wire:model="preferred_location">
-                                        <option value="">Select a Conclave</option>
-                                        @foreach ($this->conclaves as $conclave)
-                                            <option value="{{ $conclave->name }}">{{ $conclave->name }}</option>
-                                        @endforeach
-                                    </select>
-                                    @error('preferred_location')
-                                        <div class="text-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label text-muted" for="organization">Organization</label>
-                                    <input class="form-control rounded-lg" id="organization" name="organization"
-                                        placeholder="Your organization" type="text" wire:model="organization" />
-                                    @error('organization')
-                                        <div class="text-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label text-muted" for="website">Website</label>
-                                    <input class="form-control rounded-lg" id="website" name="website"
-                                        placeholder="https://yourwebsite.com" type="url" wire:model="website" />
-                                    @error('website')
-                                        <div class="text-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label text-muted" for="partnership_type">Partnership
-                                        Type</label>
-                                    <select class="form-select rounded-lg" id="partnership_type"
-                                        name="partnership_type" wire:model="partnership_type">
-                                        <option value="">Select Type</option>
-                                        <option value="financial">Financial</option>
-                                        <option value="strategic">Strategic</option>
-                                        <option value="ministry">Ministry</option>
-                                        <option value="technology">Technology</option>
-                                        <option value="other">Other</option>
-                                    </select>
-                                    @error('partnership_type')
-                                        <div class="text-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label text-muted" for="proposed_amount">Proposed Amount</label>
-                                    <input class="form-control rounded-lg" id="proposed_amount"
-                                        name="proposed_amount" placeholder="0.00" type="number" step="0.01"
-                                        wire:model="proposed_amount" />
-                                    @error('proposed_amount')
-                                        <div class="text-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label text-muted" for="message">Briefly describe your
-                                        partnership
-                                        interests</label>
-                                    <textarea class="form-control rounded-lg" id="message" name="message"
-                                        placeholder="Tell us what you're looking for in a partnership." rows="4"
-                                        wire:model="partnership_interests"></textarea>
-                                    @error('partnership_interests')
-                                        <div class="text-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="col-12">
-                                    <button class="btn custom-primary text-white w-100 rounded-lg fw-bold"
-                                        type="submit">
-                                        Submit Inquiry
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
+                                @if($account->contact_email || $account->contact_phone)
+                                    <p class="mt-1 text-xs text-slate-500">
+                                        {{ $account->contact_email ?: '' }}{{ $account->contact_email && $account->contact_phone ? ' • ' : '' }}{{ $account->contact_phone ?: '' }}
+                                    </p>
+                                @endif
+                                @if($account->special_instructions)
+                                    <p class="mt-2 text-xs text-slate-500">{{ $account->special_instructions }}</p>
+                                @endif
+                            </div>
+                        @empty
+                            <div class="rounded-xl border border-dashed border-blue-200 bg-blue-50/60 p-4 text-sm text-slate-500">
+                                No active partnership accounts are configured for this chapter yet.
+                            </div>
+                        @endforelse
                     </div>
-                </div>
-            </div>
-        </main>
 
-        <!-- Footer -->
-        <footer class="main-footer">
-
-            <div class="row mx-2">
-
-                <div class="footer-content-con row mx-2">
-                    <div class="footer-content col-lg-3 col-md-6">
-                        <!-- <img src="Img/doxa.PNG"> -->
-                        <h2>Doxa commissin Global</h2>
-                        <h4>Bringing nation into God's glory world</h3>
-                            <div class="footer-info">
-                                <p>
-                                    <i class="fa-solid fa-location-dot"></i>129 Goldie, Adjacent amika
-                                    utuk, Calabar, Cross River State, Nigeria.
-                                </p>
-                                <p><i class="fa-solid fa-phone"></i>+234 [Your Phone Number]</p>
-                                <p>
-                                    <i class="fa-regular fa-envelope"></i>
-                                    <a href="mailto:info@doxachurch.org">info@doxachurch.org</a>
-                                </p>
+                    <div class="mt-5 rounded-xl border border-indigo-100 bg-indigo-50/70 p-4">
+                        <h3 class="text-sm font-semibold text-indigo-900">Available Categories</h3>
+                            <div class="mt-2 flex flex-wrap gap-2">
+                                @forelse($chapterCategories as $category)
+                                    <span class="rounded-full border border-indigo-200 bg-white px-3 py-1 text-xs font-medium text-indigo-700">
+                                        {{ $category->name }}{{ $category->account ? ' • ' . $category->account->account_name . ($category->account->account_number ? ' (' . $category->account->account_number . ')' : '') : '' }}
+                                    </span>
+                                @empty
+                                    <span class="text-xs text-indigo-700">No categories configured for this chapter yet.</span>
+                                @endforelse
                             </div>
                     </div>
+                </article>
 
-                    <div class="footer-content col-lg-3 col-md-6">
-                        <h2>Sunday Glory Life service</h2>
-                        <p>7am, 8:30am, 10am and 4pm</p>
-                        <h4>Thursday Glory Experience</h4>
-                        <p>5:30pm</p>
-                    </div>
+                <article class="rounded-2xl border border-blue-100 bg-white p-5">
+                    <h2 class="text-lg font-semibold text-slate-900">Submit Intent</h2>
+                    <p class="mt-1 text-sm text-slate-600">All submissions are reviewed by the chapter partnership team.</p>
 
-                    <div class="footer-content col-lg-3 col-md-6">
-                        <h2>Quick Links</h2>
-                        <ul>
-                            <li><a href="{{ route('home') }}" wire:navigate>Home</a></li>
-                            <li><a href="{{ route('sermons.index') }}" wire:navigate>Messages</a></li>
-                            <li><a href="{{ route('home') }}" wire:navigate>About</a></li>
-                            <li><a href="{{ route('home') }}" wire:navigate>Location</a></li>
-                            <li><a href="{{ route('believers.academy') }}" wire:navigate>Believers Class</a></li>
-                        </ul>
-                    </div>
-
-                    <div class="footer-content newsletter col-lg-3 col-md-6">
-                        <h3 class=>Stay Connected</h3>
-                        <p></p>Subscribe to our newsletter for updates and spiritual insights.</p>
-                        <form id="newsletter-form">
-                            <input type="email" id="newsletter-email" placeholder="Your email address" required>
-                            <button type="submit">
-                                Subscribe
-                            </button>
-                        </form>
-                        <div class="footer-icons-wrapper">
-                            <a href="https://www.facebook.com/DoxaCommissionGlobal/" aria-label="Facebook"><i
-                                    class="fab fa-facebook-f"></i></a>
-                            <a href="https://www.instagram.com/doxa_commission/?hl=en" aria-label="Instagram"><i
-                                    class="fab fa-instagram"></i></a>
-                            <a href="https://www.tiktok.com/discover/doxa-commission-global" aria-label="TikTok"><i
-                                    class="fab fa-tiktok"></i></a>
-                            <a href="https://www.youtube.com/channel/UCZtReUAxK3S6qBKnV5G6PTw" aria-label="YouTube"><i
-                                    class="fab fa-youtube"></i></a>
-                            <a href="#" aria-label="Spotify"><i class="fab fa-spotify"></i></a>
+                    <form class="mt-4 space-y-4" wire:submit.prevent="submit">
+                        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                            <div>
+                                <label for="name" class="mb-2 block text-sm font-medium text-slate-700">Name</label>
+                                <input id="name" type="text" wire:model="name" class="w-full rounded-xl border border-blue-100 px-4 py-3 text-sm text-slate-900" />
+                                @error('name') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                            </div>
+                            <div>
+                                <label for="email" class="mb-2 block text-sm font-medium text-slate-700">Email</label>
+                                <input id="email" type="email" wire:model="email" class="w-full rounded-xl border border-blue-100 px-4 py-3 text-sm text-slate-900" />
+                                @error('email') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                            </div>
                         </div>
-                        <p style="color: rgb(204, 198, 198); text-align: center; margin-top: 8px;">Follow us for update
-                            and
-                            inspiration!</p>
-                    </div>
-                </div>
 
-                <div class="break"></div>
+                        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                            <div>
+                                <label for="phone" class="mb-2 block text-sm font-medium text-slate-700">Phone (Optional)</label>
+                                <input id="phone" type="text" wire:model="phone" class="w-full rounded-xl border border-blue-100 px-4 py-3 text-sm text-slate-900" />
+                                @error('phone') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                            </div>
+                            <div>
+                                <label for="organization" class="mb-2 block text-sm font-medium text-slate-700">Organization (Optional)</label>
+                                <input id="organization" type="text" wire:model="organization" class="w-full rounded-xl border border-blue-100 px-4 py-3 text-sm text-slate-900" />
+                                @error('organization') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                            </div>
+                        </div>
 
-                <div class="footer-2">
-                    <p>&copy; Copyright Doxa Commission Global <span id="current-year"></span> All Right Reserved.
-                        Desinged and Developed by Doxa
-                        database
-                    </p>
-                </div>
+                        <div>
+                            <label for="website" class="mb-2 block text-sm font-medium text-slate-700">Website (Optional)</label>
+                            <input id="website" type="url" wire:model="website" class="w-full rounded-xl border border-blue-100 px-4 py-3 text-sm text-slate-900" placeholder="https://example.com" />
+                            @error('website') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                        </div>
 
+                        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                            <div>
+                                <label for="intent_type" class="mb-2 block text-sm font-medium text-slate-700">Intent Type</label>
+                                <select id="intent_type" wire:model.live="intentType" class="w-full rounded-xl border border-blue-100 px-4 py-3 text-sm text-slate-900">
+                                    <option value="general">General</option>
+                                    <option value="event">Event</option>
+                                    <option value="project">Project</option>
+                                </select>
+                                @error('intentType') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                            </div>
+                            @if($intentType === 'project')
+                                <div>
+                                    <label for="category_id" class="mb-2 block text-sm font-medium text-slate-700">Category</label>
+                                    <select id="category_id" wire:model.live="categoryId" class="w-full rounded-xl border border-blue-100 px-4 py-3 text-sm text-slate-900">
+                                        <option value="">Select category</option>
+                                        @foreach($chapterCategories as $category)
+                                            <option value="{{ $category->id }}">
+                                                {{ $category->name }}{{ $category->account ? ' - ' . $category->account->account_name . ($category->account->account_number ? ' (' . $category->account->account_number . ')' : '') : '' }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('categoryId') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                                </div>
+                            @else
+                                <div>
+                                    <label for="account_id" class="mb-2 block text-sm font-medium text-slate-700">Contribution Account</label>
+                                    <select id="account_id" wire:model.live="accountId" class="w-full rounded-xl border border-blue-100 px-4 py-3 text-sm text-slate-900">
+                                        <option value="">Select account</option>
+                                        @if($intentType === 'event')
+                                            @foreach($eventAccounts as $account)
+                                                <option value="{{ $account->id }}">
+                                                    {{ $account->account_name }} ({{ $account->bank_name }}){{ $account->account_number ? ' • ' . $account->account_number : '' }}{{ $account->chapter_id === null ? ' - Global' : '' }}
+                                                </option>
+                                            @endforeach
+                                        @else
+                                            @foreach($chapterAccounts as $account)
+                                                <option value="{{ $account->id }}">
+                                                    {{ $account->account_name }} ({{ $account->bank_name }}){{ $account->account_number ? ' • ' . $account->account_number : '' }}{{ $account->chapter_id === null ? ' - Global' : '' }}
+                                                </option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                    @error('accountId') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                                </div>
+                            @endif
+                        </div>
+
+                        <div>
+                            <label for="intent_title" class="mb-2 block text-sm font-medium text-slate-700">Intent Title</label>
+                            <input id="intent_title" type="text" wire:model="intentTitle" class="w-full rounded-xl border border-blue-100 px-4 py-3 text-sm text-slate-900" placeholder="Partnership Intent" />
+                            @error('intentTitle') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                            <div>
+                                <label for="pledge_amount" class="mb-2 block text-sm font-medium text-slate-700">Pledge Amount (Optional)</label>
+                                <input id="pledge_amount" type="number" min="0" step="0.01" wire:model="pledgeAmount" class="w-full rounded-xl border border-blue-100 px-4 py-3 text-sm text-slate-900" />
+                                @error('pledgeAmount') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                            </div>
+                            <div>
+                                <label for="pledge_currency" class="mb-2 block text-sm font-medium text-slate-700">Currency</label>
+                                <input id="pledge_currency" type="text" maxlength="3" wire:model="pledgeCurrency" class="w-full rounded-xl border border-blue-100 px-4 py-3 text-sm text-slate-900" />
+                                @error('pledgeCurrency') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                            </div>
+                            <div>
+                                <label for="pledge_frequency" class="mb-2 block text-sm font-medium text-slate-700">Frequency</label>
+                                <select id="pledge_frequency" wire:model="pledgeFrequency" class="w-full rounded-xl border border-blue-100 px-4 py-3 text-sm text-slate-900">
+                                    <option value="one_time">One Time</option>
+                                    <option value="weekly">Weekly</option>
+                                    <option value="monthly">Monthly</option>
+                                    <option value="quarterly">Quarterly</option>
+                                    <option value="yearly">Yearly</option>
+                                    <option value="custom">Custom</option>
+                                </select>
+                                @error('pledgeFrequency') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                            </div>
+                        </div>
+
+                        @if($intentType === 'event')
+                            <div>
+                                <label for="event_id" class="mb-2 block text-sm font-medium text-slate-700">Event</label>
+                                <select id="event_id" wire:model="eventId" class="w-full rounded-xl border border-blue-100 px-4 py-3 text-sm text-slate-900">
+                                    <option value="">Select event</option>
+                                    @foreach($chapterEvents as $event)
+                                        <option value="{{ $event->id }}">
+                                            {{ $event->title }}
+                                            @if($event->start_at)
+                                                ({{ $event->start_at->format('M d, Y') }})
+                                            @endif
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('eventId') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                            </div>
+                        @endif
+
+                        @php
+                            $selectedCategory = $chapterCategories->firstWhere('id', (int) $categoryId);
+                            $selectedAccount = null;
+
+                            if ($intentType === 'project') {
+                                $selectedAccount = $selectedCategory?->account;
+                            }
+
+                            if ($intentType === 'general') {
+                                $selectedAccount = $chapterAccounts->firstWhere('id', (int) $accountId);
+                            }
+
+                            if ($intentType === 'event') {
+                                $selectedAccount = $eventAccounts->firstWhere('id', (int) $accountId);
+                            }
+                        @endphp
+                        <div class="rounded-xl border border-blue-100 bg-blue-50/50 px-4 py-3">
+                            <label class="mb-2 block text-sm font-medium text-slate-700">Linked Contribution Account</label>
+                            @if($selectedAccount)
+                                <p class="text-sm font-semibold text-slate-900">
+                                    {{ $selectedAccount->account_name }} ({{ $selectedAccount->bank_name }}){{ $selectedAccount->account_number ? ' • ' . $selectedAccount->account_number : '' }}{{ $selectedAccount->chapter_id === null ? ' - Global' : '' }}
+                                </p>
+                            @else
+                                <p class="text-sm text-slate-600">
+                                    @if($intentType === 'project')
+                                        Select a category to see the linked account.
+                                    @elseif($intentType === 'event')
+                                        Select an event and its linked account.
+                                    @else
+                                        Select a contribution account to continue.
+                                    @endif
+                                </p>
+                            @endif
+                        </div>
+
+                        <div>
+                            <label for="intent_notes" class="mb-2 block text-sm font-medium text-slate-700">Intent Notes</label>
+                            <textarea id="intent_notes" rows="4" wire:model="intentNotes" class="w-full rounded-xl border border-blue-100 px-4 py-3 text-sm text-slate-900" placeholder="Tell us about your partnership intent."></textarea>
+                            @error('intentNotes') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                        </div>
+
+                        <button type="submit" class="inline-flex w-full items-center justify-center rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700" wire:loading.attr="disabled">
+                            <span wire:loading.remove>Submit Intent</span>
+                            <span wire:loading>Submitting...</span>
+                        </button>
+                    </form>
+                </article>
             </div>
-            <script>
-                let year = new Date().getFullYear()
-                document.getElementById('current-year').innerHTML = year
-            </script>
-
-        </footer>
-    </div>
-
-
-
-
+        </div>
+    </section>
 </div>

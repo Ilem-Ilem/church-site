@@ -80,6 +80,10 @@ TODO: Add Active route indicators
        
         <flux:spacer />
 
+        <div class="flex items-center justify-center py-2">
+            <livewire:admin.components.notifications />
+        </div>
+
         
 
         <!-- Desktop User Menu -->
@@ -130,6 +134,8 @@ TODO: Add Active route indicators
         <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
 
         <flux:spacer />
+
+        <livewire:admin.components.notifications />
 
         <flux:dropdown position="top" align="end">
             <flux:profile :initials="auth()->user()->initials()" icon-trailing="chevron-down" />

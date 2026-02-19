@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Report;
+use App\Services\ReportPdfGenerator;
 use Livewire\Attributes\{Layout, Url};
 use Livewire\Volt\Component;
 use Illuminate\Support\Facades\Auth;
@@ -56,6 +57,24 @@ new #[Layout('components.layouts.admin')] class extends Component
         $this->toast()
             ->error('Error', 'Report file not found')
             ->send();
+    }
+
+    public function generatePdf()
+    {
+        $generator = app(ReportPdfGenerator::class);
+        $path = $generator->generate($this->report);
+
+        $this->report->report_path = $path;
+        $this->report->save();
+
+        $this->fileType = 'pdf';
+        $this->fileUrl = Storage::disk('public')->url($path);
+
+        $this->toast()
+            ->success('PDF Generated', 'Report PDF has been generated successfully ✅')
+            ->send();
+
+        return Storage::disk('public')->download($path, $this->report->title . '.pdf');
     }
 
     public function goBack()
@@ -249,6 +268,8 @@ new #[Layout('components.layouts.admin')] class extends Component
 
             @if($report->report_path)
                 <x-button wire:click="downloadReport" color="primary" icon="download" label="Download Report" />
+            @else
+                <x-button wire:click="generatePdf" color="primary" icon="download" label="Generate PDF" />
             @endif
         </div>
     </div>

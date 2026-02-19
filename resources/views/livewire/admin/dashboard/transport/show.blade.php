@@ -14,7 +14,7 @@ new #[Layout('components.layouts.admin')] class extends Component {
 
     public function mount($id)
     {
-        $this->transport = Transport::findOrFail($id);
+        $this->transport = Transport::with('pickupLocation')->findOrFail($id);
         $this->notes = $this->transport->notes ?? '';
         $this->status = $this->transport->status;
     }
@@ -39,7 +39,7 @@ new #[Layout('components.layouts.admin')] class extends Component {
 <div>
     <!-- Back Button -->
     <div class="mb-6">
-        <a href="{{ route('admin.dashboard.transport.index') }}"
+        <a href="{{ route('admin.dashboard.transport.index', request()->query()) }}"
             class="inline-flex items-center gap-2 rounded-lg bg-gray-200 px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600">
             <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -74,6 +74,10 @@ new #[Layout('components.layouts.admin')] class extends Component {
                     <div>
                         <label class="block text-sm font-medium text-gray-600 dark:text-gray-400">Pickup Location</label>
                         <p class="mt-1 text-base text-gray-900 dark:text-white">{{ $transport->pickup_location }}</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600 dark:text-gray-400">Pickup Time</label>
+                        <p class="mt-1 text-base text-gray-900 dark:text-white">{{ $transport->pickup_time ? \Carbon\Carbon::parse($transport->pickup_time)->format('g:i A') : 'Not set' }}</p>
                     </div>
                 </div>
             </x-card>
@@ -119,9 +123,9 @@ new #[Layout('components.layouts.admin')] class extends Component {
                                 Updating...
                             </span>
                         </button>
-                        <a href="{{ route('admin.dashboard.transport.index') }}"
+                        <a href="{{ route('admin.dashboard.transport.index', request()->query()) }}"
                             class="inline-flex items-center rounded-lg bg-gray-300 px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-400 dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-700">
-                            Cancel
+                            Back to list
                         </a>
                     </div>
                 </form>

@@ -16,16 +16,20 @@ class Report extends Model
         'description',
         'event_type',
         'level',
+        'status',
         'chapter_id',
         'team_id',
         'created_by',
         'report',
-        'report_path'
+        'report_path',
+        'report_data',
     ];
 
     protected $casts = [
         'report_date' => 'date',
         'level' => 'string', // enum: team, chapter, hq
+        'status' => 'string',
+        'report_data' => 'array',
     ];
 
     // Relationships

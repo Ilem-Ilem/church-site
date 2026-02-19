@@ -26,5 +26,20 @@ class Chapter extends Model
         });
     }
 
+    public function accounts()
+    {
+        return $this->hasMany(Accounts::class);
+    }
+
+    public function partnershipCategories()
+    {
+        return $this->hasMany(PartnershipCategory::class);
+    }
+
+    public function partnershipIntents()
+    {
+        return $this->hasMany(PartnershipIntent::class);
+    }
+
 
 }

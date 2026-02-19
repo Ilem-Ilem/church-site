@@ -6,8 +6,11 @@ use Livewire\Attributes\Layout;
 use Livewire\WithFileUploads;
 use Livewire\Volt\Component;
 use TallStackUi\Traits\Interactions;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
-new #[Layout('layouts.admin')] class extends Component
+new #[Layout('components.layouts.admin')] class extends Component
 {
     use WithFileUploads, Interactions;
 
@@ -88,7 +91,7 @@ new #[Layout('layouts.admin')] class extends Component
                 ->send();
 
         } catch (\Exception $e) {
-            \Log::error('Gallery upload failed', [
+            Log::error('Gallery upload failed', [
                 'event_id' => $this->selectedEvent->id ?? null,
                 'error' => $e->getMessage()
             ]);
@@ -136,8 +139,8 @@ new #[Layout('layouts.admin')] class extends Component
             $image = EventGallery::findOrFail($imageId);
             
             // Delete the actual file
-            if ($image->file_path && \Storage::disk('public')->exists($image->file_path)) {
-                \Storage::disk('public')->delete($image->file_path);
+            if ($image->file_path && Storage::disk('public')->exists($image->file_path)) {
+                Storage::disk('public')->delete($image->file_path);
             }
             
             $image->delete();
@@ -156,7 +159,7 @@ new #[Layout('layouts.admin')] class extends Component
     public function reorderImages($oldIndex, $newIndex)
     {
         try {
-            $images = $this->galleryImages->values()->toArray();
+            $images = collect($this->galleryImages)->values()->toArray();
             
             // Move image
             $movedImage = array_splice($images, $oldIndex, 1)[0];
@@ -435,11 +438,18 @@ new #[Layout('layouts.admin')] class extends Component
     }
 </style>
 
-<div class="space-y-6">
+<x-fancy-header title="Event Gallery Management" subtitle="Manage event photos and galleries" :breadcrumbs="[['label' => 'Home', 'url' => route('admin.dashboard', request()->query())], ['label' => 'Events', 'url' => route('admin.dashboard.events.index', request()->query())], ['label' => 'Gallery']]">
+        <x-slot:actions>
+            <a href="{{ route('admin.dashboard.events.index', request()->query()) }}">
+                <x-button color="secondary" icon="arrow-left" label="Back to Events" />
+            </a>
+        </x-slot:actions>
+    </x-fancy-header>
+
     <div class="gallery-container">
         <h2 class="h4 mb-4">
             <i class="bi bi-images me-2" style="color: var(--primary);"></i>
-            Event Gallery Management
+            Select Event
         </h2>
 
         <!-- Event Selection -->
@@ -542,7 +552,7 @@ new #[Layout('layouts.admin')] class extends Component
                                         src="{{ Storage::url($image->file_path) }}" 
                                         alt="{{ $image->title ?? 'Gallery Image' }}"
                                         class="gallery-item-image"
-                                        onerror="this.src='{{ asset('images/placeholder.jpg') }}'"
+
                                     >
                                     <div class="gallery-item-info">
                                         @if($editingImageId === $image->id)
@@ -579,7 +589,7 @@ new #[Layout('layouts.admin')] class extends Component
                                             <div class="gallery-item-actions">
                                                 <button 
                                                     class="action-btn"
-                                                    wire:click="startEditImage({{ $image->id }}, '{{ addslashes($image->title ?? '') }}')"
+                                                    wire:click="startEditImage({{ $image->id }}, {{ json_encode($image->title ?? '') }})"
                                                 >
                                                     <i class="bi bi-pencil-square me-1"></i> Edit
                                                 </button>
